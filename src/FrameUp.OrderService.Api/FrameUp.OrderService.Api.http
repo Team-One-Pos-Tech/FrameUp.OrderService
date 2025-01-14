@@ -1,0 +1,6 @@
+@FrameUp.OrderService.Api_HostAddress = http://localhost:5244
+
+GET {{FrameUp.OrderService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
