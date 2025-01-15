@@ -22,12 +22,11 @@ public class ProcessShould
     {
         #region Arrange
         
-        var content = "Mocked file content";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-        
+        var video = CreateFakeVideo();
+
         var request = new ProcessVideoRequest
         {
-            Video = stream
+            Video = video
         };
         
         #endregion
@@ -45,5 +44,20 @@ public class ProcessShould
         response.Status.Should().Be(ProcessingStatus.Received);
 
         #endregion
+    }
+
+    private static MemoryStream CreateFakeVideo()
+    {
+        var content = "This is some content for the MemoryStream.";
+        var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        var filePath = "output.mp4";
+
+        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        {
+            memoryStream.WriteTo(fileStream);
+        }
+
+        return memoryStream;
     }
 }
