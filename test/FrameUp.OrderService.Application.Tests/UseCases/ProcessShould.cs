@@ -120,7 +120,7 @@ public class ProcessShould
     }
     
     [Test]
-    public async Task Validate_Video_Size_When_Is_Not_Mp4()
+    public async Task Validate_Video_Content_Type_When_Is_Not_Mp4()
     {
         #region Arrange
         
