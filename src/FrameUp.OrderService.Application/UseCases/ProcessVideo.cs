@@ -28,7 +28,13 @@ public class ProcessVideo(IFileBucket fileBucket)
         if (request.VideoSize > MaxVideoSize)
         {
             responseOut.Status = ProcessingStatus.Refused;
-            responseOut.AddNotification("Video", "Video size is too large");
+            responseOut.AddNotification("Video", "Video size is too large.");
+            return false;
+        }
+        if (request.VideoContentType != "video/mp4")
+        {
+            responseOut.Status = ProcessingStatus.Refused;
+            responseOut.AddNotification("Video", "File type not supported.");
             return false;
         }
 

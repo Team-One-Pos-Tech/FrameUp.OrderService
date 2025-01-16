@@ -29,7 +29,8 @@ public class ProcessShould
 
         var request = new ProcessVideoRequest
         {
-            Video = video
+            Video = video,
+            VideoContentType = "video/mp4"
         };
         
         #endregion
@@ -60,7 +61,8 @@ public class ProcessShould
         var request = new ProcessVideoRequest
         {
             Video = video,
-            VideoName = videoName
+            VideoName = videoName,
+            VideoContentType = "video/mp4"
         };
         
         #endregion
@@ -93,6 +95,7 @@ public class ProcessShould
             Video = video,
             VideoName = videoName,
             VideoSize = 1024L * 1024L * 1024L + 512L, // 1 GB in bytes
+            VideoContentType = "video/mp4"
         };
         
         #endregion
@@ -109,7 +112,44 @@ public class ProcessShould
         
         response.Status.Should().Be(ProcessingStatus.Refused);
 
-        response.Notifications.First().Message.Should().Be("Video size is too large");
+        response.Notifications.First().Message.Should().Be("Video size is too large.");
+        
+        fileBucketMock.Verify(x => x.Save(video, videoName), Times.Never);
+
+        #endregion
+    }
+    
+    [Test]
+    public async Task Validate_Video_Size_When_Is_Not_Mp4()
+    {
+        #region Arrange
+        
+        var video = CreateFakeVideo();
+
+        const string videoName = "marketing.txt";
+        var request = new ProcessVideoRequest
+        {
+            Video = video,
+            VideoName = videoName,
+            VideoSize = 1024L * 1024L, 
+            VideoContentType = "text/plain"
+        };
+        
+        #endregion
+
+        #region Act
+
+        var response = await processVideo.Execute(request);
+
+        #endregion
+
+        #region Assert
+        
+        response.IsValid.Should().BeFalse();
+        
+        response.Status.Should().Be(ProcessingStatus.Refused);
+
+        response.Notifications.First().Message.Should().Be("File type not supported.");
         
         fileBucketMock.Verify(x => x.Save(video, videoName), Times.Never);
 
