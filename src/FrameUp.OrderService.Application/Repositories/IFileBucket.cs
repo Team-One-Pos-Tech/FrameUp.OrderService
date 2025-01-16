@@ -4,5 +4,5 @@ namespace FrameUp.OrderService.Application.Repositories;
 
 public interface IFileBucket
 {
-    public Task Save(Stream stream, VideoMetadataRequest fileName);
+    public Task Save(Stream stream, VideoMetadataRequest metadata);
 }
