@@ -23,7 +23,7 @@ public class ProcessVideo(IFileBucket fileBucket)
         
         return new ProcessVideoResponse
         {
-            Status = ProcessingStatus.Received
+            Status = ProcessingStatus.Processing
         };
     }
 }

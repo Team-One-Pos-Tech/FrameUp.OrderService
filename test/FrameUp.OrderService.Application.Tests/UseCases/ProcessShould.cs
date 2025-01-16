@@ -44,7 +44,7 @@ public class ProcessShould
         
         response.IsValid.Should().BeTrue();
         
-        response.Status.Should().Be(ProcessingStatus.Received);
+        response.Status.Should().Be(ProcessingStatus.Processing);
 
         #endregion
     }
