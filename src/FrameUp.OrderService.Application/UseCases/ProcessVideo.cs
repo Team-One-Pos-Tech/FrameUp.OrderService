@@ -13,7 +13,7 @@ public class ProcessVideo(IFileBucket fileBucket)
         if (!IsValid(request, out var response)) 
             return response;
 
-        await fileBucket.Save(request.Video, request.VideoName);
+        await fileBucket.Save(request.Video, request.VideoMetadata);
         
         return new ProcessVideoResponse
         {
@@ -25,13 +25,13 @@ public class ProcessVideo(IFileBucket fileBucket)
     {
         responseOut = new ProcessVideoResponse();
 
-        if (request.VideoSize > MaxVideoSize)
+        if (request.VideoMetadata.Size > MaxVideoSize)
         {
             responseOut.Status = ProcessingStatus.Refused;
             responseOut.AddNotification("Video", "Video size is too large.");
             return false;
         }
-        if (request.VideoContentType != "video/mp4")
+        if (request.VideoMetadata.ContentType != "video/mp4")
         {
             responseOut.Status = ProcessingStatus.Refused;
             responseOut.AddNotification("Video", "File type not supported.");

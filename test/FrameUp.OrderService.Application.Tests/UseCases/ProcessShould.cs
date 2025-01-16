@@ -30,7 +30,9 @@ public class ProcessShould
         var request = new ProcessVideoRequest
         {
             Video = video,
-            VideoContentType = "video/mp4"
+            VideoMetadata = new VideoMetadataRequest {
+                ContentType = "video/mp4"
+            },
         };
         
         #endregion
@@ -61,8 +63,10 @@ public class ProcessShould
         var request = new ProcessVideoRequest
         {
             Video = video,
-            VideoName = videoName,
-            VideoContentType = "video/mp4"
+            VideoMetadata = new VideoMetadataRequest {
+                Name = videoName,
+                ContentType = "video/mp4"
+            },
         };
         
         #endregion
@@ -77,7 +81,10 @@ public class ProcessShould
         
         response.IsValid.Should().BeTrue();
         
-        fileBucketMock.Verify(x => x.Save(video, videoName), Times.Once);
+        fileBucketMock.Verify(x => x.Save(
+            It.IsAny<Stream>(), 
+            It.Is<VideoMetadataRequest>(v => v.Name == videoName && v.ContentType == "video/mp4")
+        ), Times.Once);
 
         #endregion
     }
@@ -93,9 +100,11 @@ public class ProcessShould
         var request = new ProcessVideoRequest
         {
             Video = video,
-            VideoName = videoName,
-            VideoSize = 1024L * 1024L * 1024L + 512L, // 1 GB in bytes
-            VideoContentType = "video/mp4"
+            VideoMetadata = new VideoMetadataRequest {
+                Name = videoName,
+                Size = 1024L * 1024L * 1024L + 512L, // 1 GB in bytes
+                ContentType = "video/mp4"
+            },
         };
         
         #endregion
@@ -114,7 +123,7 @@ public class ProcessShould
 
         response.Notifications.First().Message.Should().Be("Video size is too large.");
         
-        fileBucketMock.Verify(x => x.Save(video, videoName), Times.Never);
+        fileBucketMock.Verify(x => x.Save(video, new VideoMetadataRequest()), Times.Never);
 
         #endregion
     }
@@ -130,9 +139,11 @@ public class ProcessShould
         var request = new ProcessVideoRequest
         {
             Video = video,
-            VideoName = videoName,
-            VideoSize = 1024L * 1024L, 
-            VideoContentType = "text/plain"
+            VideoMetadata = new VideoMetadataRequest {
+                Name = videoName,
+                Size = 1024L * 1024L, 
+                ContentType = "text/plain"
+            },
         };
         
         #endregion
@@ -151,7 +162,7 @@ public class ProcessShould
 
         response.Notifications.First().Message.Should().Be("File type not supported.");
         
-        fileBucketMock.Verify(x => x.Save(video, videoName), Times.Never);
+        fileBucketMock.Verify(x => x.Save(video, new VideoMetadataRequest()), Times.Never);
 
         #endregion
     }

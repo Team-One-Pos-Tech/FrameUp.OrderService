@@ -3,7 +3,14 @@ namespace FrameUp.OrderService.Application.Models;
 public record ProcessVideoRequest
 {
     public required Stream Video { get; init; }
-    public string VideoName { get; set; }
-    public long VideoSize { get; set; }
-    public string VideoContentType { get; set; }
+    public required VideoMetadataRequest VideoMetadata { get; init; }
+}
+
+public record VideoMetadataRequest
+{
+    public string Name { get; set; }
+    
+    public long Size { get; set; }
+    
+    public string ContentType { get; set; }
 }
