@@ -79,7 +79,40 @@ public class ProcessShould
 
         #endregion
     }
+    
+    
+    [Test]
+    public async Task Validate_Video_Size_When_Is_Bigger_Than_1gb()
+    {
+        #region Arrange
+        
+        var video = CreateFakeVideo();
 
+        const string videoName = "marketing.mp4";
+        var request = new ProcessVideoRequest
+        {
+            Video = video,
+            VideoName = videoName,
+            VideoSize = 1024L * 1024L * 1024L, // 1 GB in bytes
+        };
+        
+        #endregion
+
+        #region Act
+
+        var response = await processVideo.Execute(request);
+
+        #endregion
+
+        #region Assert
+        
+        response.IsValid.Should().BeFalse();
+        
+        fileBucketMock.Verify(x => x.Save(video, videoName), Times.Never);
+
+        #endregion
+    }
+    
     private static MemoryStream CreateFakeVideo()
     {
         var content = "This is some content for the MemoryStream.";
