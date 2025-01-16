@@ -10,20 +10,28 @@ public class ProcessVideo(IFileBucket fileBucket)
     
     public async Task<ProcessVideoResponse> Execute(ProcessVideoRequest request)
     {
-        var response = new ProcessVideoResponse();
-        
-        if (request.VideoSize > MaxVideoSize)
-        {
-            response.Status = ProcessingStatus.Refused;
-            response.AddNotification("Video", "Video size is too large");
+        if (!IsValid(request, out var response)) 
             return response;
-        }
-        
+
         await fileBucket.Save(request.Video, request.VideoName);
         
         return new ProcessVideoResponse
         {
             Status = ProcessingStatus.Processing
         };
+    }
+
+    private static bool IsValid(ProcessVideoRequest request, out ProcessVideoResponse responseOut)
+    {
+        responseOut = new ProcessVideoResponse();
+
+        if (request.VideoSize > MaxVideoSize)
+        {
+            responseOut.Status = ProcessingStatus.Refused;
+            responseOut.AddNotification("Video", "Video size is too large");
+            return false;
+        }
+
+        return true;
     }
 }
