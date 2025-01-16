@@ -11,4 +11,9 @@ public class Order
     public ProcessingStatus Status { get; set; }
 
     public Guid OwnerId { get; set; }
+
+    public Order()
+    {
+        Id = Guid.NewGuid();
+    }
 }

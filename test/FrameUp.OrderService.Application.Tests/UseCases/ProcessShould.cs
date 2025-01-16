@@ -182,14 +182,17 @@ public class ProcessShould
         var video = CreateFakeVideo();
 
         const string videoName = "marketing.txt";
+        var size = 1024L * 1024L;
+        var contentType = "video/mp4";
+        
         var request = new ProcessVideoRequest
         {
             Video = video,
             VideoMetadata = new VideoMetadataRequest
             {
                 Name = videoName,
-                Size = 1024L * 1024L,
-                ContentType = "video/mp4"
+                Size = size,
+                ContentType = contentType
             },
         };
 
@@ -207,8 +210,8 @@ public class ProcessShould
         
         _orderRepository.Verify(repository => repository.Save(
             It.Is<Order>(order => order.VideoMetadata.Name == videoName && 
-                                  order.VideoMetadata.Size == 1024L * 1024L &&
-                                  order.VideoMetadata.ContentType == "text/plain")
+                                  order.VideoMetadata.Size == size &&
+                                  order.VideoMetadata.ContentType == contentType)
         ), Times.Once);
 
         #endregion

@@ -1,11 +1,11 @@
 ﻿using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Repositories;
-using FrameUp.OrderService.Domain.Enums;
+using FrameUp.OrderService.Domain.Entities;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class ProcessVideo(IFileBucketRepository fileBucketRepository, IOrderRepository orderRepositoryObject)
+public class ProcessVideo(IFileBucketRepository fileBucketRepository, IOrderRepository orderRepository)
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
     
@@ -14,11 +14,15 @@ public class ProcessVideo(IFileBucketRepository fileBucketRepository, IOrderRepo
         if (!IsValid(request, out var response)) 
             return response;
 
+        var order = CreateOrder(request);
+        
+        await orderRepository.Save(order);
+
         await fileBucketRepository.Save(request.Video, request.VideoMetadata);
         
         return new ProcessVideoResponse
         {
-            Status = ProcessingStatus.Processing
+            Status = order.Status
         };
     }
 
@@ -40,5 +44,19 @@ public class ProcessVideo(IFileBucketRepository fileBucketRepository, IOrderRepo
         }
 
         return true;
+    }
+    
+    private static Order CreateOrder(ProcessVideoRequest request)
+    {
+        return new Order()
+        {
+            Status = ProcessingStatus.Processing,
+            VideoMetadata = new VideoMetadata
+            {
+                ContentType = request.VideoMetadata.ContentType,
+                Size = request.VideoMetadata.Size,
+                Name = request.VideoMetadata.Name
+            }
+        };
     }
 }
