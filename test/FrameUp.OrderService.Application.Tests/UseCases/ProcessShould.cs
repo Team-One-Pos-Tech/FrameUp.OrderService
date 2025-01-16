@@ -16,8 +16,8 @@ public class ProcessShould
     [SetUp]
     public void Setup()
     {
-        processVideo = new ProcessVideo();
         fileBucketMock = new Mock<IFileBucket>();
+        processVideo = new ProcessVideo(fileBucketMock.Object);
     }
     
     [Test]
@@ -36,7 +36,7 @@ public class ProcessShould
 
         #region Act
 
-        var response = processVideo.Execute(request);
+        var response = await processVideo.Execute(request);
 
         #endregion
 
@@ -56,22 +56,26 @@ public class ProcessShould
         
         var video = CreateFakeVideo();
 
+        const string videoName = "marketing.mp4";
         var request = new ProcessVideoRequest
         {
-            Video = video
+            Video = video,
+            VideoName = videoName
         };
         
         #endregion
 
         #region Act
 
-        var response = processVideo.Execute(request);
+        var response = await processVideo.Execute(request);
 
         #endregion
 
         #region Assert
         
-        fileBucketMock.Verify(x => x.Save(video, "output.mp4"), Times.Once);
+        response.IsValid.Should().BeTrue();
+        
+        fileBucketMock.Verify(x => x.Save(video, videoName), Times.Once);
 
         #endregion
     }
