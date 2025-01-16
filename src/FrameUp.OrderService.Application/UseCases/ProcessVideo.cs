@@ -6,7 +6,7 @@ namespace FrameUp.OrderService.Application.UseCases;
 
 public class ProcessVideo(IFileBucket fileBucket)
 {
-    const long MaxVideoSize = 1024L * 1024L * 1024L;
+    private const long MaxVideoSize = 1024L * 1024L * 1024L;
     
     public async Task<ProcessVideoResponse> Execute(ProcessVideoRequest request)
     {
