@@ -2,18 +2,22 @@ using System.Text;
 using FluentAssertions;
 using FrameUp.OrderService.Application.Enums;
 using FrameUp.OrderService.Application.Models;
+using FrameUp.OrderService.Application.Repositories;
 using FrameUp.OrderService.Application.UseCases;
+using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
 
 public class ProcessShould
 {
     private ProcessVideo processVideo;
+    private Mock<IFileBucket> fileBucketMock;
 
     [SetUp]
     public void Setup()
     {
         processVideo = new ProcessVideo();
+        fileBucketMock = new Mock<IFileBucket>();
     }
     
     [Test]
@@ -41,6 +45,33 @@ public class ProcessShould
         response.IsValid.Should().BeTrue();
         
         response.Status.Should().Be(ProcessingStatus.Received);
+
+        #endregion
+    }
+    
+    [Test]
+    public async Task Upload_Video()
+    {
+        #region Arrange
+        
+        var video = CreateFakeVideo();
+
+        var request = new ProcessVideoRequest
+        {
+            Video = video
+        };
+        
+        #endregion
+
+        #region Act
+
+        var response = processVideo.Execute(request);
+
+        #endregion
+
+        #region Assert
+        
+        fileBucketMock.Verify(x => x.Save(video, "output.mp4"), Times.Once);
 
         #endregion
     }
