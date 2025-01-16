@@ -1,9 +1,8 @@
-using System.Net.Http.Headers;
 using System.Text;
 using FluentAssertions;
+using FrameUp.OrderService.Application.Enums;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.UseCases;
-using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
 
