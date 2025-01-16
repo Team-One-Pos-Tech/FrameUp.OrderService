@@ -1,10 +1,11 @@
-﻿using FrameUp.OrderService.Application.Enums;
+﻿using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Repositories;
+using FrameUp.OrderService.Domain.Enums;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class ProcessVideo(IFileBucket fileBucket)
+public class ProcessVideo(IFileBucketRepository fileBucketRepository, IOrderRepository orderRepositoryObject)
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
     
@@ -13,7 +14,7 @@ public class ProcessVideo(IFileBucket fileBucket)
         if (!IsValid(request, out var response)) 
             return response;
 
-        await fileBucket.Save(request.Video, request.VideoMetadata);
+        await fileBucketRepository.Save(request.Video, request.VideoMetadata);
         
         return new ProcessVideoResponse
         {

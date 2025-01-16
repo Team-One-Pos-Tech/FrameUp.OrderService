@@ -1,4 +1,4 @@
-namespace FrameUp.OrderService.Application.Enums;
+namespace FrameUp.OrderService.Domain.Enums;
 
 public enum ProcessingStatus
 {

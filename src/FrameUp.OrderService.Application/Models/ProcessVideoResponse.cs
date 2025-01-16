@@ -1,5 +1,5 @@
 using Flunt.Notifications;
-using FrameUp.OrderService.Application.Enums;
+using FrameUp.OrderService.Domain.Enums;
 
 namespace FrameUp.OrderService.Application.Models;
 
