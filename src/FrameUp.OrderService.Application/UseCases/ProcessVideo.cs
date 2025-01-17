@@ -2,10 +2,14 @@
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Repositories;
 using FrameUp.OrderService.Domain.Entities;
+using MassTransit;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class ProcessVideo(IFileBucketRepository fileBucketRepository, IOrderRepository orderRepository)
+public class ProcessVideo(
+    IFileBucketRepository fileBucketRepository, 
+    IOrderRepository orderRepository,
+    IPublishEndpoint publishEndpoint)
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
     
@@ -16,7 +20,7 @@ public class ProcessVideo(IFileBucketRepository fileBucketRepository, IOrderRepo
 
         var order = CreateOrder(request);
         
-        await orderRepository.Save(order);
+        order.Id = await orderRepository.Save(order);
 
         await fileBucketRepository.Save(request.Video, request.VideoMetadata);
         

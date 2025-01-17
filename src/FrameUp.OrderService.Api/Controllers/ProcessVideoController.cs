@@ -14,6 +14,18 @@ namespace FrameUp.OrderService.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<ProcessVideoResponse> Post(ProcessVideoBodyRequest request)
         {
+            var stream = request.Video.OpenReadStream();
+
+            var processVideoRequest = new ProcessVideoRequest()
+            {
+                Video = stream,
+                VideoMetadata = new VideoMetadataRequest
+                {
+                    ContentType = request.Video.ContentType,
+                    Size = request.Video.Length
+                }
+            };
+            
             return Ok();
         }
     }

@@ -14,6 +14,5 @@ public class Order
 
     public Order()
     {
-        Id = Guid.NewGuid();
     }
 }

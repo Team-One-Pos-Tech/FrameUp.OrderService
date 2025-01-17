@@ -1,10 +1,12 @@
 using System.Text;
 using FluentAssertions;
 using FrameUp.OrderService.Application.Models;
+using FrameUp.OrderService.Application.Models.Consumers;
 using FrameUp.OrderService.Application.Repositories;
 using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
+using MassTransit;
 using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
@@ -14,13 +16,19 @@ public class ProcessShould
     private ProcessVideo _processVideo;
     private Mock<IFileBucketRepository> _fileBucketMock;
     private Mock<IOrderRepository> _orderRepository;
+    private Mock<IPublishEndpoint> _publishEndpointMock;
 
     [SetUp]
     public void Setup()
     {
         _fileBucketMock = new Mock<IFileBucketRepository>();
         _orderRepository = new Mock<IOrderRepository>();
-        _processVideo = new ProcessVideo(_fileBucketMock.Object,_orderRepository.Object);
+        _publishEndpointMock = new Mock<IPublishEndpoint>();
+
+        _processVideo = new ProcessVideo(
+            _fileBucketMock.Object,
+            _orderRepository.Object, 
+            _publishEndpointMock.Object);
     }
 
     [Test]
@@ -212,6 +220,49 @@ public class ProcessShould
             It.Is<Order>(order => order.VideoMetadata.Name == videoName && 
                                   order.VideoMetadata.Size == size &&
                                   order.VideoMetadata.ContentType == contentType)
+        ), Times.Once);
+
+        #endregion
+    }
+    
+    [Test]
+    public async Task Publish_Ready_To_Process_Envent()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+        
+        var request = new ProcessVideoRequest
+        {
+            Video = video,
+            VideoMetadata = new VideoMetadataRequest
+            {
+                Name = "marketing.txt",
+                Size = 1024L * 1024L,
+                ContentType = "video/mp4"
+            },
+        };
+
+        var orderId = Guid.NewGuid();
+        
+        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
+            .ReturnsAsync(orderId);
+
+        #endregion
+
+        #region Act
+
+        var response = await _processVideo.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+        
+        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
+            It.Is<ReadyToProcessVideo>(message => message.OrderId == orderId), 
+            It.IsAny<CancellationToken>()
         ), Times.Once);
 
         #endregion

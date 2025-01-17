@@ -4,5 +4,5 @@ namespace FrameUp.OrderService.Application.Repositories;
 
 public interface IOrderRepository
 {
-    public Task Save(Order order);
+    public Task<Guid> Save(Order order);
 }

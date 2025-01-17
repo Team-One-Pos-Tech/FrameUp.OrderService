@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Flunt" Version="2.0.5" />
+    <PackageReference Include="MassTransit" Version="8.3.5-develop.2174" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
   </ItemGroup>
 
   <PropertyGroup>
