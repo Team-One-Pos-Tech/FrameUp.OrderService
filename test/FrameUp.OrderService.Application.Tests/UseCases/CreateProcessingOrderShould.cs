@@ -40,11 +40,18 @@ public class CreateProcessingOrderShould
 
         var request = new CreateProcessingOrderRequest
         {
-            Video = video,
-            VideoMetadata = new VideoMetadataRequest
-            {
-                ContentType = "video/mp4"
-            },
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = "marketing.mp4",
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
         };
 
         #endregion
@@ -74,13 +81,24 @@ public class CreateProcessingOrderShould
         const string videoName = "marketing.mp4";
         var request = new CreateProcessingOrderRequest
         {
-            Video = video,
-            VideoMetadata = new VideoMetadataRequest
-            {
-                Name = videoName,
-                ContentType = "video/mp4"
-            },
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                },
+            ]
         };
+        
+        var orderId = Guid.NewGuid();
+        
+        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
+            .ReturnsAsync(orderId);
 
         #endregion
 
@@ -94,16 +112,16 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _fileBucketMock.Verify(x => x.Save(
-            It.IsAny<Stream>(),
-            It.Is<VideoMetadataRequest>(v => v.Name == videoName && v.ContentType == "video/mp4")
+        _fileBucketMock.Verify(mock => mock.Save(
+            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId && 
+                                                    fileRequest.Files.Count() == 1)
         ), Times.Once);
 
         #endregion
     }
     
     [Test]
-    public async Task Start_Processing_Many_Videos_Simultaneously()
+    public async Task Upload_Many_Videos_Simultaneously()
     {
         #region Arrange
 
@@ -174,13 +192,18 @@ public class CreateProcessingOrderShould
         const string videoName = "marketing.mp4";
         var request = new CreateProcessingOrderRequest
         {
-            Video = video,
-            VideoMetadata = new VideoMetadataRequest
-            {
-                Name = videoName,
-                Size = 1024L * 1024L * 1024L + 512L, // 1 GB in bytes
-                ContentType = "video/mp4"
-            },
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        Size = 1024L * 1024L * 1024L + 512L, // 1 GB in bytes
+                        ContentType = "video/mp4"
+                    }
+                }
+            ]
         };
 
         #endregion
@@ -214,13 +237,18 @@ public class CreateProcessingOrderShould
         const string videoName = "marketing.txt";
         var request = new CreateProcessingOrderRequest
         {
-            Video = video,
-            VideoMetadata = new VideoMetadataRequest
-            {
-                Name = videoName,
-                Size = 1024L * 1024L,
-                ContentType = "text/plain"
-            },
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = "text/plain",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
         };
 
         #endregion
@@ -257,13 +285,18 @@ public class CreateProcessingOrderShould
         
         var request = new CreateProcessingOrderRequest
         {
-            Video = video,
-            VideoMetadata = new VideoMetadataRequest
-            {
-                Name = videoName,
-                Size = size,
-                ContentType = contentType
-            },
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = contentType,
+                        Size = size
+                    }
+                }
+            ]
         };
 
         #endregion
@@ -279,9 +312,9 @@ public class CreateProcessingOrderShould
         response.IsValid.Should().BeTrue();
         
         _orderRepository.Verify(repository => repository.Save(
-            It.Is<Order>(order => order.VideoMetadata.Name == videoName && 
-                                  order.VideoMetadata.Size == size &&
-                                  order.VideoMetadata.ContentType == contentType)
+            It.Is<Order>(order => order.Videos.First().Name == videoName && 
+                                  order.Videos.First().Size == size &&
+                                  order.Videos.First().ContentType == contentType)
         ), Times.Once);
 
         #endregion
@@ -296,13 +329,18 @@ public class CreateProcessingOrderShould
         
         var request = new CreateProcessingOrderRequest
         {
-            Video = video,
-            VideoMetadata = new VideoMetadataRequest
-            {
-                Name = "marketing.txt",
-                Size = 1024L * 1024L,
-                ContentType = "video/mp4"
-            },
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = "marketing.mp4",
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
         };
 
         var orderId = Guid.NewGuid();

@@ -18,11 +18,18 @@ namespace FrameUp.OrderService.Api.Controllers
 
             var processVideoRequest = new CreateProcessingOrderRequest()
             {
-                Video = stream,
-                VideoMetadata = new VideoMetadataRequest
+                Videos = new List<VideoRequest>
                 {
-                    ContentType = request.Video.ContentType,
-                    Size = request.Video.Length
+                    new VideoRequest
+                    {
+                        ContentStream = stream,
+                        Metadata = new VideoMetadataRequest
+                        {
+                            Name = request.Video.FileName,
+                            Size = request.Video.Length,
+                            ContentType = request.Video.ContentType
+                        }
+                    }
                 }
             };
             

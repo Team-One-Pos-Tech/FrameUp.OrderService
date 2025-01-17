@@ -23,7 +23,7 @@ public class CreateProcessingOrder(
         
         order.Id = await orderRepository.Save(order);
 
-        await fileBucketRepository.Save(request.Video, request.VideoMetadata);
+        await UploadVideos(order.Id, request);
 
         await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
         
@@ -31,6 +31,23 @@ public class CreateProcessingOrder(
         {
             Status = order.Status
         };
+    }
+
+    private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
+    {
+        var requestUpload = new FileBucketRequest
+        {
+            OrderId = orderId,
+            Files = request.Videos.Select(video => new FileRequest
+            {
+                ContentStream = video.ContentStream,
+                Name = video.Metadata.Name,
+                Size = video.Metadata.Size,
+                ContentType = video.Metadata.ContentType
+            })
+        };
+        
+        await fileBucketRepository.Save(requestUpload);
     }
 
     private static bool IsValid(CreateProcessingOrderRequest request, out CreateProcessingOrderResponse responseOut)
@@ -61,12 +78,12 @@ public class CreateProcessingOrder(
         return new Order()
         {
             Status = ProcessingStatus.Processing,
-            VideoMetadata = new VideoMetadata
+            Videos = request.Videos.Select(video => new VideoMetadata
             {
-                ContentType = request.VideoMetadata.ContentType,
-                Size = request.VideoMetadata.Size,
-                Name = request.VideoMetadata.Name
-            }
+                ContentType = video.Metadata.ContentType,
+                Size = video.Metadata.Size,
+                Name = video.Metadata.Name
+            })
         };
     }
 }

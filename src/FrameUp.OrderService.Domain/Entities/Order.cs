@@ -13,6 +13,8 @@ public class Order
 
     public Guid OwnerId { get; set; }
 
+    public IEnumerable<VideoMetadata> Videos { get; set; } = [];
+
     public Order()
     {
     }
