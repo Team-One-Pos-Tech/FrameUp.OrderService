@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FrameUp.OrderService.Application\FrameUp.OrderService.Application.csproj" />
+  </ItemGroup>
+
 </Project>

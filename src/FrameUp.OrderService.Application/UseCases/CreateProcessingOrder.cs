@@ -1,4 +1,5 @@
-﻿using FrameUp.OrderService.Domain.Enums;
+﻿using FrameUp.OrderService.Application.Contracts;
+using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Models.Consumers;
 using FrameUp.OrderService.Application.Repositories;
@@ -9,12 +10,11 @@ namespace FrameUp.OrderService.Application.UseCases;
 
 public class CreateProcessingOrder(
     IFileBucketRepository fileBucketRepository, 
-    IOrderRepository orderRepository,
-    IPublishEndpoint publishEndpoint)
+    IOrderRepository orderRepository) : ICreateProcessingOrder
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
     private const int MaxVideoCount = 3;
-    public static readonly List<string> SupportedContentTypes = ["video/mp4"];
+    private static readonly List<string> SupportedContentTypes = ["video/mp4"];
     
     public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
     {
@@ -28,7 +28,7 @@ public class CreateProcessingOrder(
         // How long this could take? 
         await UploadVideos(order.Id, request);
 
-        await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
+        // await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
         
         return new CreateProcessingOrderResponse
         {

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FrameUp.OrderService.Application\FrameUp.OrderService.Application.csproj" />
+    <ProjectReference Include="..\FrameUp.OrderService.Infra\FrameUp.OrderService.Infra.csproj" />
   </ItemGroup>
 
 </Project>

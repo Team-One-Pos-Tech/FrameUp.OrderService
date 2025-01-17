@@ -1,11 +1,18 @@
-var builder = WebApplication.CreateBuilder(args);
+using FrameUp.OrderService.Api.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+// Add services to the container.
+builder.Services
+    .AddRepositories()
+    .AddUseCases();
 
 var app = builder.Build();
 

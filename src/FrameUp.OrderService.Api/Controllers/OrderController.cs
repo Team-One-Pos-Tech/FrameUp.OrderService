@@ -1,3 +1,4 @@
+using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -5,40 +6,39 @@ namespace FrameUp.OrderService.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OrderController(ILogger<OrderController> logger) : ControllerBase
+    public class OrderController(ILogger<OrderController> logger, ICreateProcessingOrder createProcessingOrder) : ControllerBase
     {
         private readonly ILogger<OrderController> _logger = logger;
 
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<CreateProcessingOrderResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<CreateProcessingOrderResponse> Post(ProcessVideoBodyRequest request)
+        [DisableRequestSizeLimit]
+        [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+        public async Task<ActionResult<CreateProcessingOrderResponse>> Post([FromForm] ProcessVideoBodyRequest request)
         {
-            var stream = request.Video.OpenReadStream();
-
             var processVideoRequest = new CreateProcessingOrderRequest()
             {
-                Videos = new List<VideoRequest>
+                Videos = request.Videos.Select(video => new VideoRequest
                 {
-                    new VideoRequest
+                    ContentStream = video.OpenReadStream(),
+                    Metadata = new VideoMetadataRequest
                     {
-                        ContentStream = stream,
-                        Metadata = new VideoMetadataRequest
-                        {
-                            Name = request.Video.FileName,
-                            Size = request.Video.Length,
-                            ContentType = request.Video.ContentType
-                        }
+                        Name = video.FileName,
+                        Size = video.Length,
+                        ContentType = video.ContentType
                     }
-                }
+                })
             };
+
+            var response = await createProcessingOrder.Execute(processVideoRequest);
             
-            return Ok();
+            return Ok(response);
         }
     }
     
     public class ProcessVideoBodyRequest
     {
-        public IFormFile Video { get; set; }
+        public IEnumerable<IFormFile> Videos { get; set; } = [];
     }
 }
