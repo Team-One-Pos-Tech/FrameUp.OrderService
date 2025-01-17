@@ -33,7 +33,10 @@ namespace FrameUp.OrderService.Api.Controllers
 
             var response = await createProcessingOrder.Execute(processVideoRequest);
             
-            return Ok(response);
+            if(response.IsValid)
+                return Ok(response);
+
+            return BadRequest(response);
         }
     }
     
