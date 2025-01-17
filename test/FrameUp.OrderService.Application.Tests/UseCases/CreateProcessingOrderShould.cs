@@ -273,6 +273,81 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
+    public async Task Validate_Video_Count_When_Is_Up_To_3()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+
+        const string videoName = "marketing.txt";
+        var request = new CreateProcessingOrderRequest
+        {
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = "text/plain",
+                        Size = 1024L * 1024L
+                    }
+                },
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = "text/plain",
+                        Size = 1024L * 1024L
+                    }
+                },
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = "text/plain",
+                        Size = 1024L * 1024L
+                    }
+                },
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = "text/plain",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeFalse();
+
+        response.Status.Should().Be(ProcessingStatus.Refused);
+
+        response.Notifications.First().Message.Should().Be("Max supported videos processing is 3.");
+
+        _fileBucketMock.Verify(x => x.Save(video, new VideoMetadataRequest()), Times.Never);
+
+        #endregion
+    }
+    
+    [Test]
     public async Task Persist_Order_With_Video_Metadata()
     {
         #region Arrange

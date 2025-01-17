@@ -13,6 +13,8 @@ public class CreateProcessingOrder(
     IPublishEndpoint publishEndpoint)
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
+    private const int MaxVideoCount = 3;
+    public static readonly List<string> SupportedContentTypes = ["video/mp4"];
     
     public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
     {
@@ -23,6 +25,7 @@ public class CreateProcessingOrder(
         
         order.Id = await orderRepository.Save(order);
 
+        // How long this could take? 
         await UploadVideos(order.Id, request);
 
         await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
@@ -54,6 +57,13 @@ public class CreateProcessingOrder(
     {
         responseOut = new CreateProcessingOrderResponse();
 
+        if (request.Videos.Count() > MaxVideoCount)
+        {
+            responseOut.Status = ProcessingStatus.Refused;
+            responseOut.AddNotification("Video", "Max supported videos processing is 3.");
+            return false;
+        }
+
         foreach (var video in request.Videos)
         {
             if (video.Metadata.Size > MaxVideoSize)
@@ -62,7 +72,7 @@ public class CreateProcessingOrder(
                 responseOut.AddNotification("Video", "Video size is too large.");
                 return false;
             }
-            if (video.Metadata.ContentType != "video/mp4")
+            if (!SupportedContentTypes.Contains(video.Metadata.ContentType))
             {
                 responseOut.Status = ProcessingStatus.Refused;
                 responseOut.AddNotification("Video", "File type not supported.");
