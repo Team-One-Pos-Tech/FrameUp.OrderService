@@ -7,14 +7,14 @@ using MassTransit;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class ProcessVideo(
+public class CreateProcessingOrder(
     IFileBucketRepository fileBucketRepository, 
     IOrderRepository orderRepository,
     IPublishEndpoint publishEndpoint)
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
     
-    public async Task<ProcessVideoResponse> Execute(ProcessVideoRequest request)
+    public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
     {
         if (!IsValid(request, out var response)) 
             return response;
@@ -27,15 +27,15 @@ public class ProcessVideo(
 
         await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
         
-        return new ProcessVideoResponse
+        return new CreateProcessingOrderResponse
         {
             Status = order.Status
         };
     }
 
-    private static bool IsValid(ProcessVideoRequest request, out ProcessVideoResponse responseOut)
+    private static bool IsValid(CreateProcessingOrderRequest request, out CreateProcessingOrderResponse responseOut)
     {
-        responseOut = new ProcessVideoResponse();
+        responseOut = new CreateProcessingOrderResponse();
 
         if (request.VideoMetadata.Size > MaxVideoSize)
         {
@@ -53,7 +53,7 @@ public class ProcessVideo(
         return true;
     }
     
-    private static Order CreateOrder(ProcessVideoRequest request)
+    private static Order CreateOrder(CreateProcessingOrderRequest request)
     {
         return new Order()
         {

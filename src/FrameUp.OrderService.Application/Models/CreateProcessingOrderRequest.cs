@@ -1,6 +1,6 @@
 namespace FrameUp.OrderService.Application.Models;
 
-public record ProcessVideoRequest
+public record CreateProcessingOrderRequest
 {
     public required Stream Video { get; init; }
     public required VideoMetadataRequest VideoMetadata { get; init; }

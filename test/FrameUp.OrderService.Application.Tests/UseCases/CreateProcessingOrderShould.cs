@@ -11,9 +11,9 @@ using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
 
-public class ProcessShould
+public class CreateProcessingOrderShould
 {
-    private ProcessVideo _processVideo;
+    private CreateProcessingOrder _createProcessingOrder;
     private Mock<IFileBucketRepository> _fileBucketMock;
     private Mock<IOrderRepository> _orderRepository;
     private Mock<IPublishEndpoint> _publishEndpointMock;
@@ -25,7 +25,7 @@ public class ProcessShould
         _orderRepository = new Mock<IOrderRepository>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
 
-        _processVideo = new ProcessVideo(
+        _createProcessingOrder = new CreateProcessingOrder(
             _fileBucketMock.Object,
             _orderRepository.Object, 
             _publishEndpointMock.Object);
@@ -38,7 +38,7 @@ public class ProcessShould
 
         var video = CreateFakeVideo();
 
-        var request = new ProcessVideoRequest
+        var request = new CreateProcessingOrderRequest
         {
             Video = video,
             VideoMetadata = new VideoMetadataRequest
@@ -51,7 +51,7 @@ public class ProcessShould
 
         #region Act
 
-        var response = await _processVideo.Execute(request);
+        var response = await _createProcessingOrder.Execute(request);
 
         #endregion
 
@@ -72,7 +72,7 @@ public class ProcessShould
         var video = CreateFakeVideo();
 
         const string videoName = "marketing.mp4";
-        var request = new ProcessVideoRequest
+        var request = new CreateProcessingOrderRequest
         {
             Video = video,
             VideoMetadata = new VideoMetadataRequest
@@ -86,7 +86,7 @@ public class ProcessShould
 
         #region Act
 
-        var response = await _processVideo.Execute(request);
+        var response = await _createProcessingOrder.Execute(request);
 
         #endregion
 
@@ -110,7 +110,7 @@ public class ProcessShould
         var video = CreateFakeVideo();
 
         const string videoName = "marketing.mp4";
-        var request = new ProcessVideoRequest
+        var request = new CreateProcessingOrderRequest
         {
             Video = video,
             VideoMetadata = new VideoMetadataRequest
@@ -125,7 +125,7 @@ public class ProcessShould
 
         #region Act
 
-        var response = await _processVideo.Execute(request);
+        var response = await _createProcessingOrder.Execute(request);
 
         #endregion
 
@@ -150,7 +150,7 @@ public class ProcessShould
         var video = CreateFakeVideo();
 
         const string videoName = "marketing.txt";
-        var request = new ProcessVideoRequest
+        var request = new CreateProcessingOrderRequest
         {
             Video = video,
             VideoMetadata = new VideoMetadataRequest
@@ -165,7 +165,7 @@ public class ProcessShould
 
         #region Act
 
-        var response = await _processVideo.Execute(request);
+        var response = await _createProcessingOrder.Execute(request);
 
         #endregion
 
@@ -193,7 +193,7 @@ public class ProcessShould
         var size = 1024L * 1024L;
         var contentType = "video/mp4";
         
-        var request = new ProcessVideoRequest
+        var request = new CreateProcessingOrderRequest
         {
             Video = video,
             VideoMetadata = new VideoMetadataRequest
@@ -208,7 +208,7 @@ public class ProcessShould
 
         #region Act
 
-        var response = await _processVideo.Execute(request);
+        var response = await _createProcessingOrder.Execute(request);
 
         #endregion
 
@@ -232,7 +232,7 @@ public class ProcessShould
 
         var video = CreateFakeVideo();
         
-        var request = new ProcessVideoRequest
+        var request = new CreateProcessingOrderRequest
         {
             Video = video,
             VideoMetadata = new VideoMetadataRequest
@@ -252,7 +252,7 @@ public class ProcessShould
 
         #region Act
 
-        var response = await _processVideo.Execute(request);
+        var response = await _createProcessingOrder.Execute(request);
 
         #endregion
 

@@ -10,13 +10,13 @@ namespace FrameUp.OrderService.Api.Controllers
         private readonly ILogger<ProcessVideoController> _logger = logger;
 
         [HttpPost]
-        [ProducesResponseType(typeof(IEnumerable<ProcessVideoResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<CreateProcessingOrderResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<ProcessVideoResponse> Post(ProcessVideoBodyRequest request)
+        public ActionResult<CreateProcessingOrderResponse> Post(ProcessVideoBodyRequest request)
         {
             var stream = request.Video.OpenReadStream();
 
-            var processVideoRequest = new ProcessVideoRequest()
+            var processVideoRequest = new CreateProcessingOrderRequest()
             {
                 Video = stream,
                 VideoMetadata = new VideoMetadataRequest
