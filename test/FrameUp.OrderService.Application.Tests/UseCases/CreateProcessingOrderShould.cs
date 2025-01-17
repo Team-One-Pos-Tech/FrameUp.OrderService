@@ -321,7 +321,7 @@ public class CreateProcessingOrderShould
     }
     
     [Test]
-    public async Task Publish_Ready_To_Process_Envent()
+    public async Task Publish_Ready_To_Process_Event()
     {
         #region Arrange
 
