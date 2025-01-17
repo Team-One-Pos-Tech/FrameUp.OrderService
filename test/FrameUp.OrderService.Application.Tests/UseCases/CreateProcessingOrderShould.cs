@@ -32,7 +32,7 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
-    public async Task Start_Process_Video()
+    public async Task Start_Processing_Video()
     {
         #region Arrange
 
@@ -97,6 +97,68 @@ public class CreateProcessingOrderShould
         _fileBucketMock.Verify(x => x.Save(
             It.IsAny<Stream>(),
             It.Is<VideoMetadataRequest>(v => v.Name == videoName && v.ContentType == "video/mp4")
+        ), Times.Once);
+
+        #endregion
+    }
+    
+    [Test]
+    public async Task Start_Processing_Many_Videos_Simultaneously()
+    {
+        #region Arrange
+
+        var video1 = CreateFakeVideo();
+        var video2 = CreateFakeVideo();
+
+        const string video1Name = "marketing.mp4";
+        const string video2Name = "commercial.mp4";
+
+        var request = new CreateProcessingOrderRequest
+        {
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video1,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = video1Name,
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                },
+                new VideoRequest
+                {
+                    ContentStream = video2,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = video2Name,
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
+        };
+        
+        var orderId = Guid.NewGuid();
+        
+        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
+            .ReturnsAsync(orderId);
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+
+        _fileBucketMock.Verify(mock => mock.Save(
+            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId && 
+                                                    fileRequest.Files.Count() == 2)
         ), Times.Once);
 
         #endregion

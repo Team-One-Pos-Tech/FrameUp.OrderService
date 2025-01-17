@@ -5,9 +5,9 @@ namespace FrameUp.OrderService.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProcessVideoController(ILogger<ProcessVideoController> logger) : ControllerBase
+    public class OrderController(ILogger<OrderController> logger) : ControllerBase
     {
-        private readonly ILogger<ProcessVideoController> _logger = logger;
+        private readonly ILogger<OrderController> _logger = logger;
 
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<CreateProcessingOrderResponse>), StatusCodes.Status200OK)]

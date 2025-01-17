@@ -37,17 +37,20 @@ public class CreateProcessingOrder(
     {
         responseOut = new CreateProcessingOrderResponse();
 
-        if (request.VideoMetadata.Size > MaxVideoSize)
+        foreach (var video in request.Videos)
         {
-            responseOut.Status = ProcessingStatus.Refused;
-            responseOut.AddNotification("Video", "Video size is too large.");
-            return false;
-        }
-        if (request.VideoMetadata.ContentType != "video/mp4")
-        {
-            responseOut.Status = ProcessingStatus.Refused;
-            responseOut.AddNotification("Video", "File type not supported.");
-            return false;
+            if (video.Metadata.Size > MaxVideoSize)
+            {
+                responseOut.Status = ProcessingStatus.Refused;
+                responseOut.AddNotification("Video", "Video size is too large.");
+                return false;
+            }
+            if (video.Metadata.ContentType != "video/mp4")
+            {
+                responseOut.Status = ProcessingStatus.Refused;
+                responseOut.AddNotification("Video", "File type not supported.");
+                return false;
+            }
         }
 
         return true;

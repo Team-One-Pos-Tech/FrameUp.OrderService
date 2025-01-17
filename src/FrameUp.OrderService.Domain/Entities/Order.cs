@@ -9,6 +9,7 @@ public class Order
     public VideoMetadata VideoMetadata { get; set; }
     
     public ProcessingStatus Status { get; set; }
+    
 
     public Guid OwnerId { get; set; }
 
