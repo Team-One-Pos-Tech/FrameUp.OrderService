@@ -1,3 +1,4 @@
+using FrameUp.OrderService.Api.Models;
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -38,10 +39,5 @@ namespace FrameUp.OrderService.Api.Controllers
 
             return BadRequest(response);
         }
-    }
-    
-    public class ProcessVideoBodyRequest
-    {
-        public IEnumerable<IFormFile> Videos { get; set; } = [];
     }
 }
