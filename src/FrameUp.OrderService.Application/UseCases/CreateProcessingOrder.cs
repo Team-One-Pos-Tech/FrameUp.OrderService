@@ -10,7 +10,8 @@ namespace FrameUp.OrderService.Application.UseCases;
 
 public class CreateProcessingOrder(
     IFileBucketRepository fileBucketRepository, 
-    IOrderRepository orderRepository) : ICreateProcessingOrder
+    IOrderRepository orderRepository,
+    IPublishEndpoint publishEndpoint) : ICreateProcessingOrder
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
     private const int MaxVideoCount = 3;
@@ -28,7 +29,7 @@ public class CreateProcessingOrder(
         // How long this could take? 
         await UploadVideos(order.Id, request);
 
-        // await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
+        await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
         
         return new CreateProcessingOrderResponse
         {
