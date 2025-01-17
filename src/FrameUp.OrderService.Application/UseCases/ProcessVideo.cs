@@ -1,5 +1,6 @@
 ﻿using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Application.Models;
+using FrameUp.OrderService.Application.Models.Consumers;
 using FrameUp.OrderService.Application.Repositories;
 using FrameUp.OrderService.Domain.Entities;
 using MassTransit;
@@ -23,6 +24,8 @@ public class ProcessVideo(
         order.Id = await orderRepository.Save(order);
 
         await fileBucketRepository.Save(request.Video, request.VideoMetadata);
+
+        await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
         
         return new ProcessVideoResponse
         {
