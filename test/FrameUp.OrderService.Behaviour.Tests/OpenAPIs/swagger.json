@@ -151,14 +151,13 @@
       },
       "ProcessingStatus": {
         "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
+          "Received",
+          "Refused",
+          "Processing",
+          "Concluded",
+          "Failed"
         ],
-        "type": "integer",
-        "format": "int32"
+        "type": "string"
       }
     }
   }
