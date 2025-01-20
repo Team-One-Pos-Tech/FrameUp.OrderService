@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\FrameUp.OrderService.Api\FrameUp.OrderService.Api.csproj" />
     <ProjectReference Include="..\..\src\FrameUp.OrderService.Application\FrameUp.OrderService.Application.csproj" />
     <ProjectReference Include="..\..\src\FrameUp.OrderService.Domain\FrameUp.OrderService.Domain.csproj" />
   </ItemGroup>

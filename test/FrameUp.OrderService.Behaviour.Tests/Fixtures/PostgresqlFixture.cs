@@ -1,12 +1,12 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Npgsql;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using Testcontainers.PostgreSql;
 
 namespace FrameUp.OrderService.Behaviour.Tests.Fixtures;
 
-public class PgSQLFixture
+public class PostgresqlFixture
 {
     private IContainer? _pgSqlContainer;
 
@@ -14,10 +14,10 @@ public class PgSQLFixture
     public const string PgSQLUser = "postgres";
     public const string PgSQLPassword = "postgres";
 
-    [SetUp]
-    protected async Task BaseSetUp()
+    public async Task BaseSetUp()
     {
-        _pgSqlContainer = new ContainerBuilder()
+        _pgSqlContainer = new PostgreSqlBuilder()
+            .WithDatabase("order")
             .WithEnvironment("POSTGRES_USER", PgSQLUser)
             .WithEnvironment("POSTGRES_PASSWORD", PgSQLPassword)
             .WithPortBinding(5432)
@@ -37,8 +37,7 @@ public class PgSQLFixture
         await pgSqlClient.OpenAsync();
     }
 
-    [TearDown]
-    protected async Task BaseTearDown()
+    public async Task BaseTearDown()
     {
         await _pgSqlContainer!.StopAsync();
         await _pgSqlContainer.DisposeAsync();

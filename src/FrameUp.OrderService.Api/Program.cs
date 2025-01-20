@@ -31,3 +31,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// We should get "Program" class from the main project but it automatically references Microsoft.AspNetCore.Mvc.Testing.Program class
+// https://stackoverflow.com/questions/55131379/integration-testing-asp-net-core-with-net-framework-cant-find-deps-json
+public partial class Program { }
