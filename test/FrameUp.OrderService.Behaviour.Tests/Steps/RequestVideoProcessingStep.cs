@@ -24,7 +24,7 @@ public class RequestVideoProcessingStep(OrderServiceClientApi orderServiceClient
 
         var files = new List<FileParameter>
         {
-            new(CreateFakeVideo())
+            new(CreateFakeVideo(), "video.mp4", "video/mp4")
         };
 
         await orderServiceClientApi.OrderAsync(resolution, files);

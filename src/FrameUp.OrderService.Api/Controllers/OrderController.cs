@@ -12,7 +12,7 @@ namespace FrameUp.OrderService.Api.Controllers
         private readonly ILogger<OrderController> _logger = logger;
 
         [HttpPost]
-        [ProducesResponseType(typeof(IEnumerable<CreateProcessingOrderResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CreateProcessingOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [DisableRequestSizeLimit]
         [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
