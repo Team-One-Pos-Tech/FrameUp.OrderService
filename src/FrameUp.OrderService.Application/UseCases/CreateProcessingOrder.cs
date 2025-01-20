@@ -51,7 +51,7 @@ public class CreateProcessingOrder(
             })
         };
         
-        await fileBucketRepository.Save(requestUpload);
+        await fileBucketRepository.Upload(requestUpload);
     }
 
     private static bool IsValid(CreateProcessingOrderRequest request, out CreateProcessingOrderResponse responseOut)

@@ -18,6 +18,18 @@ namespace FrameUp.OrderService.Api.Controllers
         [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
         public async Task<ActionResult<CreateProcessingOrderResponse>> Post([FromForm] ProcessVideoBodyRequest request)
         {
+            var processVideoRequest = CreateProcessingOrderRequest(request);
+
+            var response = await createProcessingOrder.Execute(processVideoRequest);
+            
+            if(response.IsValid)
+                return Ok(response);
+
+            return BadRequest(response);
+        }
+
+        private static CreateProcessingOrderRequest CreateProcessingOrderRequest(ProcessVideoBodyRequest request)
+        {
             var processVideoRequest = new CreateProcessingOrderRequest()
             {
                 Videos = request.Videos.Select(video => new VideoRequest
@@ -31,13 +43,7 @@ namespace FrameUp.OrderService.Api.Controllers
                     }
                 })
             };
-
-            var response = await createProcessingOrder.Execute(processVideoRequest);
-            
-            if(response.IsValid)
-                return Ok(response);
-
-            return BadRequest(response);
+            return processVideoRequest;
         }
     }
 }

@@ -112,7 +112,7 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _fileBucketMock.Verify(mock => mock.Save(
+        _fileBucketMock.Verify(mock => mock.Upload(
             It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId && 
                                                     fileRequest.Files.Count() == 1)
         ), Times.Once);
@@ -174,7 +174,7 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _fileBucketMock.Verify(mock => mock.Save(
+        _fileBucketMock.Verify(mock => mock.Upload(
             It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId && 
                                                     fileRequest.Files.Count() == 2)
         ), Times.Once);

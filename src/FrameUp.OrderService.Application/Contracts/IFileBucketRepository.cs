@@ -24,5 +24,5 @@ public interface IFileBucketRepository
 {
     public Task Save(Stream stream, VideoMetadataRequest metadata);
     
-    public Task Save(FileBucketRequest request);
+    public Task Upload(FileBucketRequest request);
 }

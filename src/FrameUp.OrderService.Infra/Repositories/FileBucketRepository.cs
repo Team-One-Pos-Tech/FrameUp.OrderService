@@ -10,7 +10,7 @@ public class FileBucketRepository : IFileBucketRepository
         throw new NotImplementedException();
     }
 
-    public Task Save(FileBucketRequest request)
+    public Task Upload(FileBucketRequest request)
     {
         Console.WriteLine("Saving files to bucket");
 
