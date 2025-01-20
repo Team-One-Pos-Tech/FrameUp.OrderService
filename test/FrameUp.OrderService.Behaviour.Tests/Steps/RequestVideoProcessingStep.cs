@@ -1,10 +1,18 @@
+using FrameUp.OrderService.Behaviour.Tests.Fixtures;
+using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 
 namespace FrameUp.OrderService.Behaviour.Tests.Steps;
 
 [Binding]
-public class RequestVideoProcessingStep
+public class RequestVideoProcessingStep: PgSQLFixture
 {
+
+    [BeforeScenario]
+    public async Task Setup()
+    {
+    }
+    
     [Given(@"I have a video file")]
     public static void GivenIHaveAVideoFile()
     {
