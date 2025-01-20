@@ -1,5 +1,4 @@
 using FrameUp.OrderService.Api.Extensions;
-using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +10,7 @@ builder.Services.AddSwaggerGen();
 
 // Add services to the container.
 builder.Services
+    .AddMassTransit(builder.Configuration)
     .AddRepositories()
     .AddUseCases();
 
