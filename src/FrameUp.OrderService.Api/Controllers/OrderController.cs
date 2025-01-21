@@ -21,8 +21,8 @@ namespace FrameUp.OrderService.Api.Controllers
             var processVideoRequest = CreateProcessingOrderRequest(request);
 
             var response = await createProcessingOrder.Execute(processVideoRequest);
-            
-            if(response.IsValid)
+
+            if (response.IsValid)
                 return Ok(response);
 
             return BadRequest(response);
@@ -32,6 +32,8 @@ namespace FrameUp.OrderService.Api.Controllers
         {
             var processVideoRequest = new CreateProcessingOrderRequest()
             {
+                CaptureInterval = request.CaptureInterval,
+                ExportResolution = request.ExportResolution,
                 Videos = request.Videos.Select(video => new VideoRequest
                 {
                     ContentStream = video.OpenReadStream(),

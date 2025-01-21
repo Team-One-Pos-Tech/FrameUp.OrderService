@@ -16,9 +16,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "Resolution": {
+                  "CaptureInterval": {
                     "type": "integer",
                     "format": "int32"
+                  },
+                  "ExportResolution": {
+                    "$ref": "#/components/schemas/ResolutionTypes"
                   },
                   "Videos": {
                     "type": "array",
@@ -30,7 +33,10 @@
                 }
               },
               "encoding": {
-                "Resolution": {
+                "CaptureInterval": {
+                  "style": "form"
+                },
+                "ExportResolution": {
                   "style": "form"
                 },
                 "Videos": {
@@ -147,7 +153,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {}
       },
       "ProcessingStatus": {
         "enum": [
@@ -156,6 +162,15 @@
           "Processing",
           "Concluded",
           "Failed"
+        ],
+        "type": "string"
+      },
+      "ResolutionTypes": {
+        "enum": [
+          "QuadHD",
+          "FullHD",
+          "HD",
+          "SD"
         ],
         "type": "string"
       }

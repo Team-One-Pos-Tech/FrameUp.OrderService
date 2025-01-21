@@ -1,11 +1,6 @@
 using FluentAssertions;
-using FrameUp.OrderService.Api.Models;
-using FrameUp.OrderService.Behaviour.Tests.Fixtures;
 using FrameUp.OrderService.Behaviour.Tests.Helpers;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 
@@ -36,18 +31,23 @@ public class RequestVideoProcessingStep(
     [Given(@"Define Parameters")]
     public void GivenDefineParameters()
     {
-        var resolution = 1080;
+        var resolution = ResolutionTypes.FullHD;
+        var captureInterval = 10;
 
         scenarioContext["resolution"] = resolution;
+        scenarioContext["captureInterval"] = captureInterval;
     }
 
     [When(@"I request the video to be processed")]
     public async Task WhenIRequestTheVideoToBeProcessedAsync()
     {
-        var resolution = scenarioContext.Get<int>("resolution");
+        var resolution = scenarioContext.Get<ResolutionTypes>("resolution");
+
+        var captureInterval = scenarioContext.Get<int>("captureInterval");
+
         var videos = scenarioContext.Get<List<FileParameter>>("videos");
 
-        var response = await orderServiceClientApi.OrderAsync(resolution, videos);
+        var response = await orderServiceClientApi.OrderAsync(captureInterval, resolution, videos);
 
         scenarioContext["response"] = response;
     }
