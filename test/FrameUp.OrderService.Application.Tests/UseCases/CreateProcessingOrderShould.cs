@@ -443,6 +443,53 @@ public class CreateProcessingOrderShould
         #endregion
     }
 
+    [Test]
+    public async Task Persist_Order_With_ExportResolution()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+
+        const string videoName = "marketing.txt";
+        var size = 1024L * 1024L;
+        var contentType = "video/mp4";
+
+        var request = new CreateProcessingOrderRequest
+        {
+            ExportResolution = ResolutionTypes.FullHD,
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = contentType,
+                        Size = size
+                    }
+                }
+            ]
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+
+        _orderRepository.Verify(repository => repository.Save(
+            It.Is<Order>(order => order.ExportResolution == ResolutionTypes.FullHD)
+        ), Times.Once);
+
+        #endregion
+    }
+
     #region Helpers
 
     private static MemoryStream CreateFakeVideo()

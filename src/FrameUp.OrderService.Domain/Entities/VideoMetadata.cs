@@ -1,3 +1,5 @@
+using FrameUp.OrderService.Domain.Enums;
+
 namespace FrameUp.OrderService.Domain.Entities;
 
 public class VideoMetadata
@@ -9,4 +11,5 @@ public class VideoMetadata
     public string ContentType { get; set; }
     
     public long Size { get; set; }
+
 }

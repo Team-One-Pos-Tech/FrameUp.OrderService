@@ -8,10 +8,11 @@ public class Order
     
     public ProcessingStatus Status { get; set; }
     
-
     public Guid OwnerId { get; set; }
 
     public IEnumerable<VideoMetadata> Videos { get; set; } = [];
+
+    public ResolutionTypes ExportResolution { get; set; }
 
     public Order()
     {

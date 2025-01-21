@@ -1,8 +1,14 @@
+using FrameUp.OrderService.Domain.Enums;
+
 namespace FrameUp.OrderService.Application.Models;
 
 public record CreateProcessingOrderRequest
 {
-    public IEnumerable<VideoRequest> Videos { get; init; } = new List<VideoRequest>();
+    public int CaptureInterval { get; set; }
+
+    public ResolutionTypes ExportResolution { get; set; }
+
+    public IEnumerable<VideoRequest> Videos { get; init; } = [];
 }
 
 public record VideoRequest
