@@ -10,6 +10,11 @@ public class OrderRepository: IOrderRepository
         throw new NotImplementedException();
     }
 
+    public Task<IEnumerable<Order>> GetAll(Guid ownerId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<Guid> Save(Order order)
     {
         Console.WriteLine("Saving order to database");

@@ -45,13 +45,30 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <SpecFlowObsoleteCodeBehindFiles Remove="Features\RequestVideoProcessing - Copy.feature.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <OpenApiReference Include="OpenAPIs\swagger.json" CodeGenerator="NSwagCSharp" ClassName="OrderServiceClientApi">
 	    <SourceUri>http://localhost:5244/swagger/v1/swagger.json</SourceUri>
 	  </OpenApiReference>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Features\GetProcessingOrders.feature.cs">
+	    <DependentUpon>GetProcessingOrders.feature</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Update="OpenAPIs\index.html" ClassName="OrderServiceClientApi" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <SpecFlowFeatureFiles Update="Features\GetProcessingOrders.feature">
+	    <Visible>$(UsingMicrosoftNETSdk)</Visible>
+	    <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+	  </SpecFlowFeatureFiles>
 	</ItemGroup>
 
 </Project>

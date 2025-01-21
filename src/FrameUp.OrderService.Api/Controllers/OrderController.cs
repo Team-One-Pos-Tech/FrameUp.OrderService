@@ -64,5 +64,21 @@ namespace FrameUp.OrderService.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<GetProcessingOrderResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CreateProcessingOrderResponse>> Get()
+        {
+            var response = await getProcessingOrder.GetAll(new GetProcessingOrderRequest
+            {
+                OrderId = Guid.NewGuid()
+            });
+
+            if (response == null)
+                return NotFound();
+
+            return Ok(response);
+        }
     }
 }
