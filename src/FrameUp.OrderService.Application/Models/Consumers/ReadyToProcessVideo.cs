@@ -7,4 +7,6 @@ public record ReadyToProcessVideo(Guid OrderId, ProcessVideoParameters Parameter
 public class ProcessVideoParameters
 {
     public ResolutionTypes Resolution { get; set; }
+
+    public int CaptureInterval { get; internal set; }
 }

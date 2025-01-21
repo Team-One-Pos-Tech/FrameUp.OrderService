@@ -39,7 +39,8 @@ public class CreateProcessingOrder(
     {
         var parameters = new ProcessVideoParameters
         {
-            Resolution = request.ExportResolution
+            Resolution = request.ExportResolution,
+            CaptureInterval = request.CaptureInterval,
         };
 
         await publishEndpoint.Publish(
