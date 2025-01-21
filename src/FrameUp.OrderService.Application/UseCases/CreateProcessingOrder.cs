@@ -56,6 +56,7 @@ public class CreateProcessingOrder(
     {
         return new Order()
         {
+            ExportResolution = request.ExportResolution,
             Status = ProcessingStatus.Processing,
             Videos = request.Videos.Select(video => new VideoMetadata
             {
