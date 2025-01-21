@@ -14,6 +14,9 @@
           "content": {
             "multipart/form-data": {
               "schema": {
+                "required": [
+                  "Videos"
+                ],
                 "type": "object",
                 "properties": {
                   "CaptureInterval": {
@@ -256,7 +259,8 @@
           },
           "captureInterval": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false

@@ -29,7 +29,7 @@ public class GetProcessingOrdersSteps(
             new(CreateFakeVideo(), videoName, "video/mp4")
         };
 
-        var response = await orderServiceClientApi.OrderPOSTAsync(null, null, videos);
+        var response = await orderServiceClientApi.OrderPOSTAsync(10, ResolutionTypes.FullHD, videos);
 
         scenarioContext["response"] = response;
         scenarioContext["videoName"] = videoName;
