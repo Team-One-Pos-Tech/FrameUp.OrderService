@@ -68,6 +68,7 @@ public class CreateProcessingOrder(
     {
         return new Order()
         {
+            CaptureInterval = request.CaptureInterval,
             ExportResolution = request.ExportResolution,
             Status = ProcessingStatus.Processing,
             Videos = request.Videos.Select(video => new VideoMetadata

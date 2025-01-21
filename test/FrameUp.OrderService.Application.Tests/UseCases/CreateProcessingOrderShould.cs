@@ -491,6 +491,51 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
+    public async Task Persist_Order_With_CaptureInterval()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+
+        const int captureInterval = 10;
+
+        var request = new CreateProcessingOrderRequest
+        {
+            CaptureInterval = captureInterval,
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = "marketing.txt",
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+
+        _orderRepository.Verify(repository => repository.Save(
+            It.Is<Order>(order => order.CaptureInterval == captureInterval)
+        ), Times.Once);
+
+        #endregion
+    }
+
+    [Test]
     public async Task Publish_Ready_To_Process_Event_With_Parameters()
     {
         #region Arrange
