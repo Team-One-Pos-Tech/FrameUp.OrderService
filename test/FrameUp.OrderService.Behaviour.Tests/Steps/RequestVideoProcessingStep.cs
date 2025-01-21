@@ -47,7 +47,7 @@ public class RequestVideoProcessingStep(
 
         var videos = scenarioContext.Get<List<FileParameter>>("videos");
 
-        var response = await orderServiceClientApi.OrderAsync(captureInterval, resolution, videos);
+        var response = await orderServiceClientApi.OrderPOSTAsync(captureInterval, resolution, videos);
 
         scenarioContext["response"] = response;
     }

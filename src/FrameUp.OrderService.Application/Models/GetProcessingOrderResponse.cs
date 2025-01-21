@@ -14,5 +14,5 @@ public record GetProcessingOrderResponse
 
     public ResolutionTypes ExportResolution { get; set; }
 
-    public int CaptureInterval { get; set; }
+    public int? CaptureInterval { get; set; }
 }

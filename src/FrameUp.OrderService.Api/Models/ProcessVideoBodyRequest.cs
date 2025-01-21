@@ -4,9 +4,9 @@ namespace FrameUp.OrderService.Api.Models;
 
 public class ProcessVideoBodyRequest
 {
-    public int CaptureInterval { get; set; }
+    public int? CaptureInterval { get; set; }
 
-    public ResolutionTypes ExportResolution { get; set; }
+    public ResolutionTypes? ExportResolution { get; set; }
 
-    public IEnumerable<IFormFile> Videos { get; set; } = [];
+    public required IEnumerable<IFormFile> Videos { get; set; } = [];
 }

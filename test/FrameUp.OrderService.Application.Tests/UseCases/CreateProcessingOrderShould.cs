@@ -491,6 +491,54 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
+    public async Task Persist_Order_With_ExportResolution_FullHD_When_Is_Null()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+
+        const string videoName = "marketing.txt";
+        var size = 1024L * 1024L;
+        var contentType = "video/mp4";
+
+        var request = new CreateProcessingOrderRequest
+        {
+            ExportResolution = null,
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = videoName,
+                        ContentType = contentType,
+                        Size = size
+                    }
+                }
+            ]
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+
+        _orderRepository.Verify(repository => repository.Save(
+            It.Is<Order>(order => order.ExportResolution == ResolutionTypes.FullHD)
+        ), Times.Once);
+
+        #endregion
+    }
+
+
+    [Test]
     public async Task Persist_Order_With_CaptureInterval()
     {
         #region Arrange

@@ -70,7 +70,7 @@ public class CreateProcessingOrder(
         {
             OwnerId = request.OwnerId,
             CaptureInterval = request.CaptureInterval,
-            ExportResolution = request.ExportResolution,
+            ExportResolution = request.ExportResolution ?? ResolutionTypes.FullHD,
             Status = ProcessingStatus.Processing,
             Videos = request.Videos.Select(video => new VideoMetadata
             {

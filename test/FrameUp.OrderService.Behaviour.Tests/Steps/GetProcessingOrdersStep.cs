@@ -1,5 +1,7 @@
-﻿using FrameUp.OrderService.Behaviour.Tests.Helpers;
+﻿using FluentAssertions;
+using FrameUp.OrderService.Behaviour.Tests.Helpers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 
@@ -30,19 +32,31 @@ public class GetProcessingOrdersSteps(
         var response = await orderServiceClientApi.OrderPOSTAsync(null, null, videos);
 
         scenarioContext["response"] = response;
+        scenarioContext["videoName"] = videoName;
     }
 
     [When("I get processing orders")]
-    public void WhenIGetProcessingOrders()
+    public async Task WhenIGetProcessingOrdersAsync()
     {
+        var listOrders = await orderServiceClientApi.OrderAllAsync();
 
-        var response = await orderServiceClientApi.OrderGETAsync();
-
+        scenarioContext["listOrders"] = listOrders;
     }
 
     [Then("I should see a list of my processing orders")]
     public void ThenIShouldSeeAListOfMyProcessingOrders()
     {
-        // Implement logic to verify the list of processing orders
+        var listOrders = scenarioContext.Get<IEnumerable<GetProcessingOrderResponse>>("listOrders");
+        var videoName = scenarioContext.Get<string>("videoName");
+
+        listOrders!.Count().Should().Be(1);
+
+        var firstOrder = listOrders.First();
+
+        firstOrder.Videos.Count.Should().Be(1);
+        
+        var firstVideo = firstOrder.Videos.First();
+
+        firstVideo.Name.Should().Be(videoName);
     }
 }
