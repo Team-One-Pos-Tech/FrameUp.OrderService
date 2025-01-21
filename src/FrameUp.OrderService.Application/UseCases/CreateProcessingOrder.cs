@@ -27,7 +27,7 @@ public class CreateProcessingOrder(
         // How long this could take? 
         await UploadVideos(order.Id, request);
 
-        await ProcessVideo(order, request);
+        await ProcessVideos(order, request);
 
         return new CreateProcessingOrderResponse
         {
@@ -35,11 +35,11 @@ public class CreateProcessingOrder(
         };
     }
 
-    private async Task ProcessVideo(Order order, CreateProcessingOrderRequest request)
+    private async Task ProcessVideos(Order order, CreateProcessingOrderRequest request)
     {
         var parameters = new ProcessVideoParameters
         {
-            Resolution = request.ExportResolution,
+            ExportResolution = request.ExportResolution,
             CaptureInterval = request.CaptureInterval,
         };
 

@@ -578,7 +578,7 @@ public class CreateProcessingOrderShould
 
         _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
             It.Is<ReadyToProcessVideo>(message => 
-                message.Parameters.Resolution == ResolutionTypes.HD
+                message.Parameters.ExportResolution == ResolutionTypes.HD
             ),
             It.IsAny<CancellationToken>()
         ), Times.Once);
