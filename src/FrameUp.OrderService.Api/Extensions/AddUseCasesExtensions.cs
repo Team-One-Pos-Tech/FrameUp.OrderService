@@ -10,6 +10,7 @@ public static class AddUseCasesExtensions
     public static IServiceCollection AddUseCases(this IServiceCollection serviceCollection)
     {
         serviceCollection
+            .AddScoped<IGetProcessingOrder, GetProcessingOrder>()
             .AddScoped<ICreateProcessingOrder, CreateProcessingOrder>();
 
         return serviceCollection;

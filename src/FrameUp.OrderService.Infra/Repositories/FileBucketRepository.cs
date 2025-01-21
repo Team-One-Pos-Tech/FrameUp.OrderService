@@ -1,5 +1,5 @@
+using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models;
-using FrameUp.OrderService.Application.Repositories;
 
 namespace FrameUp.OrderService.Infra.Repositories;
 

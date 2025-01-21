@@ -7,9 +7,10 @@ namespace FrameUp.OrderService.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OrderController(ILogger<OrderController> logger, ICreateProcessingOrder createProcessingOrder) : ControllerBase
+    public class OrderController(
+        ICreateProcessingOrder createProcessingOrder,
+        IGetProcessingOrder getProcessingOrder) : ControllerBase
     {
-        private readonly ILogger<OrderController> _logger = logger;
 
         [HttpPost]
         [ProducesResponseType(typeof(CreateProcessingOrderResponse), StatusCodes.Status200OK)]
@@ -46,6 +47,22 @@ namespace FrameUp.OrderService.Api.Controllers
                 })
             };
             return processVideoRequest;
+        }
+
+        [HttpGet("{orderId}")]
+        [ProducesResponseType(typeof(GetProcessingOrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CreateProcessingOrderResponse>> Get(Guid orderId)
+        {
+            var response = await getProcessingOrder.GetById(new GetProcessingOrderRequest
+            {
+                OrderId = orderId
+            });
+
+            if (response == null)
+                return NotFound();
+
+            return Ok(response);
         }
     }
 }

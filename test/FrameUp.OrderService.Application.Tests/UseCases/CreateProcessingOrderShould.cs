@@ -1,8 +1,8 @@
 using System.Text;
 using FluentAssertions;
+using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Models.Consumers;
-using FrameUp.OrderService.Application.Repositories;
 using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;

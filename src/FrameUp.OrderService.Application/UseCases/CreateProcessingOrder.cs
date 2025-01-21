@@ -2,7 +2,6 @@
 using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Models.Consumers;
-using FrameUp.OrderService.Application.Repositories;
 using FrameUp.OrderService.Domain.Entities;
 using MassTransit;
 using FrameUp.OrderService.Application.Validators;
