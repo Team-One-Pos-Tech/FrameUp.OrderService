@@ -536,6 +536,52 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
+    public async Task Persist_Order_With_OwnerId()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+
+        Guid ownerId = Guid.NewGuid();
+
+        var request = new CreateProcessingOrderRequest
+        {
+            OwnerId = ownerId,
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = "marketing.txt",
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+
+        _orderRepository.Verify(repository => repository.Save(
+            It.Is<Order>(order => order.OwnerId == ownerId)
+        ), Times.Once);
+
+        #endregion
+    }
+
+
+    [Test]
     public async Task Publish_Ready_To_Process_Event_With_Parameters()
     {
         #region Arrange

@@ -6,6 +6,8 @@ public record CreateProcessingOrderRequest
 {
     public int CaptureInterval { get; set; }
 
+    public Guid OwnerId { get; set; }
+
     public ResolutionTypes ExportResolution { get; set; }
 
     public IEnumerable<VideoRequest> Videos { get; init; } = [];

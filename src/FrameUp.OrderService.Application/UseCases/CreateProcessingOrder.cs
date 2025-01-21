@@ -69,6 +69,7 @@ public class CreateProcessingOrder(
     {
         return new Order()
         {
+            OwnerId = request.OwnerId,
             CaptureInterval = request.CaptureInterval,
             ExportResolution = request.ExportResolution,
             Status = ProcessingStatus.Processing,
