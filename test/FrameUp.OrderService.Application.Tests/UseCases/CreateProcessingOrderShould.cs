@@ -490,6 +490,58 @@ public class CreateProcessingOrderShould
         #endregion
     }
 
+    [Test]
+    public async Task Publish_Ready_To_Process_Event_With_Parameters()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+
+        var request = new CreateProcessingOrderRequest
+        {
+            ExportResolution = ResolutionTypes.HD,
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = "marketing.mp4",
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
+        };
+
+        var orderId = Guid.NewGuid();
+
+        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
+            .ReturnsAsync(orderId);
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+
+        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
+            It.Is<ReadyToProcessVideo>(message => 
+                message.Parameters.Resolution == ResolutionTypes.HD
+            ),
+            It.IsAny<CancellationToken>()
+        ), Times.Once);
+
+        #endregion
+    }
+
+
     #region Helpers
 
     private static MemoryStream CreateFakeVideo()

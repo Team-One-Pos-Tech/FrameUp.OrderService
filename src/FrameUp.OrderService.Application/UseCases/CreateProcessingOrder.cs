@@ -17,22 +17,34 @@ public class CreateProcessingOrder(
     
     public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
     {
-        if (!CreateProcessingOrderValidator.IsValid(request, out var response)) 
+        if (!CreateProcessingOrderValidator.IsValid(request, out var response))
             return response;
 
         var order = CreateOrder(request);
-        
+
         order.Id = await orderRepository.Save(order);
 
         // How long this could take? 
         await UploadVideos(order.Id, request);
 
-        await publishEndpoint.Publish<ReadyToProcessVideo>(new ReadyToProcessVideo(order.Id));
-        
+        await ProcessVideo(order, request);
+
         return new CreateProcessingOrderResponse
         {
             Status = order.Status
         };
+    }
+
+    private async Task ProcessVideo(Order order, CreateProcessingOrderRequest request)
+    {
+        var parameters = new ProcessVideoParameters
+        {
+            Resolution = request.ExportResolution
+        };
+
+        await publishEndpoint.Publish(
+            new ReadyToProcessVideo(order.Id, parameters)
+        );
     }
 
     private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
