@@ -95,7 +95,7 @@ public class BaseRepository<TModel, TDbContext> : IBaseRepository<TModel>
         return (pageNumber, pageSize, totalPages, elements);
     }
 
-    private async Task SaveChangesAsync()
+    protected async Task SaveChangesAsync()
     {
         _logger.LogInformation("Storing context data!");
         await _dbContext.SaveChangesAsync();

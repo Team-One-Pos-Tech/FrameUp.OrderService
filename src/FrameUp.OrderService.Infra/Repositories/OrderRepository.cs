@@ -18,9 +18,11 @@ public class OrderRepository(
         return response is null ? null : response;
     }
 
-    public Task<IEnumerable<Order>> GetAll(Guid ownerId)
+    public async Task<IEnumerable<Order>> GetAll(Guid ownerId)
     {
-        throw new NotImplementedException();
+        var response = await ListByPredicateAsync(order => true);
+
+        return response is null ? [] : response;
     }
 
     public async Task<Guid> Save(Order order)
@@ -28,6 +30,8 @@ public class OrderRepository(
         order.Id = Guid.NewGuid();
 
         await InsertAsync(order);
+
+        await SaveChangesAsync();
 
         return order.Id;
     }

@@ -77,7 +77,7 @@ public class CreateProcessingOrder(
                 ContentType = video.Metadata.ContentType,
                 Size = video.Metadata.Size,
                 Name = video.Metadata.Name
-            })
+            }).ToList()
         };
     }
 }

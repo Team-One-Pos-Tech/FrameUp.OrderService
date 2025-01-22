@@ -14,6 +14,7 @@ public class OrderServiceDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderServiceDbContext).Assembly);
+
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new OrderMap());

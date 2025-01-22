@@ -10,7 +10,7 @@ public class Order
     
     public Guid OwnerId { get; set; }
 
-    public IEnumerable<VideoMetadata> Videos { get; set; } = [];
+    public ICollection<VideoMetadata> Videos { get; set; } = new List<VideoMetadata>();
 
     public ResolutionTypes ExportResolution { get; set; }
 

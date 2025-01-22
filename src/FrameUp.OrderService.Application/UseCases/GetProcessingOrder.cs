@@ -31,7 +31,6 @@ public class GetProcessingOrder(IOrderRepository orderRepository) : IGetProcessi
             OwnerId = order.OwnerId,
             Videos = order.Videos.Select(video => new VideoMetadataResponse
             {
-                Id = video.Id,
                 Name = video.Name,
                 ContentType = video.ContentType,
                 Size = video.Size
