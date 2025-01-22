@@ -12,11 +12,10 @@ public static class AddPostgreSQLExtensions
     )
     {
         var settings = configuration.GetSection("Storage:PostgreSQL").Get<PostgreSQLSettings>()!;
-        var connectionString = $"Host={settings.Host};Username={settings.UserName};Password={settings.Password};Database={settings.Database}";
 
         serviceCollection
-            .AddDbContext<OrderDbContext>(options =>
-                options.UseNpgsql(connectionString));
+            .AddDbContext<OrderServiceDbContext>(options =>
+                options.UseNpgsql(settings.ConnectionString));
 
         return serviceCollection;
     }

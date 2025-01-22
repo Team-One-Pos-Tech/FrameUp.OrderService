@@ -1,13 +1,21 @@
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Entities;
+using FrameUp.OrderService.Infra.Abstractions;
+using FrameUp.OrderService.Infra.Context;
+using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Infra.Repositories;
 
-public class OrderRepository: IOrderRepository
+public class OrderRepository(
+    OrderServiceDbContext dbContext,
+    ILoggerFactory loggerFactory
+    ) : BaseRepository<Order, OrderServiceDbContext>(dbContext, loggerFactory), IOrderRepository
 {
-    public Task<Order> Get(Guid orderId, Guid ownerId)
+    public async Task<Order?> Get(Guid orderId, Guid ownerId)
     {
-        throw new NotImplementedException();
+        var response = await FindByPredicateAsync(order => order.Id == orderId && order.OwnerId == ownerId);
+
+        return response is null ? null : response;
     }
 
     public Task<IEnumerable<Order>> GetAll(Guid ownerId)

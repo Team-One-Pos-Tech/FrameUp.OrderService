@@ -19,5 +19,8 @@ internal class OrderMap : IEntityTypeConfiguration<Order>
         builder
             .Property(order => order.OwnerId)
             .IsRequired();
+
+        builder
+            .HasMany(order => order.Videos);
     }
 }

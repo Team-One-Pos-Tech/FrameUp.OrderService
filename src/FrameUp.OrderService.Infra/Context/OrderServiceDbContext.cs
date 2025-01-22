@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrameUp.OrderService.Infra.Context;
 
-public class OrderDbContext : DbContext
+public class OrderServiceDbContext : DbContext
 {
-    public OrderDbContext(DbContextOptions<OrderDbContext> dbContextOptions)
+    public OrderServiceDbContext(DbContextOptions<OrderServiceDbContext> dbContextOptions)
         : base(dbContextOptions)
     {
         Database.EnsureCreated();
@@ -13,7 +13,7 @@ public class OrderDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderServiceDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new OrderMap());
