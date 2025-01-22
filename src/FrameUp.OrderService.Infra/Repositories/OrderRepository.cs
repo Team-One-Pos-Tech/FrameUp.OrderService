@@ -23,10 +23,12 @@ public class OrderRepository(
         throw new NotImplementedException();
     }
 
-    public Task<Guid> Save(Order order)
+    public async Task<Guid> Save(Order order)
     {
-        Console.WriteLine("Saving order to database");
+        order.Id = Guid.NewGuid();
 
-        return Task.FromResult(Guid.NewGuid());
+        await InsertAsync(order);
+
+        return order.Id;
     }
 }
