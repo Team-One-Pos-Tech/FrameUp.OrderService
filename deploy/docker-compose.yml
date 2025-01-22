@@ -1,0 +1,43 @@
+services:
+  frame-up-order-app:
+    build:
+        context: ../
+        dockerfile: src/FrameUp.OrderService.Api/Dockerfile
+    container_name: frame-up-order-app
+    restart: always
+    ports:
+      - "5688:8080"
+      
+#   rabbitmq:
+#     image: rabbitmq:4.0-management
+#     container_name: rabbitmq
+#     restart: always
+#     ports:
+#        - "5672:5672"
+#        - "15672:15672"
+#     networks:
+#        - frame-up-network
+#     healthcheck:
+#       test: ["CMD", "rabbitmqctl", "status"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 5
+
+#   frame-up-db:
+#     image: postgres:latest
+#     container_name: frame-up-db
+#     restart: always
+#     ports:
+#       - "5432:5432"
+#     networks:
+#       - frame-up-network
+#     volumes:
+#       - frame-up-db:/var/lib/postgresql/data
+
+# volumes:
+#   frame-up-db:
+#   frame-up-mongodb:
+
+# networks:
+#   frame-up-network:
+#     driver: bridge

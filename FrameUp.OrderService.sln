@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrameUp.OrderService.Api", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrameUp.OrderService.Infra", "src\FrameUp.OrderService.Infra\FrameUp.OrderService.Infra.csproj", "{6595A27A-68FE-4EBF-9E27-B014D911EE45}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{78BA2EC0-013D-4B03-A3C8-BE4E1CB7F51F}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "deploy\docker-compose.dcproj", "{FD59EC07-4D73-4FBE-BB34-E9A71E7E4315}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,10 @@ Global
 		{6595A27A-68FE-4EBF-9E27-B014D911EE45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6595A27A-68FE-4EBF-9E27-B014D911EE45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6595A27A-68FE-4EBF-9E27-B014D911EE45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD59EC07-4D73-4FBE-BB34-E9A71E7E4315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD59EC07-4D73-4FBE-BB34-E9A71E7E4315}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD59EC07-4D73-4FBE-BB34-E9A71E7E4315}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD59EC07-4D73-4FBE-BB34-E9A71E7E4315}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +75,7 @@ Global
 		{69BE3D82-9C7D-4423-8634-7E257734A102} = {C1907FE7-7C6D-4203-A285-C798B60DC8F2}
 		{966136D0-5AF9-4EE3-B786-F8B796296DD2} = {809C87C3-D0C5-4401-8B73-CEA373F98F62}
 		{6595A27A-68FE-4EBF-9E27-B014D911EE45} = {809C87C3-D0C5-4401-8B73-CEA373F98F62}
+		{FD59EC07-4D73-4FBE-BB34-E9A71E7E4315} = {78BA2EC0-013D-4B03-A3C8-BE4E1CB7F51F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E38974C2-5F7B-4E54-B418-FA438CCF9FE5}
