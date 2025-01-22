@@ -4,8 +4,6 @@ services:
         RabbitMQ__Host: rabbitmq
         RabbitMQ__User: guest
         RabbitMQ__Password: guest
-        Storage__MongoDb__ConnectionString: mongodb://admin:admin@frame-up-mongodb:27017/
-        Storage__MongoDb__Database: frame-up-order
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
 

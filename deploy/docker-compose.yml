@@ -7,21 +7,26 @@ services:
     restart: always
     ports:
       - "5688:8080"
+    networks:
+      - frame-up-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy  
       
-#   rabbitmq:
-#     image: rabbitmq:4.0-management
-#     container_name: rabbitmq
-#     restart: always
-#     ports:
-#        - "5672:5672"
-#        - "15672:15672"
-#     networks:
-#        - frame-up-network
-#     healthcheck:
-#       test: ["CMD", "rabbitmqctl", "status"]
-#       interval: 30s
-#       timeout: 10s
-#       retries: 5
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+       - "5672:5672"
+       - "15672:15672"
+    networks:
+       - frame-up-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 #   frame-up-db:
 #     image: postgres:latest
@@ -38,6 +43,6 @@ services:
 #   frame-up-db:
 #   frame-up-mongodb:
 
-# networks:
-#   frame-up-network:
-#     driver: bridge
+networks:
+  frame-up-network:
+    driver: bridge
