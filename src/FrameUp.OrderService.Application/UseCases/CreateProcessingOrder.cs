@@ -30,6 +30,7 @@ public class CreateProcessingOrder(
 
         return new CreateProcessingOrderResponse
         {
+            Id = order.Id,
             Status = order.Status
         };
     }
