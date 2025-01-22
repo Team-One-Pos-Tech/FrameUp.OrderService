@@ -2,6 +2,7 @@ using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Infra.Abstractions;
 using FrameUp.OrderService.Infra.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Infra.Repositories;
@@ -20,7 +21,10 @@ public class OrderRepository(
 
     public async Task<IEnumerable<Order>> GetAll(Guid ownerId)
     {
-        var response = await ListByPredicateAsync(order => true);
+        var response = await _dbSet
+            .Include(px => px.Videos)
+            .AsNoTracking()
+            .ToListAsync();
 
         return response is null ? [] : response;
     }
@@ -28,6 +32,8 @@ public class OrderRepository(
     public async Task<Guid> Save(Order order)
     {
         order.Id = Guid.NewGuid();
+
+        order.Videos.ToList().ForEach(video => video.OrderId = order.Id);
 
         await InsertAsync(order);
 

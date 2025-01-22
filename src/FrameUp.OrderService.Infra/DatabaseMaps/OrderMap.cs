@@ -21,6 +21,9 @@ internal class OrderMap : IEntityTypeConfiguration<Order>
             .IsRequired();
 
         builder
-            .HasMany(order => order.Videos);
+            .HasMany(order => order.Videos)
+            .WithOne()
+            .HasForeignKey("OrderId")
+            .IsRequired();
     }
 }

@@ -12,4 +12,6 @@ public class VideoMetadata
     
     public long Size { get; set; }
 
+    public Guid OrderId { get; set; }
+
 }

@@ -9,7 +9,13 @@ internal class VideoMetadataMap : IEntityTypeConfiguration<VideoMetadata>
     public void Configure(EntityTypeBuilder<VideoMetadata> builder)
     {
         builder
-            .Property(video => video.Id);
+            .Property(video => video.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+
+        builder
+            .Property(video => video.OrderId)
+            .IsRequired();
 
         builder
             .Property(video => video.Name);
