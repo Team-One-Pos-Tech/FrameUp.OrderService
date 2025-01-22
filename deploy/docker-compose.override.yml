@@ -4,15 +4,11 @@ services:
         RabbitMQ__Host: rabbitmq
         RabbitMQ__User: guest
         RabbitMQ__Password: guest
+        Storage__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
-
-  # frame-up-gateway-app:
-  #   environment:
-  #       ASPNETCORE_ENVIRONMENT: Development
-  #       ASPNETCORE_HTTP_PORTS: 8080
         
-  # frame-up-db:
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
+  frame-up-db:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres

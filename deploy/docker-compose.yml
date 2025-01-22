@@ -24,24 +24,23 @@ services:
        - frame-up-network
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
 
-#   frame-up-db:
-#     image: postgres:latest
-#     container_name: frame-up-db
-#     restart: always
-#     ports:
-#       - "5432:5432"
-#     networks:
-#       - frame-up-network
-#     volumes:
-#       - frame-up-db:/var/lib/postgresql/data
+  frame-up-db:
+    image: postgres:latest
+    container_name: frame-up-db
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - frame-up-network
+    volumes:
+      - frame-up-db:/var/lib/postgresql/data
 
-# volumes:
-#   frame-up-db:
-#   frame-up-mongodb:
+volumes:
+  frame-up-db:
 
 networks:
   frame-up-network:
