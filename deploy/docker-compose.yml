@@ -11,7 +11,9 @@ services:
       - frame-up-network
     depends_on:
       rabbitmq:
-        condition: service_healthy  
+        condition: service_healthy 
+      frontend:
+        condition: service_started
       
   rabbitmq:
     image: rabbitmq:4.0-management
@@ -39,9 +41,49 @@ services:
     volumes:
       - frame-up-db:/var/lib/postgresql/data
 
+  backend:
+    image: catalingavan/logbee.backend:1.3.0
+    container_name: logbee.backend.dev
+    restart: unless-stopped
+    volumes:
+      - ./backend.appsettings.json:/app/appsettings.json
+      - ./backend.logbee.json:/app/Configuration/logBee.json
+    ports:
+      - "44088:80"
+    links:
+      - "mongodb"
+
+  frontend:
+    image: catalingavan/logbee.frontend:1.3.0
+    container_name: logbee.frontend.dev
+    restart: unless-stopped
+    volumes:
+      - ./frontend.appsettings.json:/app/appsettings.json
+      - ./frontend.logbee.json:/app/Configuration/logBee.json
+    ports:
+      - "44080:80"
+    links:
+      - "backend"
+
+  mongodb:
+    image: mongo:6.0.4
+    container_name: logbee.mongodb.dev
+    restart: unless-stopped
+    ports:
+      - "27017"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+
 volumes:
   frame-up-db:
+  mongo-data:
+  mongo-config:
 
 networks:
   frame-up-network:
     driver: bridge
+  default:
+    name: logbee-net
+    driver_opts:
+      com.docker.network.driver.mtu: 1380

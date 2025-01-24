@@ -7,6 +7,9 @@ services:
         Storage__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
+        LogBee.OrganizationId": ${LogBee_OrganizationId}
+        LogBee.ApplicationId": ${LogBee_ApplicationId}
+        LogBee.ApiUrl": ${LogBee_ApiUrl}
         
   frame-up-db:
     environment:

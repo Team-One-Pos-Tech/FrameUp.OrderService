@@ -1,0 +1,45 @@
+{
+  "LogBeeFrontendDomain": "logbee.dev",
+  "StaticResourcesVersion": "1.3.0",
+  "LogBeeBackendUrl": "http://logbee.backend.dev",
+  "LogBeeFrontendUrl": "http://logbee.frontend.dev",
+  "LogBeeFrontend.BasicAuth.Password": "_LogBeeFrontend_authorization_password_",
+  "LogBeeBackend.BasicAuth.Password": "_LogBeeBackend_authorization_password_",
+  "LogBee.License": "",
+  "Database": {
+    "Provider": "MongoDb",
+    "MongoDb": {
+      "ConnectionString": "mongodb://logbee.mongodb.dev:27017?socketTimeoutMS=5000&connectTimeoutMS=5000",
+      "DatabaseName": "LogBeeFrontend"
+    }
+  },
+  "Smtp": {
+    "Sender": {
+      "Address": "no-reply@logbee.dev",
+      "DisplayName": "Logbee"
+    },
+    "Host": "smtp.sendgrid.net",
+    "Port": 587,
+    "UserName": "",
+    "Password": "",
+    "EnableSsl": false
+  },
+  "UserInterface": {
+    "NumberOfApplicationsToPreloadOnTheDashboardPage": 6
+  },
+  "Authorization": {
+    "HS256Secret": "00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000"
+  },
+  "ApplicationSettings": {
+    "CacheApplicationsRepositoryInSeconds": 600,
+    "ProcessEmailsQueueIntervalInSeconds": 30,
+    "DeleteProcessedEmails": {
+      "SentMoreThanNHoursAgo": 12,
+      "TriggerIntervalInMinutes": 60
+    },
+    "DeleteLocalLogFiles": {
+      "CreatedMoreThanNDaysAgo": 3,
+      "TriggerIntervalInHours": 6
+    }
+  }
+}
