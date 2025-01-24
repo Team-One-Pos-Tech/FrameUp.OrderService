@@ -1,4 +1,21 @@
 
+# FrameUp.OrderService
+
+Project to process videos
+
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file. This file should be located inside the deploy/ directory.
+Follow the example .env.example file to create your .env
+
+`LogBee_OrganizationId`
+
+`LogBee_ApplicationId`
+
+`LogBee_ApiUrl`
+
+
 ## Deployment
 
 To deploy this project run with docker
