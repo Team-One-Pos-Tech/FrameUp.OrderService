@@ -1,5 +1,8 @@
 using FrameUp.OrderService.Api.Extensions;
 using System.Text.Json.Serialization;
+using Serilog;
+using Serilog.Sinks.LogBee;
+using Serilog.Sinks.LogBee.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,13 @@ builder.Services
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-    }); ;
+    });
+
+builder.Services.AddHttpContextAccessor();
+
+builder.AddLogBee();
+
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -31,6 +40,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseLogBee();
 
 app.UseHttpsRedirection();
 

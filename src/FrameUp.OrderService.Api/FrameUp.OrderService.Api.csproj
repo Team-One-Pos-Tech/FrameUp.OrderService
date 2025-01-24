@@ -1,21 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.5-develop.2174" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.5-develop.2174"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10"/>
+    <PackageReference Include="Serilog.Sinks.LogBee.AspNetCore" Version="*"/>
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\FrameUp.OrderService.Application\FrameUp.OrderService.Application.csproj" />
-    <ProjectReference Include="..\FrameUp.OrderService.Infra\FrameUp.OrderService.Infra.csproj" />
+    <ProjectReference Include="..\FrameUp.OrderService.Application\FrameUp.OrderService.Application.csproj"/>
+    <ProjectReference Include="..\FrameUp.OrderService.Infra\FrameUp.OrderService.Infra.csproj"/>
   </ItemGroup>
-
 </Project>
