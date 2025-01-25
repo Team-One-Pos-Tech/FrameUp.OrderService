@@ -1,11 +1,11 @@
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Enums;
-using FrameUp.OrderService.Application.Models.Consumers;
 using FrameUp.OrderService.Domain.Entities;
 using MassTransit;
 using FrameUp.OrderService.Application.Validators;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
+using FrameUp.OrderService.Application.Models.Events;
 
 namespace FrameUp.OrderService.Application.UseCases;
 

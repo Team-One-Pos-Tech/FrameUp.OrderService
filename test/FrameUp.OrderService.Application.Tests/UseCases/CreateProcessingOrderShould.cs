@@ -1,7 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Models.Consumers;
+using FrameUp.OrderService.Application.Models.Events;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;

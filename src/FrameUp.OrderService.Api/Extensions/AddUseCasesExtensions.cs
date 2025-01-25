@@ -11,6 +11,7 @@ public static class AddUseCasesExtensions
     {
         serviceCollection
             .AddScoped<IGetProcessingOrder, GetProcessingOrder>()
+            .AddScoped<IUpdateProcessingOrder, UpdateProcessingOrder>()
             .AddScoped<ICreateProcessingOrder, CreateProcessingOrder>();
 
         return serviceCollection;

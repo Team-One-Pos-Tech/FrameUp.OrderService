@@ -1,5 +1,6 @@
 using FrameUp.OrderService.Api.Configuration;
 using FrameUp.OrderService.Api.Extensions;
+using FrameUp.OrderService.Application.Consumers;
 using MassTransit;
 
 namespace FrameUp.OrderService.Api.Extensions;
@@ -10,8 +11,9 @@ public static class MassTransitExtensions
     {
         serviceCollection.AddMassTransit(busConfigurator =>
         {
-            busConfigurator.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("order-service"));
-            //busConfigurator.AddConsumer<T>();
+            busConfigurator.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("frameup-order-service"));
+
+            busConfigurator.AddConsumer<ProcessVideoConsumer>();
 
             busConfigurator.SetKebabCaseEndpointNameFormatter();
             busConfigurator.UsingRabbitMq((context, configurator) =>

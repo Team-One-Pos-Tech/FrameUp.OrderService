@@ -1,7 +1,7 @@
 services:
   frame-up-order-app:
     environment:
-        Settings__RabbitMQ__ConnectionString: amqp://guest:guest@localhost:5672
+        Settings__RabbitMQ__ConnectionString: amqp://guest:guest@rabbitmq
         Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
         Settings__MinIO__Endpoint: play.min.io
         Settings__MinIO__AccessKey: 8F2QSn6rpRAjkZOneNBS
