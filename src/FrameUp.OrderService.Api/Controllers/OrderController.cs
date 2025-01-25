@@ -1,6 +1,7 @@
 using FrameUp.OrderService.Api.Models;
 using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Models;
+using FrameUp.OrderService.Application.Models.Requests;
+using FrameUp.OrderService.Application.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FrameUp.OrderService.Api.Controllers

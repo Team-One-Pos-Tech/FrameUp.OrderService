@@ -1,4 +1,4 @@
-using FrameUp.OrderService.Application.Models;
+using FrameUp.OrderService.Application.Models.Requests;
 
 namespace FrameUp.OrderService.Application.Contracts;
 

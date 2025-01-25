@@ -1,66 +1,19 @@
 using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Models;
-using Minio;
-using Minio.DataModel.Args;
-using Minio.DataModel.Tags;
+using FrameUp.OrderService.Application.Models.Requests;
 
 namespace FrameUp.OrderService.Infra.Repositories;
 
-public class FileBucketRepository(IMinioClient minioClient) : IFileBucketRepository
+public class FileBucketRepository : IFileBucketRepository
 {
-    private const string bucketName = "frameup.videos";
-
-    public async Task Upload(FileBucketRequest request)
+    public Task Save(Stream stream, VideoMetadataRequest metadata)
     {
-        await CreateBucketIfNotExistsAsync();
-
-        Tagging tagging = CreateTagging(request.OrderId.ToString());
-
-        var uploadTasks = request.Files
-            .Select(file => UploadFile(request.OrderId, file, tagging));
-
-        try
-        {
-            await Task.WhenAll(uploadTasks);
-        }
-        catch (Exception e)
-        {
-            throw new Exception("Error uploading files", e);
-        }
+        throw new NotImplementedException();
     }
 
-    private async Task UploadFile(Guid orderId, FileRequest file, Tagging tagging)
+    public Task Upload(FileBucketRequest request)
     {
-        var objectName = orderId.ToString() + "/" + file.Name;
+        Console.WriteLine("Saving files to bucket");
 
-        var args = new PutObjectArgs()
-                .WithBucket(bucketName)
-                .WithTagging(tagging)
-                .WithObject(objectName)
-                .WithStreamData(file.ContentStream)
-                .WithObjectSize(file.ContentStream.Length)
-                .WithContentType(file.ContentType);
-
-        await minioClient.PutObjectAsync(args);
+        return Task.FromResult("");
     }
-
-    private static Tagging CreateTagging(string orderId)
-    {
-        return new Tagging(new Dictionary<string, string>()
-                {
-                    {
-                        "orderId", orderId
-                    }
-                },
-        false);
-    }
-
-    private async Task CreateBucketIfNotExistsAsync()
-    {
-        if (await minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName)))
-            return;
-
-        await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
-    }
-
 }

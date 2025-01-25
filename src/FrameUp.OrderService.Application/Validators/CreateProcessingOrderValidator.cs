@@ -1,4 +1,5 @@
-﻿using FrameUp.OrderService.Application.Models;
+﻿using FrameUp.OrderService.Application.Models.Requests;
+using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Domain.Enums;
 
 namespace FrameUp.OrderService.Application.Validators;

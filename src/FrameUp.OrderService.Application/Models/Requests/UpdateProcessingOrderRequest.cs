@@ -1,6 +1,6 @@
 ﻿using FrameUp.OrderService.Domain.Enums;
 
-namespace FrameUp.OrderService.Application.Models;
+namespace FrameUp.OrderService.Application.Models.Requests;
 
 public class UpdateProcessingOrderRequest
 {

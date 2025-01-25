@@ -1,4 +1,4 @@
-﻿namespace FrameUp.OrderService.Application.Models;
+﻿namespace FrameUp.OrderService.Application.Models.Requests;
 
 public record FileRequest
 {
