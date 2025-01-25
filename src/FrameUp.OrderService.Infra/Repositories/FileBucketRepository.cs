@@ -21,29 +21,32 @@ public class FileBucketRepository(IMinioClient minioClient) : IFileBucketReposit
 
         Tagging tagging = CreateTagging(request.OrderId.ToString());
 
-        var objectName = CreateObjectName(request);
+        var uploadTasks = request.Files
+            .Select(file => UploadFile(request.OrderId, file, tagging));
+
+        try
+        {
+            await Task.WhenAll(uploadTasks);
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Error uploading files", e);
+        }
+    }
+
+    private async Task UploadFile(Guid orderId, FileRequest file, Tagging tagging)
+    {
+        var objectName = orderId.ToString() + "/" + file.Name;
 
         var args = new PutObjectArgs()
                 .WithBucket(bucketName)
                 .WithTagging(tagging)
                 .WithObject(objectName)
-                .WithStreamData(request.Files.First().ContentStream)
-                .WithObjectSize(request.Files.First().ContentStream.Length)
-                .WithContentType(request.Files.First().ContentType);
+                .WithStreamData(file.ContentStream)
+                .WithObjectSize(file.ContentStream.Length)
+                .WithContentType(file.ContentType);
 
-        try
-        {
-            await minioClient.PutObjectAsync(args);
-        }
-        catch (Exception e)
-        {
-            throw new Exception("Error uploading file", e);
-        }
-    }
-
-    private static string CreateObjectName(FileBucketRequest request)
-    {
-        return request.OrderId.ToString() + "/" + request.Files.First().Name;
+        await minioClient.PutObjectAsync(args);
     }
 
     private static Tagging CreateTagging(string orderId)
