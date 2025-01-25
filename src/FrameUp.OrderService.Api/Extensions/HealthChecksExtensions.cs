@@ -34,7 +34,7 @@ public static class HealthChecksExtensions
         {
             options.SetEvaluationTimeInSeconds(5);
             options.MaximumHistoryEntriesPerEndpoint(10);
-            options.AddHealthCheckEndpoint("OrderService", "/health");
+            options.AddHealthCheckEndpoint("OrderService", $"{settings.Host}health");
         }).AddInMemoryStorage();
 
         return builder;
