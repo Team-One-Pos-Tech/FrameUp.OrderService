@@ -1,4 +1,5 @@
-﻿using FrameUp.OrderService.Application.Contracts;
+﻿using FluentAssertions;
+using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
@@ -60,6 +61,40 @@ public class UpdateProcessingOrderShould
             It.Is<Order>(order => order.Status == request.Status &&
                 order.Id == request.OrderId)
             ), Times.Once);
+
+        #endregion
+    }
+
+    [Test]
+    public async Task Validate_When_Order_Does_Not_Exists()
+    {
+        #region Arrange
+
+        var request = new UpdateProcessingOrderRequest
+        {
+            OrderId = Guid.NewGuid(),
+            Status = ProcessingStatus.Concluded,
+            OwnerId = Guid.NewGuid()
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await updateProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.Should().NotBeNull();
+
+        response.Notifications.First().Message.Should().Be("Order not found");
+
+        orderRepository.Verify(x => x.Update(
+            It.Is<Order>(order => order.Status == request.Status &&
+                order.Id == request.OrderId)
+            ), Times.Never);
 
         #endregion
     }
