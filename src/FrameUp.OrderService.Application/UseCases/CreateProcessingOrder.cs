@@ -23,7 +23,6 @@ public class CreateProcessingOrder(
 
         order.Id = await orderRepository.Save(order);
 
-        // How long this could take? 
         await UploadVideos(order.Id, request);
 
         await ProcessVideos(order, request);
@@ -61,7 +60,10 @@ public class CreateProcessingOrder(
                 ContentType = video.Metadata.ContentType
             })
         };
-        
+
+        // How long this could take? 
+        // A: take a lot of time on big files
+        // Is inevitable? To complex to handle? 
         await fileBucketRepository.Upload(requestUpload);
     }
 
