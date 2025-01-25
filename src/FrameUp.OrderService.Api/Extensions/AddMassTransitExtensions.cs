@@ -4,7 +4,7 @@ using MassTransit;
 
 namespace FrameUp.OrderService.Api.Extensions;
 
-public static class MassTransitExtensions
+public static class AddMassTransitExtensions
 {
     public static IServiceCollection AddMassTransit(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
