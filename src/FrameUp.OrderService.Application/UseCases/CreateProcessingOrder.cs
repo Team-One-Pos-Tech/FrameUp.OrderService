@@ -6,10 +6,12 @@ using FrameUp.OrderService.Application.Validators;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Application.Models.Events;
+using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
 public class CreateProcessingOrder(
+    ILogger<CreateProcessingOrder> logger,
     IFileBucketRepository fileBucketRepository, 
     IOrderRepository orderRepository,
     IPublishEndpoint publishEndpoint) : ICreateProcessingOrder
@@ -20,6 +22,8 @@ public class CreateProcessingOrder(
         if (!CreateProcessingOrderValidator.IsValid(request, out var response))
             return response;
 
+        logger.LogInformation("Starting creation of new Processing Order");
+
         var order = CreateOrder(request);
 
         order.Id = await orderRepository.Save(order);
@@ -27,6 +31,8 @@ public class CreateProcessingOrder(
         await UploadVideos(order.Id, request);
 
         await ProcessVideos(order, request);
+
+        logger.LogInformation("New Processing Order [{orderId}] created suscessfully!", order.Id);
 
         return new CreateProcessingOrderResponse
         {

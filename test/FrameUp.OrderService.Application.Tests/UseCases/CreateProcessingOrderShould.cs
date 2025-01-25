@@ -7,6 +7,7 @@ using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
@@ -16,6 +17,7 @@ public class CreateProcessingOrderShould
     private CreateProcessingOrder _createProcessingOrder;
     private Mock<IFileBucketRepository> _fileBucketMock;
     private Mock<IOrderRepository> _orderRepository;
+    private Mock<ILogger<CreateProcessingOrder>> _loggerMock;
     private Mock<IPublishEndpoint> _publishEndpointMock;
 
     [SetUp]
@@ -23,9 +25,11 @@ public class CreateProcessingOrderShould
     {
         _fileBucketMock = new Mock<IFileBucketRepository>();
         _orderRepository = new Mock<IOrderRepository>();
+        _loggerMock = new Mock<ILogger<CreateProcessingOrder>>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
 
         _createProcessingOrder = new CreateProcessingOrder(
+            _loggerMock.Object,
             _fileBucketMock.Object,
             _orderRepository.Object,
             _publishEndpointMock.Object);
