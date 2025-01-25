@@ -17,7 +17,8 @@ public static class AddLogBeeExtensions
                     builder.Configuration["LogBee.ApiUrl"]!
                 ),
                 services
-            ));
+            )
+            .WriteTo.Console());
         return builder;
     }
 

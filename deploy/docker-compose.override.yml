@@ -1,10 +1,8 @@
 services:
   frame-up-order-app:
     environment:
-        RabbitMQ__Host: rabbitmq
-        RabbitMQ__User: guest
-        RabbitMQ__Password: guest
-        Storage__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
+        Settings__RabbitMQ__ConnectionString: amqp://guest:guest@localhost:5672
+        Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
         LogBee.OrganizationId": ${LogBee_OrganizationId}

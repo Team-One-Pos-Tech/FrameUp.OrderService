@@ -6,10 +6,8 @@ namespace FrameUp.OrderService.Api.Extensions;
 
 public static class MassTransitExtensions
 {
-    public static IServiceCollection AddMassTransit(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static IServiceCollection AddMassTransit(this IServiceCollection serviceCollection, Settings settings)
     {
-        var settings = configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>()!;
-
         serviceCollection.AddMassTransit(busConfigurator =>
         {
             busConfigurator.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("order-service"));
@@ -18,11 +16,7 @@ public static class MassTransitExtensions
             busConfigurator.SetKebabCaseEndpointNameFormatter();
             busConfigurator.UsingRabbitMq((context, configurator) =>
             {
-                configurator.Host(settings.Host, "/", rabbitMqHostConfigurator =>
-                {
-                    rabbitMqHostConfigurator.Username(settings.UserName);
-                    rabbitMqHostConfigurator.Password(settings.Password);
-                });
+                configurator.Host(new Uri(settings.RabbitMQ.ConnectionString));
 
                 configurator.AutoDelete = true;
                 configurator.ConfigureEndpoints(context);

@@ -18,7 +18,7 @@ Follow the example .env.example file to create your .env
 
 ## Deployment
 
-To deploy this project run with docker
+To deploy this project run with docker http://localhost:5688/dashboard#/healthchecks
 
 Then open a bash terminal in the project root directory.
 ```bash

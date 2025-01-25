@@ -3,8 +3,11 @@ using System.Text.Json.Serialization;
 using Serilog;
 using Serilog.Sinks.LogBee;
 using Serilog.Sinks.LogBee.AspNetCore;
+using FrameUp.OrderService.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
+builder.Services.AddSingleton(settings);
 
 builder.Services
     .AddControllers()
@@ -16,7 +19,8 @@ builder.Services
 
 builder.Services.AddHttpContextAccessor();
 
-builder.AddLogBee();
+builder.AddLogBee()
+    .AddCustomHealthChecks(settings);
 
 
 
@@ -25,11 +29,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+
+
+
 // Add services to the container.
 builder.Services
-    .AddMassTransit(builder.Configuration)
+    .AddMassTransit(settings)
     .AddRepositories()
-    .AddDatabaseContext(builder.Configuration)
+    .AddDatabaseContext(settings)
     .AddUseCases();
 
 var app = builder.Build();
@@ -43,7 +50,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseLogBee();
 
-app.UseHttpsRedirection();
+app.UseCustomHealthChecks();
 
 app.UseAuthorization();
 
