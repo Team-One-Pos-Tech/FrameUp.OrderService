@@ -5,10 +5,6 @@ namespace FrameUp.OrderService.Infra.Repositories;
 
 public class FileBucketRepository : IFileBucketRepository
 {
-    public Task Save(Stream stream, VideoMetadataRequest metadata)
-    {
-        throw new NotImplementedException();
-    }
 
     public Task Upload(FileBucketRequest request)
     {

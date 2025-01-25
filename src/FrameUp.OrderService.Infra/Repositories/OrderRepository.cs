@@ -46,8 +46,10 @@ public class OrderRepository(
         return order.Id;
     }
 
-    public Task Update(Order order)
+    public async Task Update(Order order)
     {
-        throw new NotImplementedException();
+        _dbSet.Update(order);
+
+        await SaveChangesAsync();
     }
 }
