@@ -8,17 +8,19 @@ using System.Threading.Tasks;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class UpdateProcessingOrder
+public class UpdateProcessingOrderResponse { }
+
+public class UpdateProcessingOrder(IOrderRepository orderRepository)
 {
-    private IOrderRepository @object;
 
-    public UpdateProcessingOrder(IOrderRepository @object)
+    public async Task<UpdateProcessingOrderResponse> Execute(UpdateProcessingOrderRequest request)
     {
-        this.@object = @object;
-    }
+        var order = await orderRepository.Get(request.OrderId, request.OwnerId);
 
-    public async Task Execute(UpdateProcessingOrderRequest request)
-    {
-        throw new NotImplementedException();
+        order.Status = request.Status;
+
+        await orderRepository.Update(order);
+
+        return new UpdateProcessingOrderResponse();
     }
 }

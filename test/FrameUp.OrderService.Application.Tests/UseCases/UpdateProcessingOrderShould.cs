@@ -36,7 +36,15 @@ public class UpdateProcessingOrderShould
         {
             OrderId = Guid.NewGuid(),
             Status = ProcessingStatus.Concluded,
+            OwnerId = Guid.NewGuid()
         };
+
+        orderRepository.Setup(x => x.Get(request.OrderId, request.OwnerId))
+            .ReturnsAsync(new Order
+            {
+                Id = request.OrderId,
+                Status = ProcessingStatus.Processing,
+            });
 
         #endregion
 
