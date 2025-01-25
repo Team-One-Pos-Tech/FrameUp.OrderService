@@ -9,9 +9,9 @@ namespace FrameUp.OrderService.Application.Consumers;
 public class ProcessVideoConsumer(
     ILogger<ProcessVideoConsumer> logger,
     IUpdateProcessingOrder updateProcessingOrder
-    ) : IConsumer<UpdateOrderStatus>
+    ) : IConsumer<UpdateOrderStatusEvent>
 {
-    public async Task Consume(ConsumeContext<UpdateOrderStatus> context)
+    public async Task Consume(ConsumeContext<UpdateOrderStatusEvent> context)
     {
         var response = await updateProcessingOrder.Execute(new UpdateProcessingOrderRequest
         {
