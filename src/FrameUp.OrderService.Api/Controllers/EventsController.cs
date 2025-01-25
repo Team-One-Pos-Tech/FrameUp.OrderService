@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrameUp.OrderService.Api.Controllers;
 
-[Route("events/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class EventsController(IPublishEndpoint publishEndpoint) : ControllerBase
 {
-    [HttpPut("{orderId}")]
+    [HttpPut("UpdateOrderStatus/{orderId}")]
     public async Task UpdateOrderStatusAsync(Guid orderId, ProcessingStatus status)
     {
         await publishEndpoint.Publish(new UpdateOrderStatusEvent(orderId, status));
