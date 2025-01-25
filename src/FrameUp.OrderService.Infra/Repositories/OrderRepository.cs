@@ -12,12 +12,12 @@ public class OrderRepository(
     ILoggerFactory loggerFactory
     ) : BaseRepository<Order, OrderServiceDbContext>(dbContext, loggerFactory), IOrderRepository
 {
-    public async Task<Order?> Get(Guid orderId, Guid ownerId)
+    public async Task<Order?> Get(Guid orderId)
     {
         var response = await _dbSet
             .AsNoTracking()
             .Include(px => px.Videos)
-            .Where(order => order.Id == orderId && order.OwnerId == ownerId)
+            .Where(order => order.Id == orderId)
             .FirstOrDefaultAsync();
 
         return response;

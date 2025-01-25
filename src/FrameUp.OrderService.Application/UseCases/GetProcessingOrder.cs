@@ -17,7 +17,7 @@ public class GetProcessingOrder(IOrderRepository orderRepository) : IGetProcessi
 
     public async Task<GetProcessingOrderResponse?> GetById(GetProcessingOrderRequest request)
     {
-        var order = await orderRepository.Get(request.OrderId, Guid.Empty);
+        var order = await orderRepository.Get(request.OrderId);
 
         if (order == null)
             return null;

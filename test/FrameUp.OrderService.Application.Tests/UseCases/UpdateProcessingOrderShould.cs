@@ -29,11 +29,10 @@ public class UpdateProcessingOrderShould
         var request = new UpdateProcessingOrderRequest
         {
             OrderId = Guid.NewGuid(),
-            Status = ProcessingStatus.Concluded,
-            OwnerId = Guid.NewGuid()
+            Status = ProcessingStatus.Concluded
         };
 
-        orderRepository.Setup(x => x.Get(request.OrderId, request.OwnerId))
+        orderRepository.Setup(x => x.Get(request.OrderId))
             .ReturnsAsync(new Order
             {
                 Id = request.OrderId,
@@ -66,8 +65,7 @@ public class UpdateProcessingOrderShould
         var request = new UpdateProcessingOrderRequest
         {
             OrderId = Guid.NewGuid(),
-            Status = ProcessingStatus.Concluded,
-            OwnerId = Guid.NewGuid()
+            Status = ProcessingStatus.Concluded
         };
 
         #endregion

@@ -11,7 +11,7 @@ public class UpdateProcessingOrder(IOrderRepository orderRepository)
     {
         var response = new UpdateProcessingOrderResponse();
 
-        var order = await orderRepository.Get(request.OrderId, request.OwnerId);
+        var order = await orderRepository.Get(request.OrderId);
 
         if (order is null)
         {
