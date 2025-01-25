@@ -10,11 +10,6 @@ public class FileBucketRepository(IMinioClient minioClient) : IFileBucketReposit
 {
     private const string bucketName = "frameup.videos";
 
-    public Task Save(Stream stream, VideoMetadataRequest metadata)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task Upload(FileBucketRequest request)
     {
         await CreateBucketIfNotExistsAsync();
