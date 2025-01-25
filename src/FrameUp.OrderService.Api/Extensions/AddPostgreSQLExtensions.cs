@@ -8,14 +8,12 @@ public static class AddPostgreSQLExtensions
 {
     public static IServiceCollection AddDatabaseContext(
         this IServiceCollection serviceCollection,
-        IConfiguration configuration
+        Settings settings
     )
     {
-        var settings = configuration.GetSection("Storage:PostgreSQL").Get<PostgreSQLSettings>()!;
-
         serviceCollection
             .AddDbContext<OrderServiceDbContext>(options =>
-                options.UseNpgsql(settings.ConnectionString));
+                options.UseNpgsql(settings.PostgreSQL.ConnectionString));
 
         return serviceCollection;
     }

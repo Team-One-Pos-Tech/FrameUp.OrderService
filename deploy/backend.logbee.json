@@ -1,0 +1,272 @@
+{
+  "LogBeeBackendUrl": "http://logbee.backend.dev",
+  "LogBeeFrontendUrl": "http://logbee.frontend.dev",
+  "LogBeeFrontend.BasicAuth.Password": "_LogBeeFrontend_authorization_password_",
+  "LogBeeBackend.BasicAuth.Password": "_LogBeeBackend_authorization_password_",
+  "Database": {
+    "Provider": "MongoDb",
+    "MongoDb": {
+      "ConnectionString": "mongodb://logbee.mongodb.dev:27017?socketTimeoutMS=5000&connectTimeoutMS=5000",
+      "DatabaseName": "LogBeeBackend"
+    }
+  },
+  "Files": {
+    "Provider": "MongoDb",
+    "MaximumFileSizeInBytes": 2097152
+  },
+  "LogBeeFrontend": {
+    "Database": {
+      "Provider": "MongoDb",
+      "MongoDb": {
+        "ConnectionString": "mongodb://logbee.mongodb.dev:27017?socketTimeoutMS=5000&connectTimeoutMS=5000",
+        "DatabaseName": "LogBeeFrontend"
+      }
+    }
+  },
+  "CreateRequestLog": {
+    "ValidateApplicationKeys": true,
+    "SaveInputStreamAsFileIfLengthGte": 5000,
+    "Ignore": {
+      "UrlPathPatterns": [
+        "(?si).js$",
+        "(?si).css$",
+        "(?si).map$",
+        "(?si).bmp$",
+        "(?si).dib$",
+        "(?si).gif$",
+        "(?si).svg$",
+        "(?si).jpe$",
+        "(?si).jpeg$",
+        "(?si).jpg$",
+        "(?si).png$",
+        "(?si).pnz$",
+        "(?si).ico$",
+        "(?si).txt$",
+        "(?si).xml$",
+        "(?si).php$",
+        "(?si).ttf"
+      ],
+      "ResponseContentTypePatterns": [
+        "(?si)^application/javascript",
+        "(?si)^application/ecmascript",
+        "(?si)^application/x-ecmascript",
+        "(?si)^application/x-javascript",
+        "(?si)^text/javascript",
+        "(?si)^text/ecmascript",
+        "(?si)^text/css",
+        "(?si)^image/",
+        "(?si)^audio/",
+        "(?si)^video/",
+        "(?si)^application/ogg",
+        "(?si)^application/font-",
+        "(?si)^application/x-font-",
+        "(?si)^application/vnd-"
+      ]
+    },
+    "Obfuscate": {
+      "IsEnabled": true,
+      "ObfuscateInputStream": false,
+      "Placeholder": "<obfuscated>",
+      "Patterns": [
+        "(?si)pass",
+        "(?si)auth"
+      ]
+    },
+    "Truncate": {
+      "Files": {
+        "Limit": 6
+      },
+      "LogMessages": {
+        "Limit": 100,
+        "MessageMaxLength": 10000
+      },
+      "Exceptions": {
+        "Limit": 6,
+        "ExceptionMessageMaxLength": 500
+      },
+      "CustomProperties": {
+        "Limit": 10,
+        "KeyMaxLength": 20,
+        "ValueMaxLength": 100
+      },
+      "Keywords": {
+        "Limit": 6,
+        "KeywordMinLength": 5,
+        "KeywordMaxLength": 30
+      },
+      "RequestHeaders": {
+        "Limit": 20,
+        "KeyMaxLength": 100,
+        "ValueMaxLength": 1000
+      },
+      "RequestCookies": {
+        "Limit": 5,
+        "KeyMaxLength": 100,
+        "ValueMaxLength": 100
+      },
+      "RequestQueryString": {
+        "Limit": 30,
+        "KeyMaxLength": 100,
+        "ValueMaxLength": 1000
+      },
+      "RequestFormData": {
+        "Limit": 30,
+        "KeyMaxLength": 100,
+        "ValueMaxLength": 1000
+      },
+      "RequestServerVariables": {
+        "Limit": 30,
+        "KeyMaxLength": 100,
+        "ValueMaxLength": 1000
+      },
+      "RequestClaims": {
+        "Limit": 30,
+        "KeyMaxLength": 100,
+        "ValueMaxLength": 1000
+      },
+      "ResponseHeaders": {
+        "Limit": 30,
+        "KeyMaxLength": 100,
+        "ValueMaxLength": 1000
+      }
+    },
+    "Throttle": {
+      "Rules": [
+        {
+          "IsEnabled": false,
+          "Limits": [
+            {
+              "StatusCodeLt": 600,
+              "RequestLimit": 10,
+              "IntervalInSeconds": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "UrlTokenization": {
+    "IgnoreTokenizationUrlPathPatterns": [
+      "(?si)^/[0-9]+$"
+    ],
+    "PathComponentTokenization": {
+      "Characters": [
+        "%",
+        " ",
+        ":",
+        ",",
+        ";",
+        "+",
+        "%",
+        "&",
+        "#",
+        "(",
+        ")",
+        "@",
+        "=",
+        "<",
+        ">",
+        "{",
+        "}",
+        "\"",
+        "'"
+      ],
+      "Patterns": [
+        "(?si)(?:\\D*\\d){3}"
+      ]
+    }
+  },
+  "TimeToLive": {
+    "AlertDefinitionInvocation": {
+      "Days": 30
+    },
+    "ApplicationAlert": {
+      "Days": 30
+    },
+    "ApplicationChartData": {
+      "Days": 30
+    },
+    "ApplicationData": {
+      "Days": 30
+    },
+    "ApplicationEndpoint": {
+      "Days": 30
+    },
+    "ApplicationException": {
+      "Days": 30
+    },
+    "ApplicationUsage": {
+      "Days": 180
+    },
+    "ApplicationUser": {
+      "Days": 30
+    },
+    "HttpRefererDestination": {
+      "Days": 30
+    },
+    "HttpRefererSource": {
+      "Days": 30
+    },
+    "RequestLog": [
+      {
+        "StatusCodeLt": 400,
+        "Days": 2
+      },
+      {
+        "StatusCodeLt": 500,
+        "Days": 4
+      },
+      {
+        "StatusCodeLt": 600,
+        "Days": 6
+      }
+    ]
+  },
+  "OpenTelemetry": {
+    "Trace": {
+      "MaximumNumberOfSpansPerRequest": 100,
+      "CreateTraceRateLimit": {
+        "IsEnabled": true,
+        "Limit": {
+          "RequestLimit": 5,
+          "IntervalInSeconds": 1
+        }
+      }
+    },
+    "Logs": {
+      "MaximumNumberOfSpansPerRequest": 100,
+      "CreateLogsRateLimit": {
+        "IsEnabled": true,
+        "Limit": {
+          "RequestLimit": 5,
+          "IntervalInSeconds": 1
+        }
+      }
+    }
+  },
+  "UserAgentParserProvider": null,
+  "ApplicationSettings": {
+    "DeleteApplicationDataByExpiryDate": {
+      "MaximumDurationInMilliseconds": 1000,
+      "TriggerIntervalInMinutes": 180
+    },
+    "ProcessQueues": {
+      "MaximumDurationInMilliseconds": 1000,
+      "TriggerIntervalInSeconds": 10,
+      "Take": 50
+    },
+    "ProcessAlerts": {
+      "MaximumDurationInMilliseconds": 1000,
+      "TriggerIntervalInSeconds": 10
+    },
+    "ProcessAsyncRequestLogs": {
+      "MaximumDurationInMilliseconds": 5000,
+      "TriggerIntervalInSeconds": 5,
+      "Take": 50
+    },
+    "DeleteLocalLogFiles": {
+      "CreatedMoreThanNDaysAgo": 3,
+      "TriggerIntervalInHours": 6
+    }
+  }
+}

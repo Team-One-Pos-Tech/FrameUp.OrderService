@@ -1,7 +1,13 @@
 using FrameUp.OrderService.Api.Extensions;
 using System.Text.Json.Serialization;
+using Serilog;
+using Serilog.Sinks.LogBee;
+using Serilog.Sinks.LogBee.AspNetCore;
+using FrameUp.OrderService.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
+builder.Services.AddSingleton(settings);
 
 builder.Services
     .AddControllers()
@@ -9,19 +15,29 @@ builder.Services
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-    }); ;
+    });
+
+builder.Services.AddHttpContextAccessor();
+
+builder.AddLogBee()
+    .AddCustomHealthChecks(settings);
+
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+
+
+
 // Add services to the container.
 builder.Services
-    .AddMassTransit(builder.Configuration)
+    .AddMassTransit(settings)
     .AddRepositories()
-    .AddDatabaseContext(builder.Configuration)
-    .AddMinIO(builder.Configuration)
+    .AddDatabaseContext(settings)
+    .AddMinIO(settings)
     .AddUseCases();
 
 var app = builder.Build();
@@ -33,7 +49,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseLogBee();
+
+app.UseCustomHealthChecks();
 
 app.UseAuthorization();
 

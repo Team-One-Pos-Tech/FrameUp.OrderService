@@ -1,4 +1,4 @@
-﻿using FrameUp.OrderService.Application.Contracts;
+using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Models.Consumers;
@@ -9,11 +9,11 @@ using FrameUp.OrderService.Application.Validators;
 namespace FrameUp.OrderService.Application.UseCases;
 
 public class CreateProcessingOrder(
-    IFileBucketRepository fileBucketRepository, 
+    IFileBucketRepository fileBucketRepository,
     IOrderRepository orderRepository,
     IPublishEndpoint publishEndpoint) : ICreateProcessingOrder
 {
-    
+
     public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
     {
         if (!CreateProcessingOrderValidator.IsValid(request, out var response))
