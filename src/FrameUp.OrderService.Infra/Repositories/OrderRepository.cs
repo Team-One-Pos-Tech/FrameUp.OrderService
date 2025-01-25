@@ -14,9 +14,13 @@ public class OrderRepository(
 {
     public async Task<Order?> Get(Guid orderId, Guid ownerId)
     {
-        var response = await FindByPredicateAsync(order => order.Id == orderId && order.OwnerId == ownerId);
+        var response = await _dbSet
+            .AsNoTracking()
+            .Include(px => px.Videos)
+            .Where(order => order.Id == orderId && order.OwnerId == ownerId)
+            .FirstOrDefaultAsync();
 
-        return response is null ? null : response;
+        return response;
     }
 
     public async Task<IEnumerable<Order>> GetAll(Guid ownerId)
