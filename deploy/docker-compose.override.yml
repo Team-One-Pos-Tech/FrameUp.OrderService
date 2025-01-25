@@ -3,6 +3,9 @@ services:
     environment:
         Settings__RabbitMQ__ConnectionString: amqp://guest:guest@localhost:5672
         Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
+        Settings__MinIO__Endpoint: play.min.io
+        Settings__MinIO__AccessKey: 8F2QSn6rpRAjkZOneNBS
+        Settings__MinIO__SecretKey: F3EH8vrVCeNteBMheqmB8bICzujhPczrrrBusLi1
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
         LogBee.OrganizationId": ${LogBee_OrganizationId}

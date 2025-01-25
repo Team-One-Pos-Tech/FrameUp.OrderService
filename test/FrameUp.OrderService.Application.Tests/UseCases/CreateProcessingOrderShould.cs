@@ -27,7 +27,7 @@ public class CreateProcessingOrderShould
 
         _createProcessingOrder = new CreateProcessingOrder(
             _fileBucketMock.Object,
-            _orderRepository.Object, 
+            _orderRepository.Object,
             _publishEndpointMock.Object);
     }
 
@@ -94,9 +94,9 @@ public class CreateProcessingOrderShould
                 },
             ]
         };
-        
+
         var orderId = Guid.NewGuid();
-        
+
         _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
             .ReturnsAsync(orderId);
 
@@ -113,13 +113,13 @@ public class CreateProcessingOrderShould
         response.IsValid.Should().BeTrue();
 
         _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId && 
+            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
                                                     fileRequest.Files.Count() == 1)
         ), Times.Once);
 
         #endregion
     }
-    
+
     [Test]
     public async Task Upload_Many_Videos_Simultaneously()
     {
@@ -156,9 +156,9 @@ public class CreateProcessingOrderShould
                 }
             ]
         };
-        
+
         var orderId = Guid.NewGuid();
-        
+
         _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
             .ReturnsAsync(orderId);
 
@@ -175,7 +175,7 @@ public class CreateProcessingOrderShould
         response.IsValid.Should().BeTrue();
 
         _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId && 
+            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
                                                     fileRequest.Files.Count() == 2)
         ), Times.Once);
 
@@ -222,7 +222,7 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Video size is too large.");
 
-        _fileBucketMock.Verify(x => x.Save(video, new VideoMetadataRequest()), Times.Never);
+        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
 
         #endregion
     }
@@ -267,7 +267,7 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("File type not supported.");
 
-        _fileBucketMock.Verify(x => x.Save(video, new VideoMetadataRequest()), Times.Never);
+        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
 
         #endregion
     }
@@ -342,11 +342,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Max supported videos processing is 3.");
 
-        _fileBucketMock.Verify(x => x.Save(video, new VideoMetadataRequest()), Times.Never);
+        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
 
         #endregion
     }
-    
+
     [Test]
     public async Task Persist_Order_With_Video_Metadata()
     {
@@ -357,7 +357,7 @@ public class CreateProcessingOrderShould
         const string videoName = "marketing.txt";
         var size = 1024L * 1024L;
         var contentType = "video/mp4";
-        
+
         var request = new CreateProcessingOrderRequest
         {
             Videos = [
@@ -385,23 +385,23 @@ public class CreateProcessingOrderShould
         #region Assert
 
         response.IsValid.Should().BeTrue();
-        
+
         _orderRepository.Verify(repository => repository.Save(
-            It.Is<Order>(order => order.Videos.First().Name == videoName && 
+            It.Is<Order>(order => order.Videos.First().Name == videoName &&
                                   order.Videos.First().Size == size &&
                                   order.Videos.First().ContentType == contentType)
         ), Times.Once);
 
         #endregion
     }
-    
+
     [Test]
     public async Task Publish_Ready_To_Process_Event()
     {
         #region Arrange
 
         var video = CreateFakeVideo();
-        
+
         var request = new CreateProcessingOrderRequest
         {
             Videos = [
@@ -419,7 +419,7 @@ public class CreateProcessingOrderShould
         };
 
         var orderId = Guid.NewGuid();
-        
+
         _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
             .ReturnsAsync(orderId);
 
@@ -434,9 +434,9 @@ public class CreateProcessingOrderShould
         #region Assert
 
         response.IsValid.Should().BeTrue();
-        
+
         _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-            It.Is<ReadyToProcessVideo>(message => message.OrderId == orderId), 
+            It.Is<ReadyToProcessVideo>(message => message.OrderId == orderId),
             It.IsAny<CancellationToken>()
         ), Times.Once);
 
@@ -671,7 +671,7 @@ public class CreateProcessingOrderShould
         response.IsValid.Should().BeTrue();
 
         _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-            It.Is<ReadyToProcessVideo>(message => 
+            It.Is<ReadyToProcessVideo>(message =>
                 message.Parameters.ExportResolution == ResolutionTypes.HD
             ),
             It.IsAny<CancellationToken>()
