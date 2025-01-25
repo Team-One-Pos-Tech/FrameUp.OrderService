@@ -45,4 +45,9 @@ public class OrderRepository(
 
         return order.Id;
     }
+
+    public Task Update(Order order)
+    {
+        throw new NotImplementedException();
+    }
 }
