@@ -2,6 +2,7 @@ using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models;
 using Minio;
 using Minio.DataModel.Args;
+using Minio.DataModel.Tags;
 
 namespace FrameUp.OrderService.Infra.Repositories;
 
@@ -18,12 +19,17 @@ public class FileBucketRepository(IMinioClient minioClient) : IFileBucketReposit
     {
         await CreateBucketIfNotExistsAsync();
 
+        Tagging tagging = CreateTagging(request.OrderId.ToString());
+
+        var objectName = CreateObjectName(request);
+
         var args = new PutObjectArgs()
                 .WithBucket(bucketName)
-                .WithObject(request.OrderId.ToString())
-                .WithStreamData(request.Files[0].ContentStream)
-                .WithObjectSize(request.Files[0].ContentStream.Length)
-                .WithContentType(request.Files[0].ContentType);
+                .WithTagging(tagging)
+                .WithObject(objectName)
+                .WithStreamData(request.Files.First().ContentStream)
+                .WithObjectSize(request.Files.First().ContentStream.Length)
+                .WithContentType(request.Files.First().ContentType);
 
         try
         {
@@ -33,6 +39,22 @@ public class FileBucketRepository(IMinioClient minioClient) : IFileBucketReposit
         {
             throw new Exception("Error uploading file", e);
         }
+    }
+
+    private static string CreateObjectName(FileBucketRequest request)
+    {
+        return request.OrderId.ToString() + "/" + request.Files.First().Name;
+    }
+
+    private static Tagging CreateTagging(string orderId)
+    {
+        return new Tagging(new Dictionary<string, string>()
+                {
+                    {
+                        "orderId", orderId
+                    }
+                },
+        false);
     }
 
     private async Task CreateBucketIfNotExistsAsync()
