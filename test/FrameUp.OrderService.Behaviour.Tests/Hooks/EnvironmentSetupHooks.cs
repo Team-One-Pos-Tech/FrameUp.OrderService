@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using System.Net.Http;
 using System.Threading.Tasks;
+using FrameUp.OrderService.Api;
 using FrameUp.OrderService.Behaviour.Tests.Extensions;
 using TechTalk.SpecFlow;
 

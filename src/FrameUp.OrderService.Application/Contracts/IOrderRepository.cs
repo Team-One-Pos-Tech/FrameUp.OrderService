@@ -1,4 +1,3 @@
-using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Domain.Entities;
 
 namespace FrameUp.OrderService.Application.Contracts;

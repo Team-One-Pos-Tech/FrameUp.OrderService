@@ -2,34 +2,26 @@ using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Infra.Abstractions;
 using FrameUp.OrderService.Infra.Context;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Infra.Repositories;
 
-public class OrderRepository(
-    OrderServiceDbContext dbContext,
-    ILoggerFactory loggerFactory
-    ) : BaseRepository<Order, OrderServiceDbContext>(dbContext, loggerFactory), IOrderRepository
+public class OrderRepository : BaseRepository<Order, OrderServiceDbContext>, IOrderRepository
 {
+    public OrderRepository(OrderServiceDbContext dbContext,
+        ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+    {
+        _expandProperties = [nameof(Order.Videos)];
+    }
+
     public async Task<Order?> Get(Guid orderId)
     {
-        var response = await _dbSet
-            .AsNoTracking()
-            .Include(px => px.Videos)
-            .Where(order => order.Id == orderId)
-            .FirstOrDefaultAsync();
-
-        return response;
+        return await FindByPredicateAsync(px => px.Id == orderId);
     }
 
     public async Task<IEnumerable<Order>> GetAll(Guid ownerId)
     {
-        var response = await _dbSet
-            .Include(px => px.Videos)
-            .AsNoTracking()
-            .ToListAsync();
-
+        var response = await ListByPredicateAsync(px => px.OwnerId == ownerId);
         return response is null ? [] : response;
     }
 

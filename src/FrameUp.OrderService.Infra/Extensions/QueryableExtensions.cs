@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace SnackHub.Production.Infra.Extensions;
+namespace FrameUp.OrderService.Infra.Extensions;
 
 public static class QueryableExtensions
 {

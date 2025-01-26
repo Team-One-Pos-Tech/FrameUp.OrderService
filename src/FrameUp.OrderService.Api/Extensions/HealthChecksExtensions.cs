@@ -1,11 +1,7 @@
 ﻿using FrameUp.OrderService.Api.Configuration;
 using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FrameUp.OrderService.Api.Extensions;
 public static class HealthChecksExtensions

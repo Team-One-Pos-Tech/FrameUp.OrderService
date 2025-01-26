@@ -1,8 +1,5 @@
 ﻿using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
 using Npgsql;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
-using System;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 
