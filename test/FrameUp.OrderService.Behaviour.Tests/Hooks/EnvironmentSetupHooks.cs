@@ -33,7 +33,7 @@ public class EnvironmentSetupHooks
                     collection.RemoveAll<OrderServiceDbContext>();
 
                     var dbContextOptions = new DbContextOptionsBuilder<OrderServiceDbContext>()
-                        .UseNpgsql(postgresql.ConnectionSring)
+                        .UseNpgsql(postgresql.ConnectionString)
                         .Options;
 
                     var productionDbContext = new OrderServiceDbContext(dbContextOptions);

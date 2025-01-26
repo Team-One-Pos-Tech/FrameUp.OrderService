@@ -10,40 +10,41 @@ namespace FrameUp.OrderService.Behaviour.Tests.Fixtures;
 
 public class PostgresqlFixture
 {
-    private IContainer? _pgSqlContainer;
+    private PostgreSqlContainer? _pgSqlContainer = null;
 
     public const int PgSQLPublicPort = 5432;
 
     public const string PgSQLUser = "postgres";
 
     public const string PgSQLPassword = "postgres";
-    public string ConnectionSring { get; private set; }
+    public string ConnectionString { get; private set; }
 
     public async Task BaseSetUp()
     {
         _pgSqlContainer = new PostgreSqlBuilder()
-            .WithDatabase("order")
-            .WithEnvironment("POSTGRES_USER", PgSQLUser)
-            .WithEnvironment("POSTGRES_PASSWORD", PgSQLPassword)
-            .WithPortBinding(5432)
-            .WithCleanUp(true)
+            .WithDatabase("FrameUpIntegrationTests")
+            .WithUsername(PgSQLUser)
+            .WithPassword(PgSQLPassword)
             .WithPortBinding(PgSQLPublicPort, true)
-            .WithWaitStrategy(
-                Wait.ForUnixContainer()
+            .WithCleanUp(true)
+            .WithWaitStrategy(Wait
+                .ForUnixContainer()
                 .UntilPortIsAvailable(PgSQLPublicPort))
             .Build();
 
-        await _pgSqlContainer.StartAsync();
+        await _pgSqlContainer!.StartAsync();
 
-        ConnectionSring = $"Host=localhost;Port={_pgSqlContainer.GetMappedPublicPort(PgSQLPublicPort)};Database=postgres;Username={PgSQLUser};Password={PgSQLPassword}";
+        ConnectionString = _pgSqlContainer.GetConnectionString();
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder
+        (
+            ConnectionString
+        );
 
-        var pgSqlClient = new NpgsqlConnection(ConnectionSring);
-
-        await pgSqlClient.OpenAsync();
+        var dataSource = dataSourceBuilder.EnableDynamicJson().Build();
     }
 
     public async Task BaseTearDown()
-    {
+    { 
         await _pgSqlContainer!.DisposeAsync();
     }
 }
