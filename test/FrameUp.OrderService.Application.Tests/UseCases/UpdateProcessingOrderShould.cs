@@ -24,7 +24,10 @@ public class UpdateProcessingOrderShould
         
         _publishedEndpointMock = new Mock<IPublishEndpoint>();
 
-        _updateProcessingOrder = new UpdateProcessingOrder(_orderRepositoryMock.Object);
+        _updateProcessingOrder = new UpdateProcessingOrder(
+            _orderRepositoryMock.Object,
+            _publishedEndpointMock.Object
+            );
     }
 
     [Test]
@@ -64,7 +67,7 @@ public class UpdateProcessingOrderShould
     }
     
     [Test]
-    public async Task Publish_Envent_When_Order_Status_Is_Concluded()
+    public async Task Publish_Event_When_Order_Status_Is_Changed()
     {
         #region Arrange
 
@@ -81,6 +84,7 @@ public class UpdateProcessingOrderShould
             {
                 Id = request.OrderId,
                 Status = ProcessingStatus.Processing,
+                OwnerId = ownerId
             });
 
         #endregion
