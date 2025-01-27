@@ -44,7 +44,8 @@ public class UpdateProcessingOrder(IOrderRepository orderRepository, IPublishEnd
             new OrderStatusChangedEvent(order.OwnerId, new OrderStatusChangedEventParameters
             {
                 OrderId = order.Id,
-                Status = order.Status
+                Status = order.Status,
+                PackageUri = order.PackageUri
             })
         );
     }

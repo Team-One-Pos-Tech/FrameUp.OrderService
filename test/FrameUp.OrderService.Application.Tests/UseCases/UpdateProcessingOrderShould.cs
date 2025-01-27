@@ -109,6 +109,48 @@ public class UpdateProcessingOrderShould
     }
     
     [Test]
+    public async Task Publish_Event_With_Package_Uri_When_Order_Status_Is_Changed()
+    {
+        #region Arrange
+
+        var ownerId = Guid.NewGuid();
+
+        var request = new UpdateProcessingOrderRequest
+        {
+            OrderId = Guid.NewGuid(),
+            Status = ProcessingStatus.Concluded,
+            PackageUri = "https://s3.com/package.zip"
+        };
+
+        _orderRepositoryMock.Setup(x => x.Get(request.OrderId))
+            .ReturnsAsync(new Order
+            {
+                Id = request.OrderId,
+                Status = ProcessingStatus.Processing,
+                OwnerId = ownerId
+            });
+
+        #endregion
+
+        #region Act
+
+        await _updateProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        _publishedEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
+            It.Is<OrderStatusChangedEvent>(
+                message => message.Parameters.PackageUri == request.PackageUri
+            ),
+            It.IsAny<CancellationToken>()
+        ), Times.Once);
+
+        #endregion
+    }
+    
+    [Test]
     public async Task Update_Order_With_Package_Uri()
     {
         #region Arrange
