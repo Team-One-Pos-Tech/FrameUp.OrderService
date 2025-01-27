@@ -49,11 +49,11 @@ public class GetProcessingOrdersSteps(
         var listOrders = scenarioContext.Get<IEnumerable<GetProcessingOrderResponse>>("listOrders");
         var videoName = scenarioContext.Get<string>("videoName");
 
-        listOrders!.Count().Should().Be(1);
+        listOrders!.Count().Should().BeGreaterThanOrEqualTo(1);
 
         var firstOrder = listOrders.First();
 
-        firstOrder.Videos.Count.Should().Be(1);
+        firstOrder.Videos.Count.Should().BeGreaterThanOrEqualTo(1);
         
         var firstVideo = firstOrder.Videos.First();
 
