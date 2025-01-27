@@ -1,24 +1,30 @@
 ﻿using FluentAssertions;
 using FrameUp.OrderService.Application.Contracts;
+using FrameUp.OrderService.Application.Models.Events;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
+using MassTransit;
+using MassTransit.Testing;
 using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
 
 public class UpdateProcessingOrderShould
 {
-    private Mock<IOrderRepository> orderRepository;
-    private UpdateProcessingOrder updateProcessingOrder;
+    private Mock<IOrderRepository> _orderRepositoryMock;
+    private UpdateProcessingOrder _updateProcessingOrder;
+    private Mock<IPublishEndpoint> _publishedEndpointMock;
 
     [SetUp]
     public void Setup()
     {
-        orderRepository = new Mock<IOrderRepository>();
+        _orderRepositoryMock = new Mock<IOrderRepository>();
+        
+        _publishedEndpointMock = new Mock<IPublishEndpoint>();
 
-        updateProcessingOrder = new UpdateProcessingOrder(orderRepository.Object);
+        _updateProcessingOrder = new UpdateProcessingOrder(_orderRepositoryMock.Object);
     }
 
     [Test]
@@ -32,7 +38,7 @@ public class UpdateProcessingOrderShould
             Status = ProcessingStatus.Concluded
         };
 
-        orderRepository.Setup(x => x.Get(request.OrderId))
+        _orderRepositoryMock.Setup(x => x.Get(request.OrderId))
             .ReturnsAsync(new Order
             {
                 Id = request.OrderId,
@@ -43,16 +49,57 @@ public class UpdateProcessingOrderShould
 
         #region Act
 
-        await updateProcessingOrder.Execute(request);
+        await _updateProcessingOrder.Execute(request);
 
         #endregion
 
         #region Assert
 
-        orderRepository.Verify(x => x.Update(
+        _orderRepositoryMock.Verify(x => x.Update(
             It.Is<Order>(order => order.Status == request.Status &&
                 order.Id == request.OrderId)
             ), Times.Once);
+
+        #endregion
+    }
+    
+    [Test]
+    public async Task Publish_Envent_When_Order_Status_Is_Concluded()
+    {
+        #region Arrange
+
+        var ownerId = Guid.NewGuid();
+
+        var request = new UpdateProcessingOrderRequest
+        {
+            OrderId = Guid.NewGuid(),
+            Status = ProcessingStatus.Concluded
+        };
+
+        _orderRepositoryMock.Setup(x => x.Get(request.OrderId))
+            .ReturnsAsync(new Order
+            {
+                Id = request.OrderId,
+                Status = ProcessingStatus.Processing,
+            });
+
+        #endregion
+
+        #region Act
+
+        await _updateProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        _publishedEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
+            It.Is<OrderStatusChangedEvent>(message => message.OwnerId == ownerId
+                && message.Parameters.OrderId == request.OrderId
+                && message.Parameters.Status == request.Status
+            ),
+            It.IsAny<CancellationToken>()
+        ), Times.Once);
 
         #endregion
     }
@@ -72,7 +119,7 @@ public class UpdateProcessingOrderShould
 
         #region Act
 
-        var response = await updateProcessingOrder.Execute(request);
+        var response = await _updateProcessingOrder.Execute(request);
 
         #endregion
 
@@ -82,7 +129,7 @@ public class UpdateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Order not found");
 
-        orderRepository.Verify(x => x.Update(
+        _orderRepositoryMock.Verify(x => x.Update(
             It.Is<Order>(order => order.Status == request.Status &&
                 order.Id == request.OrderId)
             ), Times.Never);
