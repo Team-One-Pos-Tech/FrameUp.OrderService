@@ -11,5 +11,5 @@ public record OrderStatusChangedEventParameters
 {
     public Guid OrderId { get; set; }
     public ProcessingStatus Status { get; set; }
-    public string? PackageLink { get; set; }
+    public string? PackageUri { get; set; }
 }

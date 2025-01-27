@@ -107,6 +107,46 @@ public class UpdateProcessingOrderShould
 
         #endregion
     }
+    
+    [Test]
+    public async Task Update_Order_With_Package_Uri()
+    {
+        #region Arrange
+
+        var ownerId = Guid.NewGuid();
+
+        var request = new UpdateProcessingOrderRequest
+        {
+            OrderId = Guid.NewGuid(),
+            Status = ProcessingStatus.Concluded,
+            PackageUri = "https://s3.com/package.zip"
+        };
+
+        _orderRepositoryMock.Setup(x => x.Get(request.OrderId))
+            .ReturnsAsync(new Order
+            {
+                Id = request.OrderId,
+                Status = ProcessingStatus.Processing,
+                OwnerId = ownerId
+            });
+
+        #endregion
+
+        #region Act
+
+        await _updateProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        _orderRepositoryMock.Verify(x => x.Update(
+            It.Is<Order>(order => 
+                order.PackageUri == request.PackageUri)
+        ), Times.Once);
+
+        #endregion
+    }
 
     [Test]
     public async Task Validate_When_Order_Does_Not_Exists()

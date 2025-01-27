@@ -23,13 +23,19 @@ public class UpdateProcessingOrder(IOrderRepository orderRepository, IPublishEnd
             return response;
         }
 
-        order.Status = request.Status;
-        
+        UpdateOrder(request, order);
+
         await PublishOrderStatusChangedEvent(order);
 
         await orderRepository.Update(order);
 
         return response;
+    }
+
+    private static void UpdateOrder(UpdateProcessingOrderRequest request, Order order)
+    {
+        order.Status = request.Status;
+        order.PackageUri = request.PackageUri;
     }
 
     private async Task PublishOrderStatusChangedEvent(Order order)

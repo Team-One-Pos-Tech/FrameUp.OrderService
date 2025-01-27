@@ -4,6 +4,7 @@ namespace FrameUp.OrderService.Application.Models.Requests;
 
 public class UpdateProcessingOrderRequest
 {
-    public Guid OrderId { get; set; }
-    public ProcessingStatus Status { get; set; }
+    public required Guid OrderId { get; init; }
+    public required ProcessingStatus Status { get; init; }
+    public string? PackageUri { get; set; }
 }
