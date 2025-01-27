@@ -18,7 +18,7 @@ public class CancelProcessingOrder(
         await orderServiceClientApi.CancelAsync(createdOrder.Id);
     }
 
-    [ThenAttribute(@"Order Status Should Be Cancelled")]
+    [ThenAttribute(@"Order status should be cancelled")]
     public async Task ThenOrderStatusShouldBeCancelled()
     {
         var createdOrder = scenarioContext.Get<CreateProcessingOrderResponse>("createOrderResponse");
