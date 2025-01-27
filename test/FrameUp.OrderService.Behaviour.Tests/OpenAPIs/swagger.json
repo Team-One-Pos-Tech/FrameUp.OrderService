@@ -5,6 +5,36 @@
     "version": "1.0"
   },
   "paths": {
+    "/Events/UpdateOrderStatus/{orderId}": {
+      "put": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ProcessingStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Order": {
       "post": {
         "tags": [
@@ -208,6 +238,66 @@
           }
         }
       }
+    },
+    "/Order/Cancel/{orderId}": {
+      "put": {
+        "tags": [
+          "Order"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProcessingOrderResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProcessingOrderResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProcessingOrderResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -229,6 +319,11 @@
           },
           "status": {
             "$ref": "#/components/schemas/ProcessingStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -308,10 +403,10 @@
       },
       "ProcessingStatus": {
         "enum": [
-          "Received",
           "Refused",
           "Processing",
           "Concluded",
+          "Cancelled",
           "Failed"
         ],
         "type": "string"
@@ -325,7 +420,29 @@
         ],
         "type": "string"
       },
+      "UpdateProcessingOrderResponse": {
+        "type": "object",
+        "properties": {
+          "notifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "VideoMetadataResponse": {
+        "required": [
+          "contentType",
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {

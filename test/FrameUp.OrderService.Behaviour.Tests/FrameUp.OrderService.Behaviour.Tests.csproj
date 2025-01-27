@@ -61,10 +61,12 @@
 	  <Compile Update="Features\GetProcessingOrders.feature.cs">
 	    <DependentUpon>GetProcessingOrders.feature</DependentUpon>
 	  </Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Update="OpenAPIs\index.html" ClassName="OrderServiceClientApi" />
+	  <Compile Update="Features\CancelProcessingOrders.feature.cs">
+	    <DependentUpon>CancelProcessingOrders.feature</DependentUpon>
+	    <AutoGen>true</AutoGen>
+	    <DesignTime>true</DesignTime>
+	    <Visible>true</Visible>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>

@@ -31,7 +31,7 @@ public class GetProcessingOrdersSteps(
 
         var response = await orderServiceClientApi.OrderPOSTAsync(10, ResolutionTypes.FullHD, videos);
 
-        scenarioContext["response"] = response;
+        scenarioContext["createOrderResponse"] = response;
         scenarioContext["videoName"] = videoName;
     }
 

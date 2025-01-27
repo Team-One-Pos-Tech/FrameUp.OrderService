@@ -81,5 +81,13 @@ namespace FrameUp.OrderService.Api.Controllers
 
             return Ok(response);
         }
+        
+        [HttpPut("Cancel/{orderId}")]
+        [ProducesResponseType(typeof(UpdateProcessingOrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UpdateProcessingOrderResponse>> Put(Guid orderId)
+        {
+            return Ok(new UpdateProcessingOrderResponse());
+        }
     }
 }
