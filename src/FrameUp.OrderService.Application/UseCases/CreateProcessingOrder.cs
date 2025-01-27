@@ -32,7 +32,7 @@ public class CreateProcessingOrder(
 
         await ProcessVideos(order, request);
 
-        logger.LogInformation("New Processing Order [{orderId}] created suscessfully!", order.Id);
+        logger.LogInformation("New Processing Order [{orderId}] created successfully!", order.Id);
 
         return new CreateProcessingOrderResponse
         {
