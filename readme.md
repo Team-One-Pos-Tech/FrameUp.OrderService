@@ -14,6 +14,8 @@ FrameUp.OrderService is a comprehensive project designed to handle the processin
 - SpecFlow
 - NUnit
 - RabbitMQ
+- MinIO
+- LogBee
 
 ### Installation
 
@@ -83,6 +85,20 @@ With all services running, follow the next step.
 
 ---
 
+# Minio Local Development Integration
+Used to simulate the S3 bucket locally
+
+1. Access the minio dashboard at https://play.min.io
+2. Login with username: `minioadmin`, password: `minioadmin`
+3. Create Access key.
+4. Fill the docker compose app variables, Example:
+```
+   Settings__MinIO__AccessKey: 8F2QSn6rpRAjkZOneNBS
+   Settings__MinIO__SecretKey: F3EH8vrVCeNteBMheqmB8bICzujhPczrrrBusLi1
+```
+
+
+---
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
