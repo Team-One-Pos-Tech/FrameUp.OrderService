@@ -44,8 +44,8 @@ public class GetProcessingOrderShould
             .ReturnsAsync(new Order()
             {
                 Id = request.OrderId,
-                Status = ProcessingStatus.Processing, // Adjust based on expected status
-                OwnerId = Guid.Empty, // Adjust based on expected owner ID
+                Status = ProcessingStatus.Processing,
+                OwnerId = Guid.Empty,
                 Videos = new List<VideoMetadata>
                 {
                     new VideoMetadata
@@ -56,8 +56,8 @@ public class GetProcessingOrderShould
                         Size = 1024
                     }
                 },
-                ExportResolution = ResolutionTypes.FullHD, // Adjust based on expected resolution
-                CaptureInterval = null // Adjust based on expected capture interval
+                ExportResolution = ResolutionTypes.FullHD,
+                CaptureInterval = null
             });
         
         #endregion
@@ -73,11 +73,67 @@ public class GetProcessingOrderShould
         response.Should().NotBeNull();
         
         response!.Id.Should().Be(request.OrderId);
-        response.Status.Should().Be(ProcessingStatus.Processing); // Adjust based on expected status
-        response.OwnerId.Should().Be(Guid.Empty); // Adjust based on expected owner ID
+        response.Status.Should().Be(ProcessingStatus.Processing);
+        response.OwnerId.Should().Be(Guid.Empty);
         response.Videos.Should().NotBeEmpty();
-        response.ExportResolution.Should().Be(ResolutionTypes.FullHD); // Adjust based on expected resolution
-        response.CaptureInterval.Should().BeNull(); // Adjust based on expected capture interval
+        response.ExportResolution.Should().Be(ResolutionTypes.FullHD);
+        response.CaptureInterval.Should().BeNull();
+        
+        #endregion
+    }
+    
+    [Test]
+    public async Task Get_Order_By_Id_With_Videos()
+    {
+        #region Arrange
+
+        var request = new GetProcessingOrderRequest
+        {
+            OrderId = Guid.NewGuid()
+        };
+
+        var videoMetadata = new VideoMetadata
+        {
+            Id = Guid.NewGuid(),
+            Name = "video.mp4",
+            ContentType = "video/mp4",
+            Size = 1024
+        };
+        
+        _orderRepository.Setup(x => x.Get(request.OrderId))
+            .ReturnsAsync(new Order()
+            {
+                Id = request.OrderId,
+                Status = ProcessingStatus.Processing,
+                OwnerId = Guid.Empty,
+                Videos = new List<VideoMetadata>
+                {
+                    videoMetadata
+                },
+                ExportResolution = ResolutionTypes.FullHD,
+                CaptureInterval = null
+            });
+        
+        #endregion
+
+        #region Act
+
+        var response = await _getProcessingOrder.GetById(request);
+
+        #endregion
+
+        #region Assert
+
+        response.Should().NotBeNull();
+        
+        response!.Id.Should().Be(request.OrderId);
+        
+        response.Videos.Should().NotBeEmpty();        
+        
+        response.Videos.First().Id.Should().Be(videoMetadata.Id);
+        response.Videos.First().Name.Should().Be(videoMetadata.Name);
+        response.Videos.First().ContentType.Should().Be(videoMetadata.ContentType);
+        response.Videos.First().Size.Should().Be(videoMetadata.Size);
         
         #endregion
     }
