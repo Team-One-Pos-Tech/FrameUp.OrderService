@@ -1,6 +1,7 @@
 using FluentAssertions;
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models.Requests;
+using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
@@ -134,6 +135,60 @@ public class GetProcessingOrderShould
         response.Videos.First().Name.Should().Be(videoMetadata.Name);
         response.Videos.First().ContentType.Should().Be(videoMetadata.ContentType);
         response.Videos.First().Size.Should().Be(videoMetadata.Size);
+        
+        #endregion
+    }
+    
+    [Test]
+    public async Task Get_All_Orders()
+    {
+        #region Arrange
+
+        var request = new GetProcessingOrderRequest
+        {
+            OwnerId = Guid.NewGuid()
+        };
+        
+        _orderRepository.Setup(x => x.GetAll(request.OwnerId))
+            .ReturnsAsync(new List<Order>
+            {
+                new Order
+                {
+                    Id = Guid.NewGuid(),
+                    Status = ProcessingStatus.Processing,
+                    OwnerId = request.OwnerId,
+                    Videos = new List<VideoMetadata>
+                    {
+                        new VideoMetadata
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = "video.mp4",
+                            ContentType = "video/mp4",
+                            Size = 1024
+                        }
+                    },
+                    ExportResolution = ResolutionTypes.FullHD,
+                    CaptureInterval = null
+                }
+            });
+        
+        #endregion
+
+        #region Act
+
+        var response = await _getProcessingOrder.GetAll(request);
+
+        #endregion
+
+        #region Assert
+
+        var getProcessingOrderResponses = response as GetProcessingOrderResponse[] ?? response.ToArray();
+        
+        getProcessingOrderResponses.Should().NotBeEmpty();
+        getProcessingOrderResponses.First().OwnerId.Should().Be(request.OwnerId);
+        getProcessingOrderResponses.First().Videos.Should().NotBeEmpty();
+        getProcessingOrderResponses.First().ExportResolution.Should().Be(ResolutionTypes.FullHD);
+        getProcessingOrderResponses.First().CaptureInterval.Should().BeNull();
         
         #endregion
     }

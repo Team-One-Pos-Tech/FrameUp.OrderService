@@ -10,7 +10,7 @@ public class GetProcessingOrder(ILogger<GetProcessingOrder> loggerMockObject, IO
 {
     public async Task<IEnumerable<GetProcessingOrderResponse>> GetAll(GetProcessingOrderRequest request)
     {
-        IEnumerable<Order> orders = await orderRepository.GetAll(request.OwnerId);
+        var orders = await orderRepository.GetAll(request.OwnerId);
 
         return orders.Select(CreateOrderResponse);
     }
@@ -19,10 +19,7 @@ public class GetProcessingOrder(ILogger<GetProcessingOrder> loggerMockObject, IO
     {
         var order = await orderRepository.Get(request.OrderId);
 
-        if (order == null)
-            return null;
-
-        return CreateOrderResponse(order);
+        return order == null ? null : CreateOrderResponse(order);
     }
 
     private static GetProcessingOrderResponse CreateOrderResponse(Order order)
