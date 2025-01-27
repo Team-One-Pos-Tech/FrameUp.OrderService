@@ -2,11 +2,11 @@
 
 public record FileRequest
 {
-    public Stream ContentStream { get; init; }
+    public required Stream ContentStream { get; init; }
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     public long Size { get; set; }
 
-    public string ContentType { get; set; }
+    public required string ContentType { get; set; }
 }

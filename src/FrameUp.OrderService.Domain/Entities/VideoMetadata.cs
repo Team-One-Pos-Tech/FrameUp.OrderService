@@ -2,13 +2,13 @@ namespace FrameUp.OrderService.Domain.Entities;
 
 public class VideoMetadata
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     
-    public string Name { get; set; }
+    public required string Name { get; init; }
     
-    public string ContentType { get; set; }
+    public required string ContentType { get; init; }
     
-    public long Size { get; set; }
+    public long Size { get; init; }
 
     public Guid OrderId { get; set; }
 
