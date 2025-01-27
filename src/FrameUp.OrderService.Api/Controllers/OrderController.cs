@@ -50,7 +50,7 @@ namespace FrameUp.OrderService.Api.Controllers
             return processVideoRequest;
         }
 
-        [HttpGet("{orderId}")]
+        [HttpGet("{orderId:guid}")]
         [ProducesResponseType(typeof(GetProcessingOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CreateProcessingOrderResponse>> Get(Guid orderId)
@@ -76,13 +76,10 @@ namespace FrameUp.OrderService.Api.Controllers
                 OrderId = Guid.NewGuid()
             });
 
-            if (response == null)
-                return NotFound();
-
             return Ok(response);
         }
         
-        [HttpPut("Cancel/{orderId}")]
+        [HttpPut("Cancel/{orderId:guid}")]
         [ProducesResponseType(typeof(UpdateProcessingOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UpdateProcessingOrderResponse>> Put(Guid orderId)
