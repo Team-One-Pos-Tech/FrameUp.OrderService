@@ -1,8 +1,7 @@
 using System.Linq.Expressions;
+using FrameUp.OrderService.Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SnackHub.Production.Infra.Extensions;
-using SnackHub.Production.Infra.Repositories.Abstractions;
 
 namespace FrameUp.OrderService.Infra.Abstractions;
 
