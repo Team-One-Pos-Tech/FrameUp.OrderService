@@ -7,6 +7,7 @@ using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
 using MassTransit.Testing;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
@@ -16,15 +17,17 @@ public class UpdateProcessingOrderShould
     private Mock<IOrderRepository> _orderRepositoryMock;
     private UpdateProcessingOrder _updateProcessingOrder;
     private Mock<IPublishEndpoint> _publishedEndpointMock;
+    private Mock<ILogger<UpdateProcessingOrder>> _logger;
 
     [SetUp]
     public void Setup()
     {
         _orderRepositoryMock = new Mock<IOrderRepository>();
-        
+        _logger = new Mock<ILogger<UpdateProcessingOrder>>();
         _publishedEndpointMock = new Mock<IPublishEndpoint>();
 
         _updateProcessingOrder = new UpdateProcessingOrder(
+            _logger.Object,
             _orderRepositoryMock.Object,
             _publishedEndpointMock.Object
             );

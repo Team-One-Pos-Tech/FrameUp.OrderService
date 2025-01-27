@@ -5,14 +5,20 @@ using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class UpdateProcessingOrder(IOrderRepository orderRepository, IPublishEndpoint publishEndpoint) : IUpdateProcessingOrder
+public class UpdateProcessingOrder(
+    ILogger<UpdateProcessingOrder> logger,
+    IOrderRepository orderRepository, 
+    IPublishEndpoint publishEndpoint) : IUpdateProcessingOrder
 {
 
     public async Task<UpdateProcessingOrderResponse> Execute(UpdateProcessingOrderRequest request)
     {
+        logger.LogInformation("Starting update of Processing Order [{orderId}]", request.OrderId);
+        
         var response = new UpdateProcessingOrderResponse();
 
         var order = await orderRepository.Get(request.OrderId);
@@ -28,6 +34,8 @@ public class UpdateProcessingOrder(IOrderRepository orderRepository, IPublishEnd
         await PublishOrderStatusChangedEvent(order);
 
         await orderRepository.Update(order);
+        
+        logger.LogInformation("Processing Order [{orderId}] updated successfully!", request.OrderId);
 
         return response;
     }

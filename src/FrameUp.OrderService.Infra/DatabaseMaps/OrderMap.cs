@@ -21,6 +21,9 @@ internal class OrderMap : IEntityTypeConfiguration<Order>
             .IsRequired();
 
         builder
+            .Property(order => order.PackageUri);
+
+        builder
             .HasMany(order => order.Videos)
             .WithOne()
             .HasForeignKey("OrderId")
