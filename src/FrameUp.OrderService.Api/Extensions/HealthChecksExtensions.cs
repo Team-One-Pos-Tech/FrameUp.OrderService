@@ -28,7 +28,7 @@ public static class HealthChecksExtensions
 
         builder.Services.AddHealthChecksUI(options =>
         {
-            options.SetEvaluationTimeInSeconds(5);
+            options.SetEvaluationTimeInSeconds(120);
             options.MaximumHistoryEntriesPerEndpoint(10);
             options.AddHealthCheckEndpoint("OrderService", $"{settings.Host}health");
         }).AddInMemoryStorage();
