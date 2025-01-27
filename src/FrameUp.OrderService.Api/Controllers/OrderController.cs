@@ -1,3 +1,4 @@
+using FrameUp.OrderService.Api.Mappers;
 using FrameUp.OrderService.Api.Models;
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models.Requests;
@@ -22,7 +23,7 @@ namespace FrameUp.OrderService.Api.Controllers
         [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
         public async Task<ActionResult<CreateProcessingOrderResponse>> Post([FromForm] ProcessVideoBodyRequest request)
         {
-            var processVideoRequest = CreateProcessingOrderRequest(request);
+            var processVideoRequest = CreateProcessingOrderRequestMapper.Map(request);
 
             var response = await createProcessingOrder.Execute(processVideoRequest);
 
@@ -30,26 +31,6 @@ namespace FrameUp.OrderService.Api.Controllers
                 return Ok(response);
 
             return BadRequest(response);
-        }
-
-        private static CreateProcessingOrderRequest CreateProcessingOrderRequest(ProcessVideoBodyRequest request)
-        {
-            var processVideoRequest = new CreateProcessingOrderRequest()
-            {
-                CaptureInterval = request.CaptureInterval,
-                ExportResolution = request.ExportResolution,
-                Videos = request.Videos.Select(video => new VideoRequest
-                {
-                    ContentStream = video.OpenReadStream(),
-                    Metadata = new VideoMetadataRequest
-                    {
-                        Name = video.FileName,
-                        Size = video.Length,
-                        ContentType = video.ContentType
-                    }
-                })
-            };
-            return processVideoRequest;
         }
 
         [HttpGet("{orderId:guid}")]
