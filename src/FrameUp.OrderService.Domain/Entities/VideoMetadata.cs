@@ -1,5 +1,3 @@
-using FrameUp.OrderService.Domain.Enums;
-
 namespace FrameUp.OrderService.Domain.Entities;
 
 public class VideoMetadata

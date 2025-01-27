@@ -1,5 +1,4 @@
 using FrameUp.OrderService.Api.Configuration;
-using FrameUp.OrderService.Api.Extensions;
 using FrameUp.OrderService.Application.Consumers;
 using MassTransit;
 

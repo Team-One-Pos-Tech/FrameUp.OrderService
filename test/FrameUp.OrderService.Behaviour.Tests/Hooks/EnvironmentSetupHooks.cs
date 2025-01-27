@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using System.Net.Http;
 using System.Threading.Tasks;
+using FrameUp.OrderService.Api;
+using FrameUp.OrderService.Behaviour.Tests.Extensions;
 using TechTalk.SpecFlow;
 
 namespace FrameUp.OrderService.Behaviour.Tests.Hooks;
@@ -23,18 +23,16 @@ public class EnvironmentSetupHooks
         postgresql = new PostgresqlFixture();
 
         await postgresql.BaseSetUp();
-
-        var httpClient = HttpClientFactory.Create();
-
         var application = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
+                builder.UseMocks();
                 builder.ConfigureServices(collection =>
                 {
                     collection.RemoveAll<OrderServiceDbContext>();
 
                     var dbContextOptions = new DbContextOptionsBuilder<OrderServiceDbContext>()
-                        .UseNpgsql(postgresql.ConnectionSring)
+                        .UseNpgsql(postgresql.ConnectionString)
                         .Options;
 
                     var productionDbContext = new OrderServiceDbContext(dbContextOptions);

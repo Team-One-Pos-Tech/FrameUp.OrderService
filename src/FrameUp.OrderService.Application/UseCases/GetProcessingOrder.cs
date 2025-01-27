@@ -1,5 +1,4 @@
 ﻿using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Domain.Entities;
