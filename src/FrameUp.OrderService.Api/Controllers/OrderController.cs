@@ -2,6 +2,7 @@ using FrameUp.OrderService.Api.Models;
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
+using FrameUp.OrderService.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FrameUp.OrderService.Api.Controllers
@@ -10,6 +11,7 @@ namespace FrameUp.OrderService.Api.Controllers
     [Route("[controller]")]
     public class OrderController(
         ICreateProcessingOrder createProcessingOrder,
+        IUpdateProcessingOrder updateProcessingOrder,
         IGetProcessingOrder getProcessingOrder) : ControllerBase
     {
 
@@ -84,7 +86,18 @@ namespace FrameUp.OrderService.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UpdateProcessingOrderResponse>> Put(Guid orderId)
         {
-            return Ok(new UpdateProcessingOrderResponse());
+            var request = new UpdateProcessingOrderRequest
+            {
+                OrderId = orderId,
+                Status = ProcessingStatus.Cancelled
+            };
+
+            var response = await updateProcessingOrder.Execute(request);
+            
+            if (!response.IsValid)
+                return BadRequest(response);
+            
+            return Ok(response);
         }
     }
 }
