@@ -20,7 +20,6 @@ FrameUp.OrderService is a comprehensive project designed to handle the processin
 1. Clone the repository:
     ```sh
     git clone https://github.com/Team-One-Pos-Tech/FrameUp.OrderService.git
-    cd SnackHub.OrderService
     ```
 
 2. Install dependencies:
