@@ -1,12 +1,12 @@
 ﻿using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Models;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class GetProcessingOrder(IOrderRepository orderRepository) : IGetProcessingOrder
+public class GetProcessingOrder(ILogger<GetProcessingOrder> loggerMockObject, IOrderRepository orderRepository) : IGetProcessingOrder
 {
     public async Task<IEnumerable<GetProcessingOrderResponse>> GetAll(GetProcessingOrderRequest request)
     {
