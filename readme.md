@@ -1,8 +1,61 @@
-
 # FrameUp.OrderService
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Team-One-Pos-Tech_FrameUp.OrderService&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Team-One-Pos-Tech_FrameUp.OrderService)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Team-One-Pos-Tech_FrameUp.OrderService&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Team-One-Pos-Tech_FrameUp.OrderService)
 
-Project to process videos
+## Overview
+FrameUp.OrderService is a comprehensive project designed to handle the processing of video orders efficiently and effectively. The project leverages the latest technologies and adheres to best practices to ensure high performance, scalability, and maintainability.
 
+## Getting Started
+
+### Technologies
+
+- .NET 9.0
+- PostgresSQL
+- SpecFlow
+- NUnit
+- RabbitMQ
+
+### Installation
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/Team-One-Pos-Tech/FrameUp.OrderService.git
+    cd SnackHub.OrderService
+    ```
+
+2. Install dependencies:
+    ```sh
+    dotnet restore
+    ```
+
+### Running just the Application
+
+To run the application locally, use the following command:
+```sh
+cd /src/FrameUp.OrderService.Api
+dotnet run
+```
+
+### Running with Docker Compose - Recommended
+Docker-Compose with all services running, follow the next step.
+
+Open a bash terminal in the project root directory.
+
+```bash
+docker compose -f deploy/docker-compose.yml up -d --build
+```
+
+### Running Tests
+
+To run the tests, use the following command:
+Ensure you are running Docker locally.
+```sh
+dotnet test
+```
+
+Note: For running integration tests ensure your local docker is running. 
+
+# LogBee Integration
 
 ## Environment Variables
 
@@ -18,12 +71,6 @@ Follow the example .env.example file to create your .env
 
 ## Deployment
 
-To deploy this project run with docker http://localhost:5688/dashboard#/healthchecks
-
-Then open a bash terminal in the project root directory.
-```bash
-docker compose -f deploy/docker-compose.yml up -d --build
-```
 With all services running, follow the next step.
 ```
   Follow these steps to create a new service in logbee:
@@ -35,3 +82,12 @@ With all services running, follow the next step.
 4 - Copy the OrganizationId, ApplicationId and ApiUrl values ​​to the variables in the .env file
 ```
 
+---
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
