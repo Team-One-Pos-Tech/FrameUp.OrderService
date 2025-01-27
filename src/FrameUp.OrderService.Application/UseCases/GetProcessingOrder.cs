@@ -6,10 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class GetProcessingOrder(ILogger<GetProcessingOrder> loggerMockObject, IOrderRepository orderRepository) : IGetProcessingOrder
+public class GetProcessingOrder(ILogger<GetProcessingOrder> logger, IOrderRepository orderRepository) : IGetProcessingOrder
 {
     public async Task<IEnumerable<GetProcessingOrderResponse>> GetAll(GetProcessingOrderRequest request)
     {
+        logger.LogInformation("Retrieving all processing orders for owner [{ownerId}]", request.OwnerId);
+        
         var orders = await orderRepository.GetAll(request.OwnerId);
 
         return orders.Select(CreateOrderResponse);
@@ -17,6 +19,8 @@ public class GetProcessingOrder(ILogger<GetProcessingOrder> loggerMockObject, IO
 
     public async Task<GetProcessingOrderResponse?> GetById(GetProcessingOrderRequest request)
     {
+        logger.LogInformation("Retrieving a processing order for owner [{ownerId}]", request.OwnerId);
+        
         var order = await orderRepository.Get(request.OrderId);
 
         return order == null ? null : CreateOrderResponse(order);
