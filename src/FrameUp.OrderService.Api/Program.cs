@@ -4,6 +4,7 @@ using Serilog;
 using Serilog.Sinks.LogBee;
 using Serilog.Sinks.LogBee.AspNetCore;
 using FrameUp.OrderService.Api.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
@@ -26,6 +27,7 @@ builder.AddLogBee()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthenticationExtension(settings);
 
 // Add services to the container.
 builder.Services
@@ -34,6 +36,13 @@ builder.Services
     .AddDatabaseContext(settings)
     .AddMinIO(settings)
     .AddUseCases();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var app = builder.Build();
 
