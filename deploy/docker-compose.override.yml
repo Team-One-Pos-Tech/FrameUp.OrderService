@@ -15,7 +15,7 @@ services:
         LogBee.ApplicationId": ${LogBee_ApplicationId}
         LogBee.ApiUrl": ${LogBee_ApiUrl}
 
-  snack-hub-client-app:
+  identity-app:
     environment:
         RabbitMQ__Host: rabbitmq
         RabbitMQ__User: guest
