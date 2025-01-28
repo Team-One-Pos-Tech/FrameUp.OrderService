@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using FrameUp.OrderService.Api;
 using FrameUp.OrderService.Behaviour.Tests.Extensions;
 using TechTalk.SpecFlow;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace FrameUp.OrderService.Behaviour.Tests.Hooks;
 
@@ -40,7 +42,13 @@ public class EnvironmentSetupHooks
                 });
             });
 
-        var orderServiceClientApi = new OrderServiceClientApi("", application.CreateClient());
+        var httpClient = application.CreateClient();
+
+        var jwtMockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxMDI3MTMsImlzcyI6IlJhbmRvbUlzc3VlciIsImF1ZCI6IlJhbmRvbUF1ZGllbmNlIn0.XyKa5pWMzBwHy7Q08mwFpG1mEHPcSsFSUNHpog4tYAg";
+
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {jwtMockToken}");
+
+        var orderServiceClientApi = new OrderServiceClientApi("", httpClient);
 
         testThreadContainer.RegisterInstanceAs(orderServiceClientApi);
 
