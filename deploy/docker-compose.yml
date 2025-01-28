@@ -75,6 +75,18 @@ services:
       - mongo-data:/data/db
       - mongo-config:/data/configdb
 
+  snack-hub-client-app:
+    image: ghcr.io/team-one-pos-tech/snack-hub-client-service:latest
+    container_name: snack-hub-client-app
+    restart: always
+    networks:
+      - frame-up-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "5488:8080"
+
 volumes:
   frame-up-db:
   mongo-data:
