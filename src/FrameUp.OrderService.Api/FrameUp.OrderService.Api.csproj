@@ -23,4 +23,17 @@
     <ProjectReference Include="..\FrameUp.OrderService.Application\FrameUp.OrderService.Application.csproj" />
     <ProjectReference Include="..\FrameUp.OrderService.Infra\FrameUp.OrderService.Infra.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resource.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resource.resx">
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

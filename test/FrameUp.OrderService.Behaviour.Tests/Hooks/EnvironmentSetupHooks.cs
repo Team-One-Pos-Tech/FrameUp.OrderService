@@ -18,6 +18,7 @@ namespace FrameUp.OrderService.Behaviour.Tests.Hooks;
 public class EnvironmentSetupHooks
 {
     private static PostgresqlFixture postgresql;
+    private static string jwtMockToken = Resource.JwtMockToken;
 
     [BeforeTestRun]
     public static async Task BeforeTestRun(IObjectContainer testThreadContainer)
@@ -43,8 +44,6 @@ public class EnvironmentSetupHooks
             });
 
         var httpClient = application.CreateClient();
-
-        var jwtMockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxMDI3MTMsImlzcyI6IlJhbmRvbUlzc3VlciIsImF1ZCI6IlJhbmRvbUF1ZGllbmNlIn0.XyKa5pWMzBwHy7Q08mwFpG1mEHPcSsFSUNHpog4tYAg";
 
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {jwtMockToken}");
 

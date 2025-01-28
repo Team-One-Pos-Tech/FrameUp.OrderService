@@ -32,7 +32,7 @@ public static class AddAuthenticationExtensions
                 {
                     OnMessageReceived = context =>
                     {
-                        const string bypassToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxMDI3MTMsImlzcyI6IlJhbmRvbUlzc3VlciIsImF1ZCI6IlJhbmRvbUF1ZGllbmNlIn0.XyKa5pWMzBwHy7Q08mwFpG1mEHPcSsFSUNHpog4tYAg";
+                        string bypassToken = Resource.JwtMockToken;
                         var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
                         if (token == bypassToken)
