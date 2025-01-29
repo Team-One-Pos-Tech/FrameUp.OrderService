@@ -1,8 +1,10 @@
+using FrameUp.OrderService.Api.Extensions;
 using FrameUp.OrderService.Api.Mappers;
 using FrameUp.OrderService.Api.Models;
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
+using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +15,8 @@ namespace FrameUp.OrderService.Api.Controllers
     public class OrderController(
         ICreateProcessingOrder createProcessingOrder,
         IUpdateProcessingOrder updateProcessingOrder,
-        IGetProcessingOrder getProcessingOrder) : ControllerBase
+        IGetProcessingOrder getProcessingOrder,
+        IAuthenticatedUser authenticatedUser) : ControllerBase
     {
 
         [HttpPost]
@@ -24,6 +27,8 @@ namespace FrameUp.OrderService.Api.Controllers
         public async Task<ActionResult<CreateProcessingOrderResponse>> Post([FromForm] ProcessVideoBodyRequest request)
         {
             var processVideoRequest = CreateProcessingOrderRequestMapper.Map(request);
+
+            processVideoRequest.OwnerId = authenticatedUser.UserId;
 
             var response = await createProcessingOrder.Execute(processVideoRequest);
 

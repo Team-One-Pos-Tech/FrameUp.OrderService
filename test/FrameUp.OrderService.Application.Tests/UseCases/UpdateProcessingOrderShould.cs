@@ -103,7 +103,7 @@ public class UpdateProcessingOrderShould
         _publishedEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
             It.Is<OrderStatusChangedEvent>(message => message.OwnerId == ownerId
                 && message.Parameters.OrderId == request.OrderId
-                && message.Parameters.Status == request.Status
+                && message.Parameters.Status == request.Status.ToString()
             ),
             It.IsAny<CancellationToken>()
         ), Times.Once);

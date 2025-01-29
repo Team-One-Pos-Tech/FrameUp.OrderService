@@ -10,6 +10,6 @@ public record OrderStatusChangedEvent(Guid OwnerId, OrderStatusChangedEventParam
 public record OrderStatusChangedEventParameters
 {
     public Guid OrderId { get; set; }
-    public ProcessingStatus Status { get; set; }
+    public required string Status { get; set; }
     public string? PackageUri { get; set; }
 }

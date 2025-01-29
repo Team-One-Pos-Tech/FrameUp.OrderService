@@ -52,7 +52,7 @@ public class UpdateProcessingOrder(
             new OrderStatusChangedEvent(order.OwnerId, new OrderStatusChangedEventParameters
             {
                 OrderId = order.Id,
-                Status = order.Status,
+                Status = order.Status.ToString(),
                 PackageUri = order.PackageUri
             })
         );

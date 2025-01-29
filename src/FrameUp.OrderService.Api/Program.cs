@@ -46,6 +46,7 @@ builder.Services
     .AddRepositories()
     .AddDatabaseContext(settings)
     .AddMinIO(settings)
+    .AddServices()
     .AddUseCases();
 
 var app = builder.Build();
