@@ -1,9 +1,9 @@
 using FrameUp.OrderService.Api.Extensions;
 using System.Text.Json.Serialization;
-using Serilog;
-using Serilog.Sinks.LogBee;
-using Serilog.Sinks.LogBee.AspNetCore;
 using FrameUp.OrderService.Api.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
@@ -17,15 +17,28 @@ builder.Services
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
-builder.Services.AddHttpContextAccessor();
+builder.Services
+    .AddAuthorization(options =>
+    {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+    })
+    .AddHttpContextAccessor();
 
 builder.AddLogBee()
     .AddCustomHealthChecks(settings);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo { Title = "FrameUp.OrderService.Api", Version = "v1" });
+        options.AddAuthorizationOptions();
+    });
 
+builder.Services.AddAuthenticationExtension(settings);
 
 // Add services to the container.
 builder.Services
@@ -47,6 +60,8 @@ if (app.Environment.IsDevelopment())
 app.UseLogBee();
 
 app.UseCustomHealthChecks();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

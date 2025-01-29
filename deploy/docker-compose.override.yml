@@ -6,11 +6,26 @@ services:
         Settings__MinIO__Endpoint: play.min.io
         Settings__MinIO__AccessKey: 8F2QSn6rpRAjkZOneNBS
         Settings__MinIO__SecretKey: F3EH8vrVCeNteBMheqmB8bICzujhPczrrrBusLi1
+        Settings__Auth__Key: randomlyGeneratedKey12345randomlyGeneratedKey12345randomlyGeneratedKey12345randomlyGeneratedKey12345
+        Settings__Auth__Issuer: FrameUp
+        Settings__Auth__Audience: http://localhost:5276
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
         LogBee.OrganizationId": ${LogBee_OrganizationId}
         LogBee.ApplicationId": ${LogBee_ApplicationId}
         LogBee.ApiUrl": ${LogBee_ApiUrl}
+
+  identity-app:
+    environment:
+        RabbitMQ__Host: rabbitmq
+        RabbitMQ__User: guest
+        RabbitMQ__Password: guest
+        Storage__PostgreSQL__Host: frame-up-db
+        Storage__PostgreSQL__User: postgres
+        Storage__PostgreSQL__Password: postgres
+        Storage__PostgreSQL__Database: snack-hub-client
+        ASPNETCORE_ENVIRONMENT: Development
+        ASPNETCORE_HTTP_PORTS: 8080
         
   frame-up-db:
     environment:

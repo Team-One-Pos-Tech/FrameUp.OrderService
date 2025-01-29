@@ -12,6 +12,7 @@
 	<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 	<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.5-develop.2174" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
     <PackageReference Include="Minio" Version="6.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
@@ -21,5 +22,18 @@
   <ItemGroup>
     <ProjectReference Include="..\FrameUp.OrderService.Application\FrameUp.OrderService.Application.csproj" />
     <ProjectReference Include="..\FrameUp.OrderService.Infra\FrameUp.OrderService.Infra.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resource.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resource.resx">
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

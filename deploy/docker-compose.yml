@@ -75,6 +75,18 @@ services:
       - mongo-data:/data/db
       - mongo-config:/data/configdb
 
+  identity-app:
+    image: ghcr.io/team-one-pos-tech/identity-service:latest
+    container_name: identity-app
+    restart: always
+    networks:
+      - frame-up-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "5488:8080"
+
 volumes:
   frame-up-db:
   mongo-data:

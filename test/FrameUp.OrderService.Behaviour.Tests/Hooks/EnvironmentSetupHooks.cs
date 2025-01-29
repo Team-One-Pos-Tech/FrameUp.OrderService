@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using FrameUp.OrderService.Api;
 using FrameUp.OrderService.Behaviour.Tests.Extensions;
 using TechTalk.SpecFlow;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace FrameUp.OrderService.Behaviour.Tests.Hooks;
 
@@ -16,6 +18,7 @@ namespace FrameUp.OrderService.Behaviour.Tests.Hooks;
 public class EnvironmentSetupHooks
 {
     private static PostgresqlFixture postgresql;
+    private static string jwtMockToken = Resource.JwtMockToken;
 
     [BeforeTestRun]
     public static async Task BeforeTestRun(IObjectContainer testThreadContainer)
@@ -40,7 +43,11 @@ public class EnvironmentSetupHooks
                 });
             });
 
-        var orderServiceClientApi = new OrderServiceClientApi("", application.CreateClient());
+        var httpClient = application.CreateClient();
+
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {jwtMockToken}");
+
+        var orderServiceClientApi = new OrderServiceClientApi("", httpClient);
 
         testThreadContainer.RegisterInstanceAs(orderServiceClientApi);
 
