@@ -2,6 +2,8 @@
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Domain.Entities;
+using MassTransit.Transports;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Application.UseCases;
@@ -23,21 +25,31 @@ public class GetProcessingOrder(ILogger<GetProcessingOrder> logger, IOrderReposi
         
         var order = await orderRepository.Get(request.OrderId);
 
-        var response = new GetProcessingOrderResponse();
+        if(!IsValid(order, request, out var response))
+        {
+            return response;
+        }
+
+        return CreateOrderResponse(order!);
+    }
+
+    public static bool IsValid(Order? order, GetProcessingOrderRequest request, out GetProcessingOrderResponse response)
+    {
+        response = new GetProcessingOrderResponse();
 
         if (order is null)
         {
             response.AddNotification("Order", "Order not found");
-            return response;
+            return false;
         }
 
         if (order.OwnerId != request.RequesterId)
         {
             response.AddNotification("Order", "Requester has no permission to the order");
-            return response;
+            return false;
         }
 
-        return CreateOrderResponse(order);
+        return true;
     }
 
     private static GetProcessingOrderResponse CreateOrderResponse(Order order)
