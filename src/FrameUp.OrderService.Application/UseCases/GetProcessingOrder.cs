@@ -12,16 +12,16 @@ public class GetProcessingOrder(ILogger<GetProcessingOrder> logger, IOrderReposi
 {
     public async Task<IEnumerable<GetProcessingOrderResponse>> GetAll(GetProcessingOrderRequest request)
     {
-        logger.LogInformation("Retrieving all processing orders for owner [{ownerId}]", request.OwnerId);
+        logger.LogInformation("Retrieving all processing orders for owner [{ownerId}]", request.RequesterId);
         
-        var orders = await orderRepository.GetAll(request.OwnerId);
+        var orders = await orderRepository.GetAll(request.RequesterId);
 
         return orders.Select(CreateOrderResponse);
     }
 
     public async Task<GetProcessingOrderResponse> GetById(GetProcessingOrderRequest request)
     {
-        logger.LogInformation("Retrieving a processing order for owner [{ownerId}]", request.OwnerId);
+        logger.LogInformation("Retrieving a processing order for owner [{ownerId}]", request.RequesterId);
         
         var order = await orderRepository.Get(request.OrderId);
 

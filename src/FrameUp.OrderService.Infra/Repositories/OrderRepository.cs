@@ -19,9 +19,9 @@ public class OrderRepository : BaseRepository<Order, OrderServiceDbContext>, IOr
         return await FindByPredicateAsync(px => px.Id == orderId);
     }
 
-    public async Task<IEnumerable<Order>> GetAll(Guid ownerId)
+    public async Task<IEnumerable<Order>> GetAll(Guid requesterId)
     {
-        var response = await ListByPredicateAsync(px => px.OwnerId == ownerId);
+        var response = await ListByPredicateAsync(px => px.OwnerId == requesterId);
         return response is null ? [] : response;
     }
 

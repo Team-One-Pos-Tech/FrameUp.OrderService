@@ -45,7 +45,8 @@ namespace FrameUp.OrderService.Api.Controllers
         {
             var response = await getProcessingOrder.GetById(new GetProcessingOrderRequest
             {
-                OrderId = orderId
+                OrderId = orderId,
+                RequesterId = authenticatedUser.UserId
             });
 
             if (response == null)
@@ -61,7 +62,8 @@ namespace FrameUp.OrderService.Api.Controllers
         {
             var response = await getProcessingOrder.GetAll(new GetProcessingOrderRequest
             {
-                OrderId = Guid.NewGuid()
+                OrderId = Guid.NewGuid(),
+                RequesterId = authenticatedUser.UserId
             });
 
             return Ok(response);

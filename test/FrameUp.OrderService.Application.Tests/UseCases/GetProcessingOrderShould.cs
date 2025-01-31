@@ -7,6 +7,7 @@ using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Moq;
 
 namespace FrameUp.OrderService.Application.Tests.UseCases;
@@ -194,17 +195,17 @@ public class GetProcessingOrderShould
 
         var request = new GetProcessingOrderRequest
         {
-            OwnerId = Guid.NewGuid()
+            RequesterId = Guid.NewGuid()
         };
         
-        _orderRepository.Setup(x => x.GetAll(request.OwnerId))
+        _orderRepository.Setup(x => x.GetAll(request.RequesterId))
             .ReturnsAsync(new List<Order>
             {
                 new Order
                 {
                     Id = Guid.NewGuid(),
                     Status = ProcessingStatus.Processing,
-                    OwnerId = request.OwnerId,
+                    OwnerId = request.RequesterId,
                     Videos = new List<VideoMetadata>
                     {
                         new VideoMetadata
@@ -233,11 +234,51 @@ public class GetProcessingOrderShould
         var getProcessingOrderResponses = response as GetProcessingOrderResponse[] ?? response.ToArray();
         
         getProcessingOrderResponses.Should().NotBeEmpty();
-        getProcessingOrderResponses.First().OwnerId.Should().Be(request.OwnerId);
+        getProcessingOrderResponses.First().OwnerId.Should().Be(request.RequesterId);
         getProcessingOrderResponses.First().Videos.Should().NotBeEmpty();
         getProcessingOrderResponses.First().ExportResolution.Should().Be(ResolutionTypes.FullHD);
         getProcessingOrderResponses.First().CaptureInterval.Should().BeNull();
         
+        #endregion
+    }
+
+    [Test]
+    public async Task Get_All_Orders_From_RequesterId()
+    {
+        #region Arrange
+
+        var request = new GetProcessingOrderRequest
+        {
+            RequesterId = Guid.NewGuid()
+        };
+
+        _orderRepository.Setup(x => x.GetAll(request.RequesterId))
+            .ReturnsAsync(new List<Order>
+            {
+                new Order
+                {
+                    Id = Guid.NewGuid(),
+                    Status = ProcessingStatus.Processing,
+                    OwnerId = request.RequesterId,
+                    ExportResolution = ResolutionTypes.FullHD,
+                    CaptureInterval = null
+                },
+            });
+
+        #endregion
+
+        #region Act
+
+        var response = await _getProcessingOrder.GetAll(request);
+
+        #endregion
+
+        #region Assert
+
+        var getProcessingOrderResponses = response as GetProcessingOrderResponse[] ?? response.ToArray();
+
+        getProcessingOrderResponses.Count().Should().Be(1);
+
         #endregion
     }
 }
