@@ -40,6 +40,7 @@ public class EnvironmentSetupHooks
 
                     var productionDbContext = new OrderServiceDbContext(dbContextOptions);
                     collection.AddSingleton<OrderServiceDbContext>(_ => productionDbContext);
+
                 });
             });
 

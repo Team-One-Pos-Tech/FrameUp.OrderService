@@ -13,11 +13,6 @@ public class GetProcessingOrdersSteps(
     ScenarioContext scenarioContext
     ) : TestHelpers
 {
-    [Given("I am logged in")]
-    public void GivenIAmLoggedIn()
-    {
-        // Implement login logic here
-    }
 
     [Given("There is processing orders")]
     public async Task GivenThereIsProcessingOrdersAsync()
