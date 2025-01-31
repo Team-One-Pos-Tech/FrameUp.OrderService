@@ -1,8 +1,9 @@
-﻿using FrameUp.OrderService.Domain.Enums;
+﻿using Flunt.Notifications;
+using FrameUp.OrderService.Domain.Enums;
 
 namespace FrameUp.OrderService.Application.Models.Responses;
 
-public record GetProcessingOrderResponse
+public class GetProcessingOrderResponse: Notifiable<Notification> 
 {
     public Guid Id { get; set; }
 

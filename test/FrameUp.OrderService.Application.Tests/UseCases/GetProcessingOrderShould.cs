@@ -82,7 +82,55 @@ public class GetProcessingOrderShould
         
         #endregion
     }
-    
+
+    [Test]
+    public async Task Validate_Get_Order_By_Id_When_Requester_Is_Not_Owner()
+    {
+        #region Arrange
+
+        var request = new GetProcessingOrderRequest
+        {
+            OrderId = Guid.NewGuid(),
+            RequesterId = Guid.NewGuid()
+        };
+
+        _orderRepository.Setup(x => x.Get(request.OrderId))
+            .ReturnsAsync(new Order()
+            {
+                Id = request.OrderId,
+                Status = ProcessingStatus.Processing,
+                OwnerId = Guid.Empty,
+                Videos = new List<VideoMetadata>
+                {
+                    new VideoMetadata
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "video.mp4",
+                        ContentType = "video/mp4",
+                        Size = 1024
+                    }
+                },
+                ExportResolution = ResolutionTypes.FullHD,
+                CaptureInterval = null
+            });
+
+        #endregion
+
+        #region Act
+
+        var response = await _getProcessingOrder.GetById(request);
+
+        #endregion
+
+        #region Assert
+
+        response!.IsValid.Should().BeFalse();
+
+        response.Notifications.First().Message.Should().Be("Requester has no permission to the order");
+
+        #endregion
+    }
+
     [Test]
     public async Task Get_Order_By_Id_With_Videos()
     {

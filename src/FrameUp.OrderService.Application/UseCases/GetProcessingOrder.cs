@@ -17,13 +17,27 @@ public class GetProcessingOrder(ILogger<GetProcessingOrder> logger, IOrderReposi
         return orders.Select(CreateOrderResponse);
     }
 
-    public async Task<GetProcessingOrderResponse?> GetById(GetProcessingOrderRequest request)
+    public async Task<GetProcessingOrderResponse> GetById(GetProcessingOrderRequest request)
     {
         logger.LogInformation("Retrieving a processing order for owner [{ownerId}]", request.OwnerId);
         
         var order = await orderRepository.Get(request.OrderId);
 
-        return order == null ? null : CreateOrderResponse(order);
+        var response = new GetProcessingOrderResponse();
+
+        if (order is null)
+        {
+            response.AddNotification("Order", "Order not found");
+            return response;
+        }
+
+        if (order.OwnerId != request.RequesterId)
+        {
+            response.AddNotification("Order", "Requester has no permission to the order");
+            return response;
+        }
+
+        return CreateOrderResponse(order);
     }
 
     private static GetProcessingOrderResponse CreateOrderResponse(Order order)

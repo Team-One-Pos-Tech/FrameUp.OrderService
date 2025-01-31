@@ -7,6 +7,6 @@ namespace FrameUp.OrderService.Application.Contracts
     {
         Task<IEnumerable<GetProcessingOrderResponse>> GetAll(GetProcessingOrderRequest getProcessingOrderRequest);
 
-        Task<GetProcessingOrderResponse?> GetById(GetProcessingOrderRequest request);
+        Task<GetProcessingOrderResponse> GetById(GetProcessingOrderRequest request);
     }
 }
