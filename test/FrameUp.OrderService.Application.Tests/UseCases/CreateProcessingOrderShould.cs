@@ -643,6 +643,7 @@ public class CreateProcessingOrderShould
         var request = new CreateProcessingOrderRequest
         {
             ExportResolution = ResolutionTypes.HD,
+            CaptureInterval = 10,
             Videos = [
                 new VideoRequest
                 {
@@ -676,7 +677,8 @@ public class CreateProcessingOrderShould
 
         _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
             It.Is<ReadyToProcessVideo>(message =>
-                message.Parameters.ExportResolution == ResolutionTypes.HD
+                message.Parameters.ExportResolution == ResolutionTypes.HD &&
+                message.Parameters.CaptureInterval == request.CaptureInterval
             ),
             It.IsAny<CancellationToken>()
         ), Times.Once);
