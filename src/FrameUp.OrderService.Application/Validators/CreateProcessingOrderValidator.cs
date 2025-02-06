@@ -14,6 +14,13 @@ public static class CreateProcessingOrderValidator
     {
         responseOut = new CreateProcessingOrderResponse();
 
+        if (request.Videos.Count() < 1)
+        {
+            responseOut.Status = ProcessingStatus.Refused;
+            responseOut.AddNotification("Video", "At least one video is required.");
+            return false;
+        }
+
         if (request.Videos.Count() > MaxVideoCount)
         {
             responseOut.Status = ProcessingStatus.Refused;

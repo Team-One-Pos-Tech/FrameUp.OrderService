@@ -352,6 +352,36 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
+    public async Task Validate_When_Video_Content_Is_Empty()
+    {
+        #region Arrange
+
+        var request = new CreateProcessingOrderRequest
+        {
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeFalse();
+
+        response.Status.Should().Be(ProcessingStatus.Refused);
+
+        response.Notifications.First().Message.Should().Be("At least one video is required.");
+
+        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+
+        #endregion
+    }
+
+    [Test]
     public async Task Persist_Order_With_Video_Metadata()
     {
         #region Arrange
