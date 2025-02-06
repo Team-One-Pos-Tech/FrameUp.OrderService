@@ -26,8 +26,6 @@ builder.Services
     })
     .AddHttpContextAccessor();
 
-builder.AddLogBee()
-    .AddCustomHealthChecks(settings);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services
@@ -38,7 +36,12 @@ builder.Services
         options.AddAuthorizationOptions();
     });
 
-builder.Services.AddAuthenticationExtension(settings);
+builder.Services
+    .AddAuthenticationExtension(settings);
+
+builder.Services.AddLogBee(settings);
+
+builder.AddCustomHealthChecks(settings);
 
 // Add services to the container.
 builder.Services
@@ -58,8 +61,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseLogBee();
-
 app.UseCustomHealthChecks();
 
 app.UseAuthentication();
@@ -67,6 +68,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseLogBee();
 
 app.Run();
 

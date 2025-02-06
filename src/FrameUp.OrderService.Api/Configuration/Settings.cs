@@ -6,4 +6,5 @@ public record Settings
     public required PostgreSQLSettings PostgreSQL { get; set; }
     public required MinIOSettings MinIO { get; set; }
     public required AuthSettings Auth { get; set; }
+    public required LogBeeSettings LogBee { get; set; }
 }
