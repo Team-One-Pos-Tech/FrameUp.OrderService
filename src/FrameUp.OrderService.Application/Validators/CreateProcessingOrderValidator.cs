@@ -28,6 +28,13 @@ public static class CreateProcessingOrderValidator
             return false;
         }
 
+        if (request.CaptureInterval < 1)
+        {
+            responseOut.Status = ProcessingStatus.Refused;
+            responseOut.AddNotification("CaptureInterval", "Capture interval should be more than 1.");
+            return false;
+        }
+
         foreach (var video in request.Videos)
         {
             if (video.Metadata.Size > MaxVideoSize)

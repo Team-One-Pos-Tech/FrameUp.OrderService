@@ -7,6 +7,7 @@ using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -375,6 +376,49 @@ public class CreateProcessingOrderShould
         response.Status.Should().Be(ProcessingStatus.Refused);
 
         response.Notifications.First().Message.Should().Be("At least one video is required.");
+
+        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+
+        #endregion
+    }
+
+    [Test]
+    public async Task Validate_When_Capture_Interval_Is_Less_Than_1()
+    {
+        #region Arrange
+
+        var request = new CreateProcessingOrderRequest
+        {
+            CaptureInterval = 0,
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = CreateFakeVideo(),
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = "videoName",
+                        ContentType = "text/plain",
+                        Size = 1024L * 1024L
+                    }
+                },
+            ]
+        };
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeFalse();
+
+        response.Status.Should().Be(ProcessingStatus.Refused);
+
+        response.Notifications.First().Message.Should().Be("Capture interval should be more than 1.");
 
         _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
 
