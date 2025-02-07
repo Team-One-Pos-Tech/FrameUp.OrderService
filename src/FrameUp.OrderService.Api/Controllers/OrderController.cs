@@ -77,7 +77,7 @@ namespace FrameUp.OrderService.Api.Controllers
             var request = new UpdateProcessingOrderRequest
             {
                 OrderId = orderId,
-                Status = ProcessingStatus.Cancelled
+                Status = ProcessingStatus.Canceled
             };
 
             var response = await updateProcessingOrder.Execute(request);

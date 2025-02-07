@@ -225,4 +225,44 @@ public class UpdateProcessingOrderShould
 
         #endregion
     }
+
+    [Test]
+    public async Task Validate_When_Try_Cancel_Order_With_Status_Is_Not_Processing()
+    {
+        #region Arrange
+
+        var request = new UpdateProcessingOrderRequest
+        {
+            OrderId = Guid.NewGuid(),
+            Status = ProcessingStatus.Canceled
+        };
+
+        _orderRepositoryMock.Setup(x => x.Get(request.OrderId))
+            .ReturnsAsync(new Order
+            {
+                Id = request.OrderId,
+                Status = ProcessingStatus.Concluded
+            });
+
+        #endregion
+
+        #region Act
+
+        var response = await _updateProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.Should().NotBeNull();
+
+        response.Notifications.First().Message.Should().Be("Just orders in processing status can be canceled.");
+
+        _orderRepositoryMock.Verify(x => x.Update(
+            It.Is<Order>(order => order.Status == request.Status &&
+                order.Id == request.OrderId)
+            ), Times.Never);
+
+        #endregion
+    }
 }

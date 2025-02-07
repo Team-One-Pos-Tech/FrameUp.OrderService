@@ -29,6 +29,12 @@ public class UpdateProcessingOrder(
             return response;
         }
 
+        if (request.Status == ProcessingStatus.Canceled && order.Status != ProcessingStatus.Processing)
+        {
+            response.AddNotification("Status", "Just orders in processing status can be canceled.");
+            return response;
+        }
+
         UpdateOrder(request, order);
 
         await PublishOrderStatusChangedEvent(order);

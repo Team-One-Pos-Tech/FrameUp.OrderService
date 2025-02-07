@@ -5,6 +5,6 @@ public enum ProcessingStatus
     Refused,
     Processing,
     Concluded,
-    Cancelled,
+    Canceled,
     Failed
 }
