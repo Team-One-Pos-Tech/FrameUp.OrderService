@@ -2,6 +2,7 @@
 using FrameUp.OrderService.Application.Models.Events;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
+using FrameUp.OrderService.Application.Validators;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
@@ -23,23 +24,14 @@ public class UpdateProcessingOrder(
 
         var order = await orderRepository.Get(request.OrderId);
 
-        if (order is null)
-        {
-            response.AddNotification("Order", "Order not found");
-            return response;
-        }
+        if (!UpdateProcessingOrderValidator.IsValid(order, request, out UpdateProcessingOrderResponse responseOut))
+            return responseOut;
 
-        if (request.Status == ProcessingStatus.Canceled && order.Status != ProcessingStatus.Processing)
-        {
-            response.AddNotification("Status", "Just orders in processing status can be canceled.");
-            return response;
-        }
+        UpdateOrder(request, order!);
 
-        UpdateOrder(request, order);
+        await PublishOrderStatusChangedEvent(order!);
 
-        await PublishOrderStatusChangedEvent(order);
-
-        await orderRepository.Update(order);
+        await orderRepository.Update(order!);
         
         logger.LogInformation("Processing Order [{orderId}] updated successfully!", request.OrderId);
 
