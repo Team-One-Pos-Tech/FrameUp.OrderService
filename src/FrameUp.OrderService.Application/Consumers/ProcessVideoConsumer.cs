@@ -16,7 +16,9 @@ public class ProcessVideoConsumer(
         var response = await updateProcessingOrder.Execute(new UpdateProcessingOrderRequest
         {
             OrderId = context.Message.OrderId,
-            Status = context.Message.Status
+            Status = context.Message.Status,
+            Packages = context.Message.PackageItems
+                .Select(x => new UpdatePackageItemRequest(x.FileName,x.Uri)).ToArray()
         });
 
         if (response.IsValid)

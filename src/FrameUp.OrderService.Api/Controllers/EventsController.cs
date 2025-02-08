@@ -16,8 +16,13 @@ public class EventsController(IPublishEndpoint publishEndpoint) : ControllerBase
         Guid orderId, ProcessingStatus status, List<UpdatePackageItemRequest> packageItems)
     {
         var uploadedPackages = packageItems
-            .Select(item => new UploadedPackageItem(item.FileName, item.Uri)).ToArray();
+            .Select(item => new UploadedPackageItem(item.FileName, item.Uri)).ToList();
         
-        await publishEndpoint.Publish(new UpdateOrderStatusEvent(orderId, status, uploadedPackages));
+        await publishEndpoint.Publish(new UpdateOrderStatusEvent
+        {
+            OrderId = orderId,
+            Status = status,
+            PackageItems = uploadedPackages
+        });
     }
 }

@@ -5,6 +5,11 @@ namespace FrameUp.OrderService.Application.Models.Events;
 
 [MessageUrn("frameup-order-service")]
 [EntityName("update-order-status")]
-public record UpdateOrderStatusEvent(Guid OrderId, ProcessingStatus Status, UploadedPackageItem[] PackageItems);
+public class UpdateOrderStatusEvent
+{
+    public Guid OrderId { get; set; }
+    public ProcessingStatus Status { get; set; }
+    public List<UploadedPackageItem> PackageItems { get; set; } = new List<UploadedPackageItem>();
+}
 
 public record UploadedPackageItem(string FileName, string Uri);
