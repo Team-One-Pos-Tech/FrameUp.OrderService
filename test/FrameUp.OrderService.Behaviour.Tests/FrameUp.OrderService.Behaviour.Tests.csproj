@@ -52,12 +52,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <OpenApiReference Include="OpenAPIs\swagger.json" CodeGenerator="NSwagCSharp" ClassName="OrderServiceClientApi">
-	    <SourceUri>http://localhost:5244/swagger/v1/swagger.json</SourceUri>
-	  </OpenApiReference>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Update="Features\GetProcessingOrders.feature.cs">
 	    <DependentUpon>GetProcessingOrders.feature</DependentUpon>
 	  </Compile>
@@ -74,6 +68,12 @@
 	    <Visible>$(UsingMicrosoftNETSdk)</Visible>
 	    <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
 	  </SpecFlowFeatureFiles>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <OpenApiReference Include="OpenAPIs\swagger.json" CodeGenerator="NSwagCSharp" ClassName="OrderServiceClientApi">
+	    <SourceUri>http://localhost:5244/swagger/v1/swagger.json</SourceUri>
+	  </OpenApiReference>
 	</ItemGroup>
 
 </Project>

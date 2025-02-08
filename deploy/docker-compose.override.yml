@@ -4,14 +4,14 @@ services:
         Settings__RabbitMQ__ConnectionString: amqp://guest:guest@rabbitmq
         Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
         Settings__MinIO__Endpoint: play.min.io
-        Settings__MinIO__AccessKey: KZiVbMtAbJDVxL5CZ5Kv
-        Settings__MinIO__SecretKey: 0NbNFEFgK9e2mu4rHkbLuQK2ViBNkTbxCmR5oenu
+        Settings__MinIO__AccessKey: QKcxMkJbemvGbOdAC2z2
+        Settings__MinIO__SecretKey: 9UopkfG8cFWBkaeI2K1glJBtVUYlplVjREBuNY1U
         Settings__Auth__Key: randomlyGeneratedKey12345randomlyGeneratedKey12345randomlyGeneratedKey12345randomlyGeneratedKey12345
         Settings__Auth__Issuer: FrameUp
         Settings__Auth__Audience: http://localhost:5276
         Settings__LogBee__OrganizationId: 8a2de170-dd2c-4bed-b853-bec2ca7bbb5a
         Settings__LogBee__ApplicationId: bafc28c1-0059-4f9d-b19b-ccb0d7c0beb1
-        Settings__LogBee__ApiUrl: logbee.backend.dev:44088
+        Settings__LogBee__ApiUrl: logbee.backend.dev
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
 
@@ -20,8 +20,8 @@ services:
         Settings__RabbitMQ__ConnectionString: amqp://guest:guest@rabbitmq
         Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
         Settings__MinIO__Endpoint: play.min.io
-        Settings__MinIO__AccessKey: KZiVbMtAbJDVxL5CZ5Kv
-        Settings__MinIO__SecretKey: 0NbNFEFgK9e2mu4rHkbLuQK2ViBNkTbxCmR5oenu
+        Settings__MinIO__AccessKey: QKcxMkJbemvGbOdAC2z2
+        Settings__MinIO__SecretKey: 9UopkfG8cFWBkaeI2K1glJBtVUYlplVjREBuNY1U
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
         

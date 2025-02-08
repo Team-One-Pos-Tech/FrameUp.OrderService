@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "FrameUp.OrderService.Api",
-    "version": "1.0"
+    "version": "v1"
   },
   "paths": {
     "/Events/UpdateOrderStatus/{orderId}": {
@@ -331,6 +331,18 @@
       "GetProcessingOrderResponse": {
         "type": "object",
         "properties": {
+          "notifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -356,6 +368,13 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "packages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageItemResponse"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -368,6 +387,20 @@
             "nullable": true
           },
           "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PackageItemResponse": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "uri": {
             "type": "string",
             "nullable": true
           }
@@ -406,7 +439,7 @@
           "Refused",
           "Processing",
           "Concluded",
-          "Cancelled",
+          "Canceled",
           "Failed"
         ],
         "type": "string"
@@ -464,6 +497,19 @@
         },
         "additionalProperties": false
       }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme. Get your token on /signIn.",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
 }

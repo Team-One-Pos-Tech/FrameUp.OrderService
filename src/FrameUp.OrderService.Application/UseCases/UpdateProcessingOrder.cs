@@ -41,7 +41,7 @@ public class UpdateProcessingOrder(
     private static void UpdateOrder(UpdateProcessingOrderRequest request, Order order)
     {
         order.Status = request.Status;
-        order.Packages = request.Packages.Select(package => new PackageItem(package.FileName, package.Uri)).ToArray();
+        order.Packages = request.Packages.Select(package => new PackageItem(package.FileName, package.Uri)).ToList();
     }
 
     private async Task PublishOrderStatusChangedEvent(Order order)

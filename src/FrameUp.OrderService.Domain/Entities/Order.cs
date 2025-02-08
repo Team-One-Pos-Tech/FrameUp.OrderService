@@ -16,7 +16,7 @@ public class Order
 
     public int? CaptureInterval { get; set; }
 
-    public PackageItem[] Packages { get; set; } = [];
+    public List<PackageItem> Packages { get; set; } = [];
 
     public Order()
     {

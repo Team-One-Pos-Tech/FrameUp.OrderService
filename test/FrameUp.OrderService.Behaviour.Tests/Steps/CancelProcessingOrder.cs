@@ -26,6 +26,6 @@ public class CancelProcessingOrder(
         var response = await orderServiceClientApi.OrderGETAsync(createdOrder.Id);
         
         response.Id.Should().Be(createdOrder.Id);
-        response.Status.Should().Be(ProcessingStatus.Cancelled);
+        response.Status.Should().Be(ProcessingStatus.Canceled);
     }
 }
