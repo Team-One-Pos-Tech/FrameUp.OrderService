@@ -1,3 +1,4 @@
+using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
 
@@ -11,5 +12,5 @@ public record OrderStatusChangedEventParameters
 {
     public Guid OrderId { get; set; }
     public required string Status { get; set; }
-    public string? PackageUri { get; set; }
+    public PackageItemResponse[] Packages { get; set; } = [];
 }

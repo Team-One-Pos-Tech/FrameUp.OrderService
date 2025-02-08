@@ -112,7 +112,7 @@ public class UpdateProcessingOrderShould
     }
     
     [Test]
-    public async Task Publish_Event_With_Package_Uri_When_Order_Status_Is_Changed()
+    public async Task Publish_Event_With_Packages_When_Order_Status_Is_Changed()
     {
         #region Arrange
 
@@ -122,7 +122,9 @@ public class UpdateProcessingOrderShould
         {
             OrderId = Guid.NewGuid(),
             Status = ProcessingStatus.Concluded,
-            PackageUri = "https://s3.com/package.zip"
+            Packages = [
+                new UpdatePackageItemRequest("file1.mp4", "https://s3.com/file1")
+            ]
         };
 
         _orderRepositoryMock.Setup(x => x.Get(request.OrderId))
@@ -145,7 +147,9 @@ public class UpdateProcessingOrderShould
 
         _publishedEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
             It.Is<OrderStatusChangedEvent>(
-                message => message.Parameters.PackageUri == request.PackageUri
+                message => message.Parameters.Packages.Length == request.Packages.Length &&
+                message.Parameters.Packages.First().FileName == request.Packages.First().FileName &&
+                message.Parameters.Packages.First().Uri == request.Packages.First().Uri
             ),
             It.IsAny<CancellationToken>()
         ), Times.Once);
@@ -154,7 +158,7 @@ public class UpdateProcessingOrderShould
     }
     
     [Test]
-    public async Task Update_Order_With_Package_Uri()
+    public async Task Update_Order_With_Package()
     {
         #region Arrange
 
@@ -164,7 +168,9 @@ public class UpdateProcessingOrderShould
         {
             OrderId = Guid.NewGuid(),
             Status = ProcessingStatus.Concluded,
-            PackageUri = "https://s3.com/package.zip"
+            Packages = [
+                new UpdatePackageItemRequest("file1.mp4", "https://s3.com/file1")
+            ]
         };
 
         _orderRepositoryMock.Setup(x => x.Get(request.OrderId))
@@ -187,7 +193,10 @@ public class UpdateProcessingOrderShould
 
         _orderRepositoryMock.Verify(x => x.Update(
             It.Is<Order>(order => 
-                order.PackageUri == request.PackageUri)
+                order.Packages.Length == request.Packages.Length &&
+                order.Packages.First().FileName == request.Packages.First().FileName &&
+                order.Packages.First().Uri == request.Packages.First().Uri
+                )
         ), Times.Once);
 
         #endregion

@@ -21,7 +21,14 @@ internal class OrderMap : IEntityTypeConfiguration<Order>
             .IsRequired();
 
         builder
-            .Property(order => order.PackageUri);
+            .OwnsMany(order => order.Packages, a =>
+            {
+                a.WithOwner().HasForeignKey("OrderId");
+                a.Property<int>("Id");
+                a.HasKey("Id");
+                a.Property(p => p.FileName).IsRequired();
+                a.Property(p => p.Uri).IsRequired();
+            });
 
         builder
             .HasMany(order => order.Videos)

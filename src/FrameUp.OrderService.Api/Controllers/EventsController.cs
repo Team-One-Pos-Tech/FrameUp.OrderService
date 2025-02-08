@@ -12,6 +12,6 @@ public class EventsController(IPublishEndpoint publishEndpoint) : ControllerBase
     [HttpPut("UpdateOrderStatus/{orderId}")]
     public async Task UpdateOrderStatusAsync(Guid orderId, ProcessingStatus status)
     {
-        await publishEndpoint.Publish(new UpdateOrderStatusEvent(orderId, status));
+        await publishEndpoint.Publish(new UpdateOrderStatusEvent(orderId, status, []));
     }
 }

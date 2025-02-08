@@ -67,7 +67,8 @@ public class GetProcessingOrder(ILogger<GetProcessingOrder> logger, IOrderReposi
                 Size = video.Size
             }),
             ExportResolution = order.ExportResolution,
-            CaptureInterval = order.CaptureInterval
+            CaptureInterval = order.CaptureInterval,
+            Packages = order.Packages.Select(package => new PackageItemResponse(package.FileName, package.Uri)).ToArray()
         };
     }
 }

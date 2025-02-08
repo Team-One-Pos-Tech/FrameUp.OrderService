@@ -10,13 +10,13 @@ public class Order
     
     public Guid OwnerId { get; set; }
 
-    public ICollection<VideoMetadata> Videos { get; set; } = new List<VideoMetadata>();
+    public ICollection<VideoMetadata> Videos { get; set; } = [];
 
     public ResolutionTypes ExportResolution { get; set; }
 
     public int? CaptureInterval { get; set; }
-    
-    public string? PackageUri { get; set; }
+
+    public PackageItem[] Packages { get; set; } = [];
 
     public Order()
     {

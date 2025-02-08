@@ -6,5 +6,7 @@ public class UpdateProcessingOrderRequest
 {
     public required Guid OrderId { get; init; }
     public required ProcessingStatus Status { get; init; }
-    public string? PackageUri { get; set; }
+    public UpdatePackageItemRequest[] Packages { get; set; } = [];
 }
+
+public record UpdatePackageItemRequest(string FileName, string Uri);

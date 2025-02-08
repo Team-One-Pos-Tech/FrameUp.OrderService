@@ -16,4 +16,6 @@ public class GetProcessingOrderResponse: Notifiable<Notification>
     public ResolutionTypes ExportResolution { get; set; }
 
     public int? CaptureInterval { get; set; }
+
+    public PackageItemResponse[] Packages { get; set; } = [];
 }
