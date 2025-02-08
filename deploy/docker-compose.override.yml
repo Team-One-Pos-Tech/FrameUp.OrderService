@@ -18,7 +18,7 @@ services:
   frame-up-process-app:
     environment:
         Settings__RabbitMQ__ConnectionString: amqp://guest:guest@rabbitmq
-        Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=OrderService;Username=postgres;Password=postgres
+        Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=ProcessService;Username=postgres;Password=postgres
         Settings__MinIO__Endpoint: play.min.io
         Settings__MinIO__AccessKey: QKcxMkJbemvGbOdAC2z2
         Settings__MinIO__SecretKey: 9UopkfG8cFWBkaeI2K1glJBtVUYlplVjREBuNY1U
@@ -27,13 +27,8 @@ services:
         
   identity-app:
     environment:
-        RabbitMQ__Host: rabbitmq
-        RabbitMQ__User: guest
-        RabbitMQ__Password: guest
-        Storage__PostgreSQL__Host: frame-up-db
-        Storage__PostgreSQL__User: postgres
-        Storage__PostgreSQL__Password: postgres
-        Storage__PostgreSQL__Database: snack-hub-client
+        Settings__RabbitMQ__ConnectionString: amqp://guest:guest@rabbitmq
+        Settings__PostgreSQL__ConnectionString: Host=frame-up-db;Port=5432;Database=IdentityService;Username=postgres;Password=postgres
         ASPNETCORE_ENVIRONMENT: Development
         ASPNETCORE_HTTP_PORTS: 8080
         
