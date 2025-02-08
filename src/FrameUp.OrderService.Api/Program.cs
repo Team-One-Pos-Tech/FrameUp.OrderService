@@ -17,6 +17,16 @@ builder.Services
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services
     .AddAuthorization(options =>
     {
@@ -64,6 +74,9 @@ if (app.Environment.IsDevelopment())
 app.UseCustomHealthChecks();
 
 app.UseAuthentication();
+
+// Use CORS middleware
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
