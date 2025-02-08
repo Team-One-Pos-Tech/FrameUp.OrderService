@@ -1,4 +1,6 @@
 ﻿using FrameUp.OrderService.Application.Models.Events;
+using FrameUp.OrderService.Application.Models.Requests;
+using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +12,12 @@ namespace FrameUp.OrderService.Api.Controllers;
 public class EventsController(IPublishEndpoint publishEndpoint) : ControllerBase
 {
     [HttpPut("UpdateOrderStatus/{orderId}")]
-    public async Task UpdateOrderStatusAsync(Guid orderId, ProcessingStatus status)
+    public async Task UpdateOrderStatusAsync(
+        Guid orderId, ProcessingStatus status, List<UpdatePackageItemRequest> packageItems)
     {
-        await publishEndpoint.Publish(new UpdateOrderStatusEvent(orderId, status, []));
+        var uploadedPackages = packageItems
+            .Select(item => new UploadedPackageItem(item.FileName, item.Uri)).ToArray();
+        
+        await publishEndpoint.Publish(new UpdateOrderStatusEvent(orderId, status, uploadedPackages));
     }
 }

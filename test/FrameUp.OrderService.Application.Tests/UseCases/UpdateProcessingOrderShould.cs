@@ -193,7 +193,7 @@ public class UpdateProcessingOrderShould
 
         _orderRepositoryMock.Verify(x => x.Update(
             It.Is<Order>(order => 
-                order.Packages.Length == request.Packages.Length &&
+                order.Packages.Count == request.Packages.Length &&
                 order.Packages.First().FileName == request.Packages.First().FileName &&
                 order.Packages.First().Uri == request.Packages.First().Uri
                 )

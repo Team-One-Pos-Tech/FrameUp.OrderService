@@ -49,9 +49,6 @@ namespace FrameUp.OrderService.Api.Controllers
                 RequesterId = authenticatedUser.UserId
             });
 
-            if (response == null)
-                return NotFound();
-
             return Ok(response);
         }
 
@@ -72,7 +69,7 @@ namespace FrameUp.OrderService.Api.Controllers
         [HttpPut("Cancel/{orderId:guid}")]
         [ProducesResponseType(typeof(UpdateProcessingOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UpdateProcessingOrderResponse>> Put(Guid orderId)
+        public async Task<ActionResult<UpdateProcessingOrderResponse>> Cancel(Guid orderId)
         {
             var request = new UpdateProcessingOrderRequest
             {
@@ -80,6 +77,19 @@ namespace FrameUp.OrderService.Api.Controllers
                 Status = ProcessingStatus.Canceled
             };
 
+            var response = await updateProcessingOrder.Execute(request);
+            
+            if (!response.IsValid)
+                return BadRequest(response);
+            
+            return Ok(response);
+        }
+        
+        [HttpPut]
+        [ProducesResponseType(typeof(UpdateProcessingOrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UpdateProcessingOrderResponse>> Put(UpdateProcessingOrderRequest request)
+        {
             var response = await updateProcessingOrder.Execute(request);
             
             if (!response.IsValid)

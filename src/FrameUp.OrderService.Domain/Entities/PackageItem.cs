@@ -2,8 +2,9 @@
 
 public class PackageItem
 {
-    public string FileName { get; }
-    public string Uri { get; }
+    public Guid Id { get; set; }
+    public string FileName { get; set; }
+    public string Uri { get; set; }
 
     public PackageItem(string fileName, string uri)
     {
