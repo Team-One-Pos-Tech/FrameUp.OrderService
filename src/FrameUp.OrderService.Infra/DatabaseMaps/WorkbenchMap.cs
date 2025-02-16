@@ -22,7 +22,7 @@ public class WorkbenchMap : IEntityTypeConfiguration<Workbench>
         builder
             .Property(px => px.Status)
             .HasColumnName("Status")
-            .HasConversion<StringToEnumConverter<WorkbenchStatus>>()
+            .HasConversion<EnumToStringConverter<WorkbenchStatus>>()
             .IsRequired();
 
         builder

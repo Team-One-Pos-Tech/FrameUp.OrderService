@@ -10,80 +10,95 @@ namespace FrameUp.OrderService.Api.Services;
 
 public class FilePreprocessorBackgroundService : BackgroundService
 {
+    private const int ExecuteFrequencyInMinutes = 2;
     private readonly ILogger<FilePreprocessorBackgroundService> _logger;
-    
-    private readonly IPublishEndpoint _publishEndpoint;
-    private readonly IFileBucketRepository _fileBucketRepository;
-    
-    private readonly IWorkbenchRepository _workbenchRepository;
-    private readonly IOrderRepository _orderRepository;
+    private readonly IServiceProvider _serviceProvider;
 
     public FilePreprocessorBackgroundService(
-        ILogger<FilePreprocessorBackgroundService> logger, 
-        IFileBucketRepository fileBucketRepository, 
-        IWorkbenchRepository workbenchRepository, 
-        IOrderRepository orderRepository, 
-        IPublishEndpoint publishEndpoint)
+        ILogger<FilePreprocessorBackgroundService> logger,
+        IServiceProvider serviceProvider)
     {
         _logger = logger;
-        _fileBucketRepository = fileBucketRepository;
-        _workbenchRepository = workbenchRepository;
-        _orderRepository = orderRepository;
-        _publishEndpoint = publishEndpoint;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var workbenches = await _workbenchRepository.ListAllWaitingWorkbenchesAsync();
-        await Parallel.ForEachAsync(workbenches, stoppingToken, async (workbench, cancellationToken) =>
+        while (!stoppingToken.IsCancellationRequested)
         {
-            var order = await _orderRepository.Get(workbench.OrderId);
+            using var scope = _serviceProvider.CreateScope();
+            var workbenchRepository = scope.ServiceProvider.GetRequiredService<IWorkbenchRepository>();
+            var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+            var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+            var fileBucketRepository = scope.ServiceProvider.GetRequiredService<IFileBucketRepository>();
 
-            if (order is null)
+            var workbenches = await workbenchRepository.ListAllWaitingWorkbenchesAsync();
+            await Parallel.ForEachAsync(workbenches, stoppingToken, async (workbench, cancellationToken) =>
             {
-                _logger.LogWarning("Order {OrderId} not found", workbench.OrderId);
-                return;   
-            }
+                var order = await orderRepository.Get(workbench.OrderId);
 
-            var processVideoParameters = new ProcessVideoParameters
-            {
-                ExportResolution = order.ExportResolution,
-                CaptureInterval = order.CaptureInterval,
-            };
-                
-            await UploadVideosFromWorkbenchAsync(workbench, cancellationToken);
-            await SubmitProcessVideoEventAsync(workbench.OrderId, processVideoParameters, cancellationToken);
-        });
+                if (order is null)
+                {
+                    _logger.LogWarning("Order {OrderId} not found", workbench.OrderId);
+                    return;
+                }
+
+                var processVideoParameters = new ProcessVideoParameters
+                {
+                    ExportResolution = order.ExportResolution,
+                    CaptureInterval = order.CaptureInterval,
+                };
+
+                await UploadVideosFromWorkbenchAsync(
+                    fileBucketRepository,
+                    workbenchRepository,
+                    workbench,
+                    cancellationToken);
+
+                await SubmitProcessVideoEventAsync(
+                    publishEndpoint,
+                    workbench.OrderId,
+                    processVideoParameters,
+                    cancellationToken);
+            });
+            
+            await Task.Delay(TimeSpan.FromMinutes(ExecuteFrequencyInMinutes), stoppingToken);
+        }
     }
-    
-    private async Task SubmitProcessVideoEventAsync(Guid orderId, ProcessVideoParameters processVideoParameters, CancellationToken cancellationToken = default)
+
+    private async Task SubmitProcessVideoEventAsync(IPublishEndpoint publishEndpoint, Guid orderId,
+        ProcessVideoParameters processVideoParameters, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Video is ready to be processed! Submitting event [ReadyToProcessVideo]");
-        
+
         var readyToProcessVideo = new ReadyToProcessVideo(orderId, processVideoParameters);
-        await _publishEndpoint.Publish(readyToProcessVideo, cancellationToken);
+        await publishEndpoint.Publish(readyToProcessVideo, cancellationToken);
     }
 
-    private async Task UploadVideosFromWorkbenchAsync(Workbench workbench, CancellationToken cancellationToken = default)
+    private async Task UploadVideosFromWorkbenchAsync(
+        IFileBucketRepository fileBucketRepository,
+        IWorkbenchRepository workbenchRepository,
+        Workbench workbench,
+        CancellationToken cancellationToken = default)
     {
         try
         {
             workbench.Status = WorkbenchStatus.InProgress;
-            await _workbenchRepository.ChangeAsync(workbench);
-            
+            await workbenchRepository.ChangeAsync(workbench);
+
             var requestUpload = SetupFileBucketRequest(workbench.OrderId, workbench);
-            await _fileBucketRepository.Upload(requestUpload);
+            await fileBucketRepository.Upload(requestUpload);
 
             workbench.Status = WorkbenchStatus.Complete;
-            await _workbenchRepository.ChangeAsync(workbench);
+            await workbenchRepository.ChangeAsync(workbench);
         }
         catch (Exception exception)
-        { 
+        {
             _logger.LogError(exception, "Error while uploading videos!");
-            
+
             workbench.Status = WorkbenchStatus.Failed;
             workbench.Error = exception.Message;
-            await _workbenchRepository.ChangeAsync(workbench);
+            await workbenchRepository.ChangeAsync(workbench);
         }
     }
 
@@ -91,7 +106,7 @@ public class FilePreprocessorBackgroundService : BackgroundService
     {
         var fileInfos = workbench.ListAllFileDetails();
         IList<FileRequest> fileRequests = [];
-        
+
         foreach (var fileInfo in fileInfos)
         {
             _logger.LogInformation("Preparing to upload the file [{fileName}]", fileInfo.Name);
@@ -119,8 +134,7 @@ public class FilePreprocessorBackgroundService : BackgroundService
         {
             contentType = "application/octet-stream";
         }
-        
+
         return contentType;
     }
-
 }

@@ -9,7 +9,7 @@ namespace FrameUp.OrderService.Infra.Repositories;
 
 public class WorkbenchRepository : BaseRepository<Workbench, OrderServiceDbContext>, IWorkbenchRepository
 {
-    protected WorkbenchRepository(
+    public WorkbenchRepository(
         OrderServiceDbContext dbContext, 
         ILoggerFactory loggerFactory) : 
         base(dbContext, loggerFactory)
