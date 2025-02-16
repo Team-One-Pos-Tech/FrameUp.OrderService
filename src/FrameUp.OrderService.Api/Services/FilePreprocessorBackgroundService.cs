@@ -112,13 +112,12 @@ public class FilePreprocessorBackgroundService : BackgroundService
         foreach (var fileInfo in fileInfos)
         {
             _logger.LogInformation("Preparing to upload the file [{fileName}]", fileInfo.Name);
-            using var stream = fileInfo.OpenRead();
             fileRequests.Add(new FileRequest
             {
-                ContentStream = stream,
+                ContentStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read),
                 ContentType = GetContentTypeFromFileInfo(fileInfo),
                 Name = fileInfo.Name,
-                Size = stream.Length
+                Size = fileInfo.Length
             });
         }
 

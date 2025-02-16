@@ -52,7 +52,9 @@ public class CreateProcessingOrder : ICreateProcessingOrder
         foreach (var videoRequest in videoRequests)
         {
             _logger.LogInformation("Storing file [{videoName}] for order [{orderId}] at [{location}]", videoRequest.Metadata.Name, orderId, workBench.Location);
-            await workBench.StoreStreamAsFileAsync(videoRequest.Metadata.Name, videoRequest.ContentStream);
+            
+            var fileFullPath = Path.Combine(workBench.Location, videoRequest.Metadata.Name);
+            await workBench.StoreStreamAsFileAsync(fileFullPath, videoRequest.ContentStream);
         }
 
         await _workbenchRepository.SaveAsync(workBench);
