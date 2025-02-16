@@ -10,7 +10,8 @@ public static class AddRepositoriesExtensions
     {
         serviceCollection
             .AddScoped<IFileBucketRepository, FileBucketRepository>()
-            .AddScoped<IOrderRepository, OrderRepository>();
+            .AddScoped<IOrderRepository, OrderRepository>()
+            .AddScoped<IWorkbenchRepository, WorkbenchRepository>();
         
         return serviceCollection;
     }

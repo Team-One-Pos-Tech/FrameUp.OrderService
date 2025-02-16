@@ -60,6 +60,7 @@ builder.Services
     .AddDatabaseContext(settings)
     .AddMinIO(settings)
     .AddServices()
+    .AddBackgroundServices()
     .AddUseCases();
 
 var app = builder.Build();

@@ -1,13 +1,10 @@
 using System.Text;
 using FluentAssertions;
 using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Models.Events;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
-using MassTransit;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -19,7 +16,7 @@ public class CreateProcessingOrderShould
     private Mock<IFileBucketRepository> _fileBucketMock;
     private Mock<IOrderRepository> _orderRepository;
     private Mock<ILogger<CreateProcessingOrder>> _loggerMock;
-    private Mock<IPublishEndpoint> _publishEndpointMock;
+    private Mock<IWorkbenchRepository> _workbenchRepositoryMock;
 
     [SetUp]
     public void Setup()
@@ -27,13 +24,12 @@ public class CreateProcessingOrderShould
         _fileBucketMock = new Mock<IFileBucketRepository>();
         _orderRepository = new Mock<IOrderRepository>();
         _loggerMock = new Mock<ILogger<CreateProcessingOrder>>();
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _workbenchRepositoryMock = new Mock<IWorkbenchRepository>();
 
         _createProcessingOrder = new CreateProcessingOrder(
             _loggerMock.Object,
-            _fileBucketMock.Object,
             _orderRepository.Object,
-            _publishEndpointMock.Object);
+            _workbenchRepositoryMock.Object);
     }
 
     [Test]
@@ -75,118 +71,7 @@ public class CreateProcessingOrderShould
 
         #endregion
     }
-
-    [Test]
-    public async Task Upload_Video()
-    {
-        #region Arrange
-
-        var video = CreateFakeVideo();
-
-        const string videoName = "marketing.mp4";
-        var request = new CreateProcessingOrderRequest
-        {
-            Videos = [
-                new VideoRequest
-                {
-                    ContentStream = video,
-                    Metadata = new VideoMetadataRequest
-                    {
-                        Name = videoName,
-                        ContentType = "video/mp4",
-                        Size = 1024L * 1024L
-                    }
-                },
-            ]
-        };
-
-        var orderId = Guid.NewGuid();
-
-        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
-            .ReturnsAsync(orderId);
-
-        #endregion
-
-        #region Act
-
-        var response = await _createProcessingOrder.Execute(request);
-
-        #endregion
-
-        #region Assert
-
-        response.IsValid.Should().BeTrue();
-
-        _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
-                                                    fileRequest.Files.Count() == 1)
-        ), Times.Once);
-
-        #endregion
-    }
-
-    [Test]
-    public async Task Upload_Many_Videos_Simultaneously()
-    {
-        #region Arrange
-
-        var video1 = CreateFakeVideo();
-        var video2 = CreateFakeVideo();
-
-        const string video1Name = "marketing.mp4";
-        const string video2Name = "commercial.mp4";
-
-        var request = new CreateProcessingOrderRequest
-        {
-            Videos = [
-                new VideoRequest
-                {
-                    ContentStream = video1,
-                    Metadata = new VideoMetadataRequest
-                    {
-                        Name = video1Name,
-                        ContentType = "video/mp4",
-                        Size = 1024L * 1024L
-                    }
-                },
-                new VideoRequest
-                {
-                    ContentStream = video2,
-                    Metadata = new VideoMetadataRequest
-                    {
-                        Name = video2Name,
-                        ContentType = "video/mp4",
-                        Size = 1024L * 1024L
-                    }
-                }
-            ]
-        };
-
-        var orderId = Guid.NewGuid();
-
-        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
-            .ReturnsAsync(orderId);
-
-        #endregion
-
-        #region Act
-
-        var response = await _createProcessingOrder.Execute(request);
-
-        #endregion
-
-        #region Assert
-
-        response.IsValid.Should().BeTrue();
-
-        _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
-                                                    fileRequest.Files.Count() == 2)
-        ), Times.Once);
-
-        #endregion
-    }
-
+    
     [Test]
     public async Task Validate_Video_Size_When_Is_Bigger_Than_1gb()
     {
@@ -512,12 +397,7 @@ public class CreateProcessingOrderShould
         #region Assert
 
         response.IsValid.Should().BeTrue();
-
-        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-            It.Is<ReadyToProcessVideo>(message => message.OrderId == orderId),
-            It.IsAny<CancellationToken>()
-        ), Times.Once);
-
+        
         #endregion
     }
 
@@ -748,15 +628,7 @@ public class CreateProcessingOrderShould
         #region Assert
 
         response.IsValid.Should().BeTrue();
-
-        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-            It.Is<ReadyToProcessVideo>(message =>
-                message.Parameters.ExportResolution == ResolutionTypes.HD &&
-                message.Parameters.CaptureInterval == request.CaptureInterval
-            ),
-            It.IsAny<CancellationToken>()
-        ), Times.Once);
-
+        
         #endregion
     }
 

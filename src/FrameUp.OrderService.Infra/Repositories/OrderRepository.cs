@@ -8,7 +8,8 @@ namespace FrameUp.OrderService.Infra.Repositories;
 
 public class OrderRepository : BaseRepository<Order, OrderServiceDbContext>, IOrderRepository
 {
-    public OrderRepository(OrderServiceDbContext dbContext,
+    public OrderRepository(
+        OrderServiceDbContext dbContext,
         ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
     {
         _expandProperties = [nameof(Order.Videos)];
@@ -28,11 +29,9 @@ public class OrderRepository : BaseRepository<Order, OrderServiceDbContext>, IOr
     public async Task<Guid> Save(Order order)
     {
         order.Id = Guid.NewGuid();
-
         order.Videos.ToList().ForEach(video => video.OrderId = order.Id);
 
         await InsertAsync(order);
-
         await SaveChangesAsync();
 
         return order.Id;
@@ -40,8 +39,7 @@ public class OrderRepository : BaseRepository<Order, OrderServiceDbContext>, IOr
 
     public async Task Update(Order order)
     {
-        _dbSet.Update(order);
-
+        await UpdateAsync(order);
         await SaveChangesAsync();
     }
 }

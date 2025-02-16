@@ -11,5 +11,5 @@ public class ProcessVideoParameters
 {
     public ResolutionTypes? ExportResolution { get; set; }
 
-    public int? CaptureInterval { get; internal set; }
+    public int? CaptureInterval { get; set; }
 }

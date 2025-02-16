@@ -1,39 +1,42 @@
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Domain.Entities;
-using MassTransit;
 using FrameUp.OrderService.Application.Validators;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
-using FrameUp.OrderService.Application.Models.Events;
 using Microsoft.Extensions.Logging;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
-public class CreateProcessingOrder(
-    ILogger<CreateProcessingOrder> logger,
-    IFileBucketRepository fileBucketRepository, 
-    IOrderRepository orderRepository,
-    IPublishEndpoint publishEndpoint) : ICreateProcessingOrder
+public class CreateProcessingOrder : ICreateProcessingOrder
 {
-    
+    private readonly ILogger<CreateProcessingOrder> _logger;
+    private readonly IOrderRepository _orderRepository;
+    private readonly IWorkbenchRepository _workbenchRepository;
+
+    public CreateProcessingOrder(
+        ILogger<CreateProcessingOrder> logger, 
+        IOrderRepository orderRepository, 
+        IWorkbenchRepository workbenchRepository)
+    {
+        _logger = logger;
+        _orderRepository = orderRepository;
+        _workbenchRepository = workbenchRepository;
+    }
+
     public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
     {
         if (!CreateProcessingOrderValidator.IsValid(request, out var response))
             return response;
 
-        logger.LogInformation("Starting creation of new Processing Order");
+        _logger.LogInformation("Starting creation of new Processing Order");
 
         var order = CreateOrder(request);
+        order.Id = await _orderRepository.Save(order);
 
-        order.Id = await orderRepository.Save(order);
-
-        await UploadVideos(order.Id, request);
-
-        await ProcessVideos(order, request);
-
-        logger.LogInformation("New Processing Order [{orderId}] created successfully!", order.Id);
-
+        await SetupFiles(order.Id, request.Videos);
+        
+        _logger.LogInformation("New Processing Order [{orderId}] created successfully!", order.Id);
         return new CreateProcessingOrderResponse
         {
             Id = order.Id,
@@ -41,42 +44,23 @@ public class CreateProcessingOrder(
         };
     }
 
-    private async Task ProcessVideos(Order order, CreateProcessingOrderRequest request)
+    private async Task SetupFiles(Guid orderId, IEnumerable<VideoRequest> videoRequests)
     {
-        var parameters = new ProcessVideoParameters
+        _logger.LogInformation("Storing video files for order [{orderId}] to be upload in background!", orderId);
+        
+        var workBench = Workbench.InitializeFor(orderId);
+        foreach (var videoRequest in videoRequests)
         {
-            ExportResolution = request.ExportResolution,
-            CaptureInterval = request.CaptureInterval,
-        };
+            _logger.LogInformation("Storing file [{videoName}] for order [{orderId}] at [{location}]", videoRequest.Metadata.Name, orderId, workBench.Location);
+            await workBench.StoreStreamAsFileAsync(videoRequest.Metadata.Name, videoRequest.ContentStream);
+        }
 
-        await publishEndpoint.Publish(
-            new ReadyToProcessVideo(order.Id, parameters)
-        );
-    }
-
-    private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
-    {
-        var requestUpload = new FileBucketRequest
-        {
-            OrderId = orderId,
-            Files = request.Videos.Select(video => new FileRequest
-            {
-                ContentStream = video.ContentStream,
-                Name = video.Metadata.Name,
-                Size = video.Metadata.Size,
-                ContentType = video.Metadata.ContentType
-            })
-        };
-
-        // How long this could take? 
-        // A: take a lot of time on big files
-        // Is inevitable? To complex to handle? 
-        await fileBucketRepository.Upload(requestUpload);
+        await _workbenchRepository.SaveAsync(workBench);
     }
 
     private static Order CreateOrder(CreateProcessingOrderRequest request)
     {
-        return new Order()
+        return new Order
         {
             OwnerId = request.OwnerId,
             CaptureInterval = request.CaptureInterval,

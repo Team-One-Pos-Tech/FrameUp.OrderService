@@ -45,13 +45,7 @@ public class BaseRepository<TModel, TDbContext> : IBaseRepository<TModel>
 
         _dbSet.Remove(model);
     }
-
-    public async Task<int> CountAsync(Expression<Func<TModel, bool>> predicate)
-    {
-        return await _dbSet
-            .CountAsync(predicate);
-    }
-
+    
     public async Task<IEnumerable<TModel>> ListByPredicateAsync(Expression<Func<TModel, bool>> predicate)
     {
         return await _dbSet

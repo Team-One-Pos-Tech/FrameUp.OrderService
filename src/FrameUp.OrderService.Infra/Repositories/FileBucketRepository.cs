@@ -31,7 +31,7 @@ public class FileBucketRepository(IMinioClient minioClient) : IFileBucketReposit
 
     private async Task UploadFile(Guid orderId, FileRequest file, Tagging tagging)
     {
-        var objectName = orderId.ToString() + "/" + file.Name;
+        var objectName = $"{orderId}/{file.Name}";
 
         var args = new PutObjectArgs()
             .WithBucket(BucketName)
