@@ -99,6 +99,8 @@ public class FilePreprocessorBackgroundService : BackgroundService
             workbench.Status = WorkbenchStatus.Failed;
             workbench.Error = exception.Message;
             await workbenchRepository.ChangeAsync(workbench);
+            
+            throw;
         }
     }
 

@@ -26,8 +26,11 @@ public class WorkbenchRepository : BaseRepository<Workbench, OrderServiceDbConte
         return workbench.Id;
     }
 
-    public async Task ChangeAsync(Workbench workbench) 
-        => await UpdateAsync(workbench);
+    public async Task ChangeAsync(Workbench workbench)
+    {
+        await UpdateAsync(workbench);
+        await SaveChangesAsync();
+    }
 
     public async Task<IEnumerable<Workbench>> ListAllWaitingWorkbenchesAsync() 
         => await ListByPredicateAsync(workbench => workbench.Status == WorkbenchStatus.Waiting);
