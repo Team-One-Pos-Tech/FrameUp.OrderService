@@ -68,9 +68,6 @@ public class CreateProcessingOrder(
             })
         };
 
-        // How long this could take? 
-        // A: take a lot of time on big files
-        // Is inevitable? To complex to handle? 
         await fileBucketRepository.Upload(requestUpload);
     }
 
