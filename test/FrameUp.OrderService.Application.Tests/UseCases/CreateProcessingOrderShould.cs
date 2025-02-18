@@ -77,7 +77,7 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
-    public async Task Upload_Video()
+    public async Task Publish_Upload_Video_Event()
     {
         #region Arrange
 
@@ -117,9 +117,13 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
-                                                    fileRequest.Files.Count() == 1)
+        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
+            It.Is<UploadVideoEvent>(message =>
+                message.Files.Count() == 1 &&
+                message.Files.First().Name == videoName &&
+                message.OrderId == orderId
+            ),
+            It.IsAny<CancellationToken>()
         ), Times.Once);
 
         #endregion
