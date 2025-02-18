@@ -7,6 +7,7 @@ using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Application.Models.Events;
 using Microsoft.Extensions.Logging;
+using MassTransit.Transports;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
@@ -41,6 +42,23 @@ public class CreateProcessingOrder(
         };
     }
 
+    private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
+    {
+        await publishEndpoint.Publish(
+            new UploadVideoEvent
+            {
+                OrderId = orderId,
+                Files = request.Videos.Select(video => new FileRequest
+                {
+                    ContentStream = video.ContentStream,
+                    Name = video.Metadata.Name,
+                    Size = video.Metadata.Size,
+                    ContentType = video.Metadata.ContentType
+                })
+            }
+        );
+    }
+
     private async Task ProcessVideos(Order order, CreateProcessingOrderRequest request)
     {
         var parameters = new ProcessVideoParameters
@@ -52,23 +70,6 @@ public class CreateProcessingOrder(
         await publishEndpoint.Publish(
             new ReadyToProcessVideo(order.Id, parameters)
         );
-    }
-
-    private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
-    {
-        var requestUpload = new FileBucketRequest
-        {
-            OrderId = orderId,
-            Files = request.Videos.Select(video => new FileRequest
-            {
-                ContentStream = video.ContentStream,
-                Name = video.Metadata.Name,
-                Size = video.Metadata.Size,
-                ContentType = video.Metadata.ContentType
-            })
-        };
-
-        await fileBucketRepository.Upload(requestUpload);
     }
 
     private static Order CreateOrder(CreateProcessingOrderRequest request)

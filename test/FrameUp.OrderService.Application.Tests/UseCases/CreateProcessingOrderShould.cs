@@ -130,7 +130,7 @@ public class CreateProcessingOrderShould
     }
 
     [Test]
-    public async Task Upload_Many_Videos_Simultaneously()
+    public async Task Publish_Upload_Many_Videos_Simultaneously()
     {
         #region Arrange
 
@@ -183,9 +183,12 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
-                                                    fileRequest.Files.Count() == 2)
+        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
+            It.Is<UploadVideoEvent>(message =>
+                message.Files.Count() == 2 &&
+                message.OrderId == orderId
+            ),
+            It.IsAny<CancellationToken>()
         ), Times.Once);
 
         #endregion
