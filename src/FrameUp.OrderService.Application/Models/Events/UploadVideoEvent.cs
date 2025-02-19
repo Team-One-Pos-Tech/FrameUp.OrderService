@@ -10,5 +10,5 @@ public class UploadVideoEvent
 {
     public Guid OrderId { get; set; }
 
-    public IEnumerable<FileRequest> Files { get; set; } = [];
+    public IEnumerable<string> FilesNames { get; set; } = [];
 }

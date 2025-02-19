@@ -13,6 +13,7 @@ public static class MassTransitExtensions
             busConfigurator.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("frameup-order-service"));
 
             busConfigurator.AddConsumer<ProcessVideoConsumer>();
+            busConfigurator.AddConsumer<UploadVideoConsumer>();
 
             busConfigurator.SetKebabCaseEndpointNameFormatter();
             busConfigurator.UsingRabbitMq((context, configurator) =>

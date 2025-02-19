@@ -13,7 +13,6 @@ namespace FrameUp.OrderService.Application.UseCases;
 
 public class CreateProcessingOrder(
     ILogger<CreateProcessingOrder> logger,
-    IFileBucketRepository fileBucketRepository, 
     IOrderRepository orderRepository,
     IPublishEndpoint publishEndpoint) : ICreateProcessingOrder
 {
@@ -31,8 +30,6 @@ public class CreateProcessingOrder(
 
         await UploadVideos(order.Id, request);
 
-        await ProcessVideos(order, request);
-
         logger.LogInformation("New Processing Order [{orderId}] created successfully!", order.Id);
 
         return new CreateProcessingOrderResponse
@@ -44,31 +41,14 @@ public class CreateProcessingOrder(
 
     private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
     {
+        // Should save the files streams to the local store
+
         await publishEndpoint.Publish(
             new UploadVideoEvent
             {
                 OrderId = orderId,
-                Files = request.Videos.Select(video => new FileRequest
-                {
-                    ContentStream = video.ContentStream,
-                    Name = video.Metadata.Name,
-                    Size = video.Metadata.Size,
-                    ContentType = video.Metadata.ContentType
-                })
+                FilesNames = request.Videos.Select(video => video.Metadata.Name)
             }
-        );
-    }
-
-    private async Task ProcessVideos(Order order, CreateProcessingOrderRequest request)
-    {
-        var parameters = new ProcessVideoParameters
-        {
-            ExportResolution = request.ExportResolution,
-            CaptureInterval = request.CaptureInterval,
-        };
-
-        await publishEndpoint.Publish(
-            new ReadyToProcessVideo(order.Id, parameters)
         );
     }
 
