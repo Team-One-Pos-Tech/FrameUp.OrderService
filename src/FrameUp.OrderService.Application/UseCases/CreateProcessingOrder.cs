@@ -7,6 +7,10 @@ using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
 using FrameUp.OrderService.Application.Models.Events;
 using Microsoft.Extensions.Logging;
+using System.Threading.Channels;
+using FrameUp.OrderService.Application.Jobs;
+using System.Collections.Concurrent;
+using FrameUp.OrderService.Application.Enums;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
@@ -14,7 +18,10 @@ public class CreateProcessingOrder(
     ILogger<CreateProcessingOrder> logger,
     IFileBucketRepository fileBucketRepository, 
     IOrderRepository orderRepository,
-    IPublishEndpoint publishEndpoint) : ICreateProcessingOrder
+    IPublishEndpoint publishEndpoint,
+    Channel<UploadVideosJob> channel,
+    ConcurrentDictionary<Guid, UploadVideosStatus> statusDictionary
+    ) : ICreateProcessingOrder
 {
     
     public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
@@ -68,10 +75,11 @@ public class CreateProcessingOrder(
             })
         };
 
-        // How long this could take? 
-        // A: take a lot of time on big files
-        // Is inevitable? To complex to handle? 
-        await fileBucketRepository.Upload(requestUpload);
+        var uploadJob = new UploadVideosJob(requestUpload);
+
+        await channel.Writer.WriteAsync(uploadJob);
+
+        statusDictionary[orderId] = UploadVideosStatus.Queued;
     }
 
     private static Order CreateOrder(CreateProcessingOrderRequest request)

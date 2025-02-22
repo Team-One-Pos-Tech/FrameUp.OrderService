@@ -4,6 +4,10 @@ using FrameUp.OrderService.Api.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using FrameUp.OrderService.Application.Jobs;
+using System.Threading.Channels;
+using System.Collections.Concurrent;
+using FrameUp.OrderService.Application.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
@@ -61,6 +65,17 @@ builder.Services
     .AddMinIO(settings)
     .AddServices()
     .AddUseCases();
+
+builder.Services.AddSingleton(_ =>
+{
+    var channel = Channel.CreateBounded<UploadVideosJob>(new BoundedChannelOptions(100)
+    {
+        FullMode = BoundedChannelFullMode.Wait,
+    });
+
+    return channel;
+});
+builder.Services.AddSingleton<ConcurrentDictionary<Guid, UploadVideosStatus>>();
 
 var app = builder.Build();
 
