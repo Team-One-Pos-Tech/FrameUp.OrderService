@@ -1,5 +1,6 @@
 ﻿using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Jobs;
+using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Services;
 using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Entities;
@@ -70,6 +71,8 @@ public class UploadVideosServiceShould
         await _uploadVideosService.StartExecuteAsync(CancellationToken.None);
 
         // Assert
+        _fileBucketRepositoryMock.Setup(repository => repository.Upload(
+            It.Is<FileBucketRequest>(request => request.OrderId == order.Id && request.Files.Count() == order.Videos.Count()))); 
 
     }
     private async IAsyncEnumerable<UploadVideosJob> GetAsyncEnumerable(UploadVideosJob job)
