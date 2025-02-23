@@ -265,7 +265,7 @@ public class UpdateProcessingOrderShould
 
         response.Should().NotBeNull();
 
-        response.Notifications.First().Message.Should().Be("Just orders in processing status can be canceled.");
+        response.Notifications.First().Message.Should().Be("Order already processed cannot be cancelled.");
 
         _orderRepositoryMock.Verify(x => x.Update(
             It.Is<Order>(order => order.Status == request.Status &&
