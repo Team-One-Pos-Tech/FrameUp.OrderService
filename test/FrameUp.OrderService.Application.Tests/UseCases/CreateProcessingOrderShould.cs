@@ -490,54 +490,6 @@ public class CreateProcessingOrderShould
         #endregion
     }
 
-    //[Test]
-    //public async Task Publish_Ready_To_Process_Event()
-    //{
-    //    #region Arrange
-
-    //    var video = CreateFakeVideo();
-
-    //    var request = new CreateProcessingOrderRequest
-    //    {
-    //        Videos = [
-    //            new VideoRequest
-    //            {
-    //                ContentStream = video,
-    //                Metadata = new VideoMetadataRequest
-    //                {
-    //                    Name = "marketing.mp4",
-    //                    ContentType = "video/mp4",
-    //                    Size = 1024L * 1024L
-    //                }
-    //            }
-    //        ]
-    //    };
-
-    //    var orderId = Guid.NewGuid();
-
-    //    _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
-    //        .ReturnsAsync(orderId);
-
-    //    #endregion
-
-    //    #region Act
-
-    //    var response = await _createProcessingOrder.Execute(request);
-
-    //    #endregion
-
-    //    #region Assert
-
-    //    response.IsValid.Should().BeTrue();
-
-    //    _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-    //        It.Is<ReadyToProcessVideo>(message => message.OrderId == orderId),
-    //        It.IsAny<CancellationToken>()
-    //    ), Times.Once);
-
-    //    #endregion
-    //}
-
     [Test]
     public async Task Persist_Order_With_ExportResolution()
     {
@@ -722,60 +674,6 @@ public class CreateProcessingOrderShould
 
         #endregion
     }
-
-
-    //[Test]
-    //public async Task Publish_Ready_To_Process_Event_With_Parameters()
-    //{
-    //    #region Arrange
-
-    //    var video = CreateFakeVideo();
-
-    //    var request = new CreateProcessingOrderRequest
-    //    {
-    //        ExportResolution = ResolutionTypes.HD,
-    //        CaptureInterval = 10,
-    //        Videos = [
-    //            new VideoRequest
-    //            {
-    //                ContentStream = video,
-    //                Metadata = new VideoMetadataRequest
-    //                {
-    //                    Name = "marketing.mp4",
-    //                    ContentType = "video/mp4",
-    //                    Size = 1024L * 1024L
-    //                }
-    //            }
-    //        ]
-    //    };
-
-    //    var orderId = Guid.NewGuid();
-
-    //    _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
-    //        .ReturnsAsync(orderId);
-
-    //    #endregion
-
-    //    #region Act
-
-    //    var response = await _createProcessingOrder.Execute(request);
-
-    //    #endregion
-
-    //    #region Assert
-
-    //    response.IsValid.Should().BeTrue();
-
-    //    _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-    //        It.Is<ReadyToProcessVideo>(message =>
-    //            message.Parameters.ExportResolution == ResolutionTypes.HD &&
-    //            message.Parameters.CaptureInterval == request.CaptureInterval
-    //        ),
-    //        It.IsAny<CancellationToken>()
-    //    ), Times.Once);
-
-    //    #endregion
-    //}
 
     [Test]
     public async Task Save_Video_Files_Locally()
