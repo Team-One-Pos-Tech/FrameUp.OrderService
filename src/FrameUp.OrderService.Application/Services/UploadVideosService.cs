@@ -33,11 +33,13 @@ public class UploadVideosService(
         {
             try
             {
-                order = job.Order;  
+                logger.LogInformation("Uploading videos started");
 
                 await UploadVideosAsync(job);
 
                 logger.LogInformation("Videos has been uploaded successfully");
+
+                order = job.Order;  
 
                 await ProcessVideos(order!);
             }

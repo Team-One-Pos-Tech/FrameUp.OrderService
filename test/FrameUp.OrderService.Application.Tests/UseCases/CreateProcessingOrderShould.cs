@@ -70,7 +70,7 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        response.Status.Should().Be(ProcessingStatus.Processing);
+        response.Status.Should().Be(ProcessingStatus.Received);
 
         #endregion
     }
