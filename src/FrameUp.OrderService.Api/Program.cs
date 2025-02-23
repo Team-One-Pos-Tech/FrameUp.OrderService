@@ -64,20 +64,8 @@ builder.Services
     .AddDatabaseContext(settings)
     .AddMinIO(settings)
     .AddServices()
+    .AddJobs()
     .AddUseCases();
-
-builder.Services.AddSingleton(_ =>
-{
-    var channel = Channel.CreateBounded<UploadVideosJob>(new BoundedChannelOptions(100)
-    {
-        FullMode = BoundedChannelFullMode.Wait,
-    });
-
-    return channel;
-});
-
-builder.Services.AddHostedService<UploadVideosService>();
-builder.Services.AddSingleton<IUploadVideosChannel, UploadVideosChannel>();
 
 var app = builder.Build();
 
