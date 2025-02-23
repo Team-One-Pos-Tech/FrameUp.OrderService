@@ -33,9 +33,9 @@ public class UploadVideosService(
 
                 await UploadVideosAsync(job);
 
-                await ProcessVideos(order!);
+                logger.LogInformation("Videos has been uploaded successfully");
 
-                logger.LogInformation("UploadVideosJob has been uploaded successfully");
+                await ProcessVideos(order!);
             }
             catch (OperationCanceledException)
             {
@@ -117,20 +117,20 @@ public class UploadVideosService(
 
     private async Task ProcessVideos(Order order)
     {
-        var parameters = new ProcessVideoParameters
-        {
-            ExportResolution = order.ExportResolution,
-            CaptureInterval = order.CaptureInterval,
-        };
 
         using (var scope = serviceProvider.CreateScope())
         {
             var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 
+            var parameters = new ProcessVideoParameters
+            {
+                ExportResolution = order.ExportResolution,
+                CaptureInterval = order.CaptureInterval,
+            };
+       
             await publishEndpoint.Publish(
                 new ReadyToProcessVideo(order.Id, parameters)
             );
-
         }
     }
 }
