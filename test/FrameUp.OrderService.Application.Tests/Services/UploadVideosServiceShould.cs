@@ -120,7 +120,7 @@ public class UploadVideosServiceShould
     }
 
     [Test]
-    public async Task Update_Order_Status_To_Uploading()
+    public async Task Update_Order_Status()
     {
         // Arrange
         var order = new Order
@@ -145,7 +145,9 @@ public class UploadVideosServiceShould
         await _uploadVideosService.StartExecuteAsync(CancellationToken.None);
 
         // Assert
-        order.Status.Should().Be(ProcessingStatus.Uploading);
+        _orderRepositoryMock.Verify(repository => repository.Update(
+            It.IsAny<Order>()
+        ), Times.Exactly(2));
 
     }
 

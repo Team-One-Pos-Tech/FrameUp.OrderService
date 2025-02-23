@@ -42,6 +42,8 @@ public class UploadVideosService(
                 logger.LogInformation("Videos has been uploaded successfully");
 
                 await ProcessVideos(job.Order!);
+
+                await UpdateOrderStatus(job.Order, ProcessingStatus.Processing);
             }
             catch (OperationCanceledException)
             {
