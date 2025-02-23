@@ -88,6 +88,11 @@ public class UploadVideosService(
                 FileBucketRequest requestUpload = CreateRequestUpload(job, files);
 
                 await fileBucketRepository.Upload(requestUpload);
+
+                foreach (var file in files)
+                {
+                    await localStoreRepository.DeleteFileAsync(job.Order.Id, file.Key);
+                }
             }
         }
         catch
@@ -118,7 +123,6 @@ public class UploadVideosService(
         foreach (var item in job.Order.Videos)
         {
             files[item.Name] = localStoreRepository.GetFile(job.Order.Id, item.Name);
-            await localStoreRepository.DeleteFileAsync(job.Order.Id, item.Name);
         }
 
         return files;
