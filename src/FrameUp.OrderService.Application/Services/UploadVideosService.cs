@@ -1,9 +1,11 @@
 ﻿using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Jobs;
+using FrameUp.OrderService.Application.Models.Events;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,9 +31,9 @@ public class UploadVideosService(
             {
                 order = job.Order;  
 
-                await ProcessJobAsync(job);
+                await UploadVideosAsync(job);
 
-                //await ProcessVideos(order!);
+                await ProcessVideos(order!);
 
                 logger.LogInformation("UploadVideosJob has been uploaded successfully");
             }
@@ -62,7 +64,7 @@ public class UploadVideosService(
         }
     }
 
-    private async Task ProcessJobAsync(UploadVideosJob job)
+    private async Task UploadVideosAsync(UploadVideosJob job)
     {
         try
         {
@@ -77,7 +79,6 @@ public class UploadVideosService(
                 FileBucketRequest requestUpload = CreateRequestUpload(job, files);
 
                 await fileBucketRepository.Upload(requestUpload);
-
             }
         }
         catch
@@ -114,16 +115,22 @@ public class UploadVideosService(
         return files;
     }
 
-    //private async Task ProcessVideos(Order order)
-    //{
-    //    var parameters = new ProcessVideoParameters
-    //    {
-    //        ExportResolution = order.ExportResolution,
-    //        CaptureInterval = order.CaptureInterval,
-    //    };
+    private async Task ProcessVideos(Order order)
+    {
+        var parameters = new ProcessVideoParameters
+        {
+            ExportResolution = order.ExportResolution,
+            CaptureInterval = order.CaptureInterval,
+        };
 
-    //    await publishEndpoint.Publish(
-    //        new ReadyToProcessVideo(order.Id, parameters)
-    //    );
-    //}
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+
+            await publishEndpoint.Publish(
+                new ReadyToProcessVideo(order.Id, parameters)
+            );
+
+        }
+    }
 }
