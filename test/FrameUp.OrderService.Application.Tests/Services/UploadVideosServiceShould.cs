@@ -5,16 +5,14 @@ using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Threading.Channels;
 
 namespace FrameUp.OrderService.Application.Tests.Services;
 
-internal class UploadVideosServiceShould
+public class UploadVideosServiceShould
 {
-    private BackgroundService _uploadVideosService;
+    private UploadVideosService _uploadVideosService;
     private Mock<ILogger<UploadVideosService>> _loggerMock;
     private Mock<IServiceProvider> _serviceProviderMock;
     private Mock<IFileBucketRepository> _fileBucketRepositoryMock;
@@ -69,7 +67,7 @@ internal class UploadVideosServiceShould
             .Returns(jobsList);
 
         // Act
-        await _uploadVideosService.ExecuteAsync(CancellationToken.None);
+        await _uploadVideosService.StartExecuteAsync(CancellationToken.None);
 
         // Assert
 

@@ -77,7 +77,7 @@ builder.Services.AddSingleton(_ =>
 });
 
 builder.Services.AddHostedService<UploadVideosService>();
-builder.Services.AddScoped<IUploadVideosChannel, UploadVideosChannel>();
+builder.Services.AddSingleton<IUploadVideosChannel, UploadVideosChannel>();
 
 var app = builder.Build();
 

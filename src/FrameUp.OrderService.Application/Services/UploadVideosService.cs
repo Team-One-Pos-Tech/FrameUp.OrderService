@@ -15,13 +15,17 @@ namespace FrameUp.OrderService.Application.Services;
 
 public class UploadVideosService(
         ILogger<UploadVideosService> logger,
-        Channel<UploadVideosJob> channel,
+        IUploadVideosChannel channel,
         IServiceProvider serviceProvider) : BackgroundService
 {
+    public async Task StartExecuteAsync(CancellationToken stoppingToken)
+    {
+        await ExecuteAsync(stoppingToken);
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var jobs = channel.Reader.ReadAllAsync(stoppingToken);
+        var jobs = channel.ReadAllAsync(stoppingToken);
 
         Order? order = null;
 
