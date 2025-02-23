@@ -64,6 +64,7 @@ public class CreateProcessingOrder(
             await localStoreRepository.SaveFileAsync(order.Id, item.Metadata.Name, item.ContentStream);
         }
 
+        // Dont need request upload
         var uploadJob = new UploadVideosJob(order, requestUpload);
 
         await uploadVideosChannel.WriteAsync(uploadJob);

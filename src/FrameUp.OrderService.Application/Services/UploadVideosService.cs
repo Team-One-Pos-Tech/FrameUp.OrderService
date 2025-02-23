@@ -1,36 +1,21 @@
 ﻿using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Enums;
 using FrameUp.OrderService.Application.Jobs;
+using FrameUp.OrderService.Application.Models.Requests;
+using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
 using System.Threading.Channels;
 
 namespace FrameUp.OrderService.Application.Services;
 
-public class UploadVideosService : BackgroundService
-{
-    private readonly ILogger<UploadVideosService> logger;
-    private readonly Channel<UploadVideosJob> channel;
-    private readonly ConcurrentDictionary<Guid, UploadVideosStatus> statusDictionary;
-    private readonly IServiceProvider serviceProvider;
-    private IFileBucketRepository fileBucketRepository;
-    private IOrderRepository orderRepository;
-
-    public UploadVideosService(
+public class UploadVideosService(
         ILogger<UploadVideosService> logger,
         Channel<UploadVideosJob> channel,
-        ConcurrentDictionary<Guid, UploadVideosStatus> statusDictionary,
-        IServiceProvider serviceProvider)
-    {
-        this.logger = logger;
-        this.channel = channel;
-        this.statusDictionary = statusDictionary;
-        this.serviceProvider = serviceProvider;
-    }
+        IServiceProvider serviceProvider) : BackgroundService
+{
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -71,6 +56,7 @@ public class UploadVideosService : BackgroundService
         order!.Status = status;
         using (var scope = serviceProvider.CreateScope())
         {
+            var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
             orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
             await orderRepository.Update(order!);
         }
@@ -78,22 +64,40 @@ public class UploadVideosService : BackgroundService
 
     private async Task ProcessJobAsync(UploadVideosJob job)
     {
-        statusDictionary[job.UploadRequest.OrderId] = UploadVideosStatus.InProgress;
-
         try
         {
             using (var scope = serviceProvider.CreateScope())
             {
-                fileBucketRepository = scope.ServiceProvider.GetRequiredService<IFileBucketRepository>();
+                var  fileBucketRepository = scope.ServiceProvider.GetRequiredService<IFileBucketRepository>();
 
-                await fileBucketRepository.Upload(job.UploadRequest);
+                var localStoreRepository = scope.ServiceProvider.GetRequiredService<ILocalStoreRepository>();
+
+                var files = new Dictionary<string, Stream>();
+
+                foreach (var item in job.Order.Videos)
+                {
+                    files[item.Name] = localStoreRepository.GetFile(job.Order.Id, item.Name);
+                    await localStoreRepository.DeleteFileAsync(job.Order.Id, item.Name);
+                }
+
+                var requestUpload = new FileBucketRequest
+                {
+                    OrderId = job.Order.Id,
+                    Files = job.Order.Videos.Select(video => new FileRequest
+                    {
+                        ContentStream = files[video.Name],
+                        Name = video.Name,
+                        Size = video.Size,
+                        ContentType = video.ContentType
+                    })
+                };
+
+                await fileBucketRepository.Upload(requestUpload);
+
             }
-
-            statusDictionary[job.UploadRequest.OrderId] = UploadVideosStatus.Completed;
         }
         catch
         {
-            statusDictionary[job.UploadRequest.OrderId] = UploadVideosStatus.Failed;
             throw;
         }
     }

@@ -4,14 +4,12 @@ using System.Threading.Channels;
 
 namespace FrameUp.OrderService.Application.Channels;
 
-public class UploadVideosChannel : IUploadVideosChannel
+public class UploadVideosChannel(Channel<UploadVideosJob> _channel) : IUploadVideosChannel
 {
-    private readonly Channel<UploadVideosJob> _channel = Channel.CreateUnbounded<UploadVideosJob>();
-
     public ChannelWriter<UploadVideosJob> Writer => _channel.Writer;
 
-    public ValueTask WriteAsync(UploadVideosJob job)
+    public async ValueTask WriteAsync(UploadVideosJob job)
     {
-        throw new NotImplementedException();
+        await _channel.Writer.WriteAsync(job);
     }
 }

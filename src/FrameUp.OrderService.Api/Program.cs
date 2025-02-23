@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using FrameUp.OrderService.Application.Jobs;
 using System.Threading.Channels;
-using System.Collections.Concurrent;
-using FrameUp.OrderService.Application.Enums;
 using FrameUp.OrderService.Application.Services;
+using FrameUp.OrderService.Application.Channels;
+using FrameUp.OrderService.Application.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
@@ -77,6 +77,7 @@ builder.Services.AddSingleton(_ =>
 });
 
 builder.Services.AddHostedService<UploadVideosService>();
+builder.Services.AddScoped<IUploadVideosChannel, UploadVideosChannel>();
 
 var app = builder.Build();
 

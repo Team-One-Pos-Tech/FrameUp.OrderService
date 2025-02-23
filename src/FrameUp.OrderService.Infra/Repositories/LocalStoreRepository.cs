@@ -1,4 +1,7 @@
+﻿using FrameUp.OrderService.Domain.Contracts;
+
 namespace FrameUp.OrderService.Infra.Repositories;
+
 
 public class LocalStoreRepository : ILocalStoreRepository
 {
@@ -8,7 +11,7 @@ public class LocalStoreRepository : ILocalStoreRepository
     {
         var path = Path.Combine(BasePath, orderId.ToString(), fileName);
 
-        Directory.CreateDirectory(Path.GetDirectoryName(path));
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
         using (var fileStream = File.Create(path))
         {
@@ -16,7 +19,7 @@ public class LocalStoreRepository : ILocalStoreRepository
         }
     }
 
-    public async Task<Stream> GetFileAsync(Guid orderId, string fileName)
+    public Stream GetFile(Guid orderId, string fileName)
     {
         var path = Path.Combine(BasePath, orderId.ToString(), fileName);
 
