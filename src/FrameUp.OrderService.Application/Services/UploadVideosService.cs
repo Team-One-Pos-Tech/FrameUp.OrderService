@@ -68,29 +68,13 @@ public class UploadVideosService(
         {
             using (var scope = serviceProvider.CreateScope())
             {
-                var  fileBucketRepository = scope.ServiceProvider.GetRequiredService<IFileBucketRepository>();
+                var fileBucketRepository = scope.ServiceProvider.GetRequiredService<IFileBucketRepository>();
 
                 var localStoreRepository = scope.ServiceProvider.GetRequiredService<ILocalStoreRepository>();
 
-                var files = new Dictionary<string, Stream>();
+                Dictionary<string, Stream> files = await GetFiles(job, localStoreRepository);
 
-                foreach (var item in job.Order.Videos)
-                {
-                    files[item.Name] = localStoreRepository.GetFile(job.Order.Id, item.Name);
-                    await localStoreRepository.DeleteFileAsync(job.Order.Id, item.Name);
-                }
-
-                var requestUpload = new FileBucketRequest
-                {
-                    OrderId = job.Order.Id,
-                    Files = job.Order.Videos.Select(video => new FileRequest
-                    {
-                        ContentStream = files[video.Name],
-                        Name = video.Name,
-                        Size = video.Size,
-                        ContentType = video.ContentType
-                    })
-                };
+                FileBucketRequest requestUpload = CreateRequestUpload(job, files);
 
                 await fileBucketRepository.Upload(requestUpload);
 
@@ -100,6 +84,34 @@ public class UploadVideosService(
         {
             throw;
         }
+    }
+
+    private static FileBucketRequest CreateRequestUpload(UploadVideosJob job, Dictionary<string, Stream> files)
+    {
+        return new FileBucketRequest
+        {
+            OrderId = job.Order.Id,
+            Files = job.Order.Videos.Select(video => new FileRequest
+            {
+                ContentStream = files[video.Name],
+                Name = video.Name,
+                Size = video.Size,
+                ContentType = video.ContentType
+            })
+        };
+    }
+
+    private static async Task<Dictionary<string, Stream>> GetFiles(UploadVideosJob job, ILocalStoreRepository localStoreRepository)
+    {
+        var files = new Dictionary<string, Stream>();
+
+        foreach (var item in job.Order.Videos)
+        {
+            files[item.Name] = localStoreRepository.GetFile(job.Order.Id, item.Name);
+            await localStoreRepository.DeleteFileAsync(job.Order.Id, item.Name);
+        }
+
+        return files;
     }
 
     //private async Task ProcessVideos(Order order)

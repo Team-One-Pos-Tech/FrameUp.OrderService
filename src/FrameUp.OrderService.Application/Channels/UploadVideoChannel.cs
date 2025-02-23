@@ -8,6 +8,11 @@ public class UploadVideosChannel(Channel<UploadVideosJob> _channel) : IUploadVid
 {
     public ChannelWriter<UploadVideosJob> Writer => _channel.Writer;
 
+    public IAsyncEnumerable<UploadVideosJob> ReadAllAsync(CancellationToken cancellationToken)
+    {
+        return _channel.Reader.ReadAllAsync(cancellationToken);
+    }
+
     public async ValueTask WriteAsync(UploadVideosJob job)
     {
         await _channel.Writer.WriteAsync(job);

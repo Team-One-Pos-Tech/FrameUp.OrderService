@@ -8,4 +8,6 @@ public interface IUploadVideosChannel
     ChannelWriter<UploadVideosJob> Writer { get; }
 
     ValueTask WriteAsync(UploadVideosJob job);
+
+    IAsyncEnumerable<UploadVideosJob> ReadAllAsync(CancellationToken cancellationToken);
 }
