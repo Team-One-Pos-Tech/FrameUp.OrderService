@@ -32,7 +32,8 @@ public static class UpdateProcessingOrderValidator
     {
         return request.Status == ProcessingStatus.Canceled && (
             order.Status == ProcessingStatus.Canceled || 
-            order.Status == ProcessingStatus.Failed || 
+            order.Status == ProcessingStatus.Failed ||
+            order.Status == ProcessingStatus.Concluded ||
             order.Status == ProcessingStatus.Refused);
     }
 }
