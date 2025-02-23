@@ -17,9 +17,7 @@ namespace FrameUp.OrderService.Application.UseCases;
 
 public class CreateProcessingOrder(
     ILogger<CreateProcessingOrder> logger,
-    IFileBucketRepository fileBucketRepository, 
     IOrderRepository orderRepository,
-    IPublishEndpoint publishEndpoint,
     IUploadVideosChannel uploadVideosChannel,
     ILocalStoreRepository localStoreRepository
     ) : ICreateProcessingOrder

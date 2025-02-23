@@ -16,28 +16,22 @@ namespace FrameUp.OrderService.Application.Tests.UseCases;
 public class CreateProcessingOrderShould
 {
     private CreateProcessingOrder _createProcessingOrder;
-    private Mock<IFileBucketRepository> _fileBucketMock;
     private Mock<IOrderRepository> _orderRepository;
     private Mock<ILogger<CreateProcessingOrder>> _loggerMock;
-    private Mock<IPublishEndpoint> _publishEndpointMock;
     private Mock<ILocalStoreRepository> _localStoreRepositoryMock;
     private Mock<IUploadVideosChannel> _channelMock;
 
     [SetUp]
     public void Setup()
     {
-        _fileBucketMock = new Mock<IFileBucketRepository>();
         _orderRepository = new Mock<IOrderRepository>();
         _loggerMock = new Mock<ILogger<CreateProcessingOrder>>();
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
         _localStoreRepositoryMock = new Mock<ILocalStoreRepository>();
         _channelMock = new Mock<IUploadVideosChannel>();
 
         _createProcessingOrder = new CreateProcessingOrder(
             _loggerMock.Object,
-            _fileBucketMock.Object,
             _orderRepository.Object,
-            _publishEndpointMock.Object,
             _channelMock.Object,
             _localStoreRepositoryMock.Object);
     }
@@ -233,7 +227,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Video size is too large.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -278,7 +276,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("File type not supported.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -353,7 +355,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Max supported videos processing is 3.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -383,7 +389,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("At least one video is required.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -426,7 +436,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Capture interval should be more than 1.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
