@@ -20,7 +20,7 @@ public class CreateProcessingOrder(
     IFileBucketRepository fileBucketRepository, 
     IOrderRepository orderRepository,
     IPublishEndpoint publishEndpoint,
-    Channel<UploadVideosJob> channel,
+    IUploadVideosChannel uploadVideosChannel,
     ILocalStoreRepository localStoreRepository
     ) : ICreateProcessingOrder
 {
@@ -61,9 +61,14 @@ public class CreateProcessingOrder(
             })
         };
 
+        foreach (var item in request.Videos)
+        {
+            await localStoreRepository.SaveFileAsync(order.Id, item.Metadata.Name, item.ContentStream);
+        }
+
         var uploadJob = new UploadVideosJob(order, requestUpload);
 
-        await channel.Writer.WriteAsync(uploadJob);
+        await uploadVideosChannel.WriteAsync(uploadJob);
     }
 
     private static Order CreateOrder(CreateProcessingOrderRequest request)
