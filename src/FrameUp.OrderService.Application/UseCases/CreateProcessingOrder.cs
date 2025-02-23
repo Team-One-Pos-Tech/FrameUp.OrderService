@@ -1,16 +1,11 @@
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Domain.Entities;
-using MassTransit;
 using FrameUp.OrderService.Application.Validators;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
-using FrameUp.OrderService.Application.Models.Events;
 using Microsoft.Extensions.Logging;
-using System.Threading.Channels;
 using FrameUp.OrderService.Application.Jobs;
-using System.Collections.Concurrent;
-using FrameUp.OrderService.Application.Enums;
 using FrameUp.OrderService.Domain.Contracts;
 
 namespace FrameUp.OrderService.Application.UseCases;
@@ -47,25 +42,12 @@ public class CreateProcessingOrder(
 
     private async Task UploadVideos(Order order, CreateProcessingOrderRequest request)
     {
-        var requestUpload = new FileBucketRequest
-        {
-            OrderId = order.Id,
-            Files = request.Videos.Select(video => new FileRequest
-            {
-                ContentStream = video.ContentStream,
-                Name = video.Metadata.Name,
-                Size = video.Metadata.Size,
-                ContentType = video.Metadata.ContentType
-            })
-        };
-
         foreach (var item in request.Videos)
         {
             await localStoreRepository.SaveFileAsync(order.Id, item.Metadata.Name, item.ContentStream);
         }
 
-        // Dont need request upload
-        var uploadJob = new UploadVideosJob(order, requestUpload);
+        var uploadJob = new UploadVideosJob(order);
 
         await uploadVideosChannel.WriteAsync(uploadJob);
     }

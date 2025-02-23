@@ -3,4 +3,4 @@ using FrameUp.OrderService.Domain.Entities;
 
 namespace FrameUp.OrderService.Application.Jobs;
 
-public record UploadVideosJob(Order Order, FileBucketRequest UploadRequest);
+public record UploadVideosJob(Order Order);

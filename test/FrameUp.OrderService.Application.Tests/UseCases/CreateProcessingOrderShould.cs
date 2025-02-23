@@ -7,7 +7,6 @@ using FrameUp.OrderService.Application.UseCases;
 using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
-using MassTransit;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -118,8 +117,7 @@ public class CreateProcessingOrderShould
         response.IsValid.Should().BeTrue();
 
         _channelMock.Verify(mock => mock.WriteAsync(
-            It.Is<UploadVideosJob>(fileRequest => fileRequest.Order.Id == orderId &&
-                                                    fileRequest.UploadRequest.Files.Count() == 1)
+            It.Is<UploadVideosJob>(fileRequest => fileRequest.Order.Id == orderId)
         ), Times.Once);
 
         #endregion
@@ -180,8 +178,7 @@ public class CreateProcessingOrderShould
         response.IsValid.Should().BeTrue();
 
         _channelMock.Verify(mock => mock.WriteAsync(
-            It.Is<UploadVideosJob>(fileRequest => fileRequest.Order.Id == orderId &&
-                                                    fileRequest.UploadRequest.Files.Count() == 2)
+            It.Is<UploadVideosJob>(fileRequest => fileRequest.Order.Id == orderId)
         ), Times.Once);
 
         #endregion
