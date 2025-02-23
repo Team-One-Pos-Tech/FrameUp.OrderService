@@ -3,7 +3,11 @@ using System.Text.Json.Serialization;
 using FrameUp.OrderService.Api.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
+using FrameUp.OrderService.Application.Jobs;
+using System.Threading.Channels;
+using FrameUp.OrderService.Application.Services;
+using FrameUp.OrderService.Application.Channels;
+using FrameUp.OrderService.Application.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
@@ -60,6 +64,7 @@ builder.Services
     .AddDatabaseContext(settings)
     .AddMinIO(settings)
     .AddServices()
+    .AddJobs()
     .AddUseCases();
 
 var app = builder.Build();

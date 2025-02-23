@@ -1,13 +1,12 @@
 using System.Text;
 using FluentAssertions;
 using FrameUp.OrderService.Application.Contracts;
-using FrameUp.OrderService.Application.Models.Events;
+using FrameUp.OrderService.Application.Jobs;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.UseCases;
+using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
-using MassTransit;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -16,24 +15,24 @@ namespace FrameUp.OrderService.Application.Tests.UseCases;
 public class CreateProcessingOrderShould
 {
     private CreateProcessingOrder _createProcessingOrder;
-    private Mock<IFileBucketRepository> _fileBucketMock;
     private Mock<IOrderRepository> _orderRepository;
     private Mock<ILogger<CreateProcessingOrder>> _loggerMock;
-    private Mock<IPublishEndpoint> _publishEndpointMock;
+    private Mock<ILocalStoreRepository> _localStoreRepositoryMock;
+    private Mock<IUploadVideosChannel> _channelMock;
 
     [SetUp]
     public void Setup()
     {
-        _fileBucketMock = new Mock<IFileBucketRepository>();
         _orderRepository = new Mock<IOrderRepository>();
         _loggerMock = new Mock<ILogger<CreateProcessingOrder>>();
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _localStoreRepositoryMock = new Mock<ILocalStoreRepository>();
+        _channelMock = new Mock<IUploadVideosChannel>();
 
         _createProcessingOrder = new CreateProcessingOrder(
             _loggerMock.Object,
-            _fileBucketMock.Object,
             _orderRepository.Object,
-            _publishEndpointMock.Object);
+            _channelMock.Object,
+            _localStoreRepositoryMock.Object);
     }
 
     [Test]
@@ -71,7 +70,7 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        response.Status.Should().Be(ProcessingStatus.Processing);
+        response.Status.Should().Be(ProcessingStatus.Received);
 
         #endregion
     }
@@ -117,9 +116,8 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
-                                                    fileRequest.Files.Count() == 1)
+        _channelMock.Verify(mock => mock.WriteAsync(
+            It.Is<UploadVideosJob>(fileRequest => fileRequest.Order.Id == orderId)
         ), Times.Once);
 
         #endregion
@@ -179,9 +177,8 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _fileBucketMock.Verify(mock => mock.Upload(
-            It.Is<FileBucketRequest>(fileRequest => fileRequest.OrderId == orderId &&
-                                                    fileRequest.Files.Count() == 2)
+        _channelMock.Verify(mock => mock.WriteAsync(
+            It.Is<UploadVideosJob>(fileRequest => fileRequest.Order.Id == orderId)
         ), Times.Once);
 
         #endregion
@@ -227,7 +224,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Video size is too large.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -272,7 +273,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("File type not supported.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -347,7 +352,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Max supported videos processing is 3.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -377,7 +386,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("At least one video is required.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -420,7 +433,11 @@ public class CreateProcessingOrderShould
 
         response.Notifications.First().Message.Should().Be("Capture interval should be more than 1.");
 
-        _fileBucketMock.Verify(mock => mock.Upload(It.IsAny<FileBucketRequest>()), Times.Never);
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Stream>()
+        ), Times.Never);
 
         #endregion
     }
@@ -468,54 +485,6 @@ public class CreateProcessingOrderShould
             It.Is<Order>(order => order.Videos.First().Name == videoName &&
                                   order.Videos.First().Size == size &&
                                   order.Videos.First().ContentType == contentType)
-        ), Times.Once);
-
-        #endregion
-    }
-
-    [Test]
-    public async Task Publish_Ready_To_Process_Event()
-    {
-        #region Arrange
-
-        var video = CreateFakeVideo();
-
-        var request = new CreateProcessingOrderRequest
-        {
-            Videos = [
-                new VideoRequest
-                {
-                    ContentStream = video,
-                    Metadata = new VideoMetadataRequest
-                    {
-                        Name = "marketing.mp4",
-                        ContentType = "video/mp4",
-                        Size = 1024L * 1024L
-                    }
-                }
-            ]
-        };
-
-        var orderId = Guid.NewGuid();
-
-        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
-            .ReturnsAsync(orderId);
-
-        #endregion
-
-        #region Act
-
-        var response = await _createProcessingOrder.Execute(request);
-
-        #endregion
-
-        #region Assert
-
-        response.IsValid.Should().BeTrue();
-
-        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-            It.Is<ReadyToProcessVideo>(message => message.OrderId == orderId),
-            It.IsAny<CancellationToken>()
         ), Times.Once);
 
         #endregion
@@ -706,9 +675,8 @@ public class CreateProcessingOrderShould
         #endregion
     }
 
-
     [Test]
-    public async Task Publish_Ready_To_Process_Event_With_Parameters()
+    public async Task Save_Video_Files_Locally()
     {
         #region Arrange
 
@@ -749,17 +717,14 @@ public class CreateProcessingOrderShould
 
         response.IsValid.Should().BeTrue();
 
-        _publishEndpointMock.Verify(publishEndpoint => publishEndpoint.Publish(
-            It.Is<ReadyToProcessVideo>(message =>
-                message.Parameters.ExportResolution == ResolutionTypes.HD &&
-                message.Parameters.CaptureInterval == request.CaptureInterval
-            ),
-            It.IsAny<CancellationToken>()
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            orderId,
+            request.Videos.First().Metadata.Name,
+            video
         ), Times.Once);
 
         #endregion
     }
-
 
     #region Helpers
 

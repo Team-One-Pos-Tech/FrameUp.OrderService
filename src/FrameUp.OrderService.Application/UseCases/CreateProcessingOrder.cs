@@ -1,20 +1,21 @@
 using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Domain.Enums;
 using FrameUp.OrderService.Domain.Entities;
-using MassTransit;
 using FrameUp.OrderService.Application.Validators;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.Models.Responses;
-using FrameUp.OrderService.Application.Models.Events;
 using Microsoft.Extensions.Logging;
+using FrameUp.OrderService.Application.Jobs;
+using FrameUp.OrderService.Domain.Contracts;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
 public class CreateProcessingOrder(
     ILogger<CreateProcessingOrder> logger,
-    IFileBucketRepository fileBucketRepository, 
     IOrderRepository orderRepository,
-    IPublishEndpoint publishEndpoint) : ICreateProcessingOrder
+    IUploadVideosChannel uploadVideosChannel,
+    ILocalStoreRepository localStoreRepository
+    ) : ICreateProcessingOrder
 {
     
     public async Task<CreateProcessingOrderResponse> Execute(CreateProcessingOrderRequest request)
@@ -28,9 +29,7 @@ public class CreateProcessingOrder(
 
         order.Id = await orderRepository.Save(order);
 
-        await UploadVideos(order.Id, request);
-
-        await ProcessVideos(order, request);
+        await UploadVideos(order, request);
 
         logger.LogInformation("New Processing Order [{orderId}] created successfully!", order.Id);
 
@@ -41,37 +40,16 @@ public class CreateProcessingOrder(
         };
     }
 
-    private async Task ProcessVideos(Order order, CreateProcessingOrderRequest request)
+    private async Task UploadVideos(Order order, CreateProcessingOrderRequest request)
     {
-        var parameters = new ProcessVideoParameters
+        foreach (var item in request.Videos)
         {
-            ExportResolution = request.ExportResolution,
-            CaptureInterval = request.CaptureInterval,
-        };
+            await localStoreRepository.SaveFileAsync(order.Id, item.Metadata.Name, item.ContentStream);
+        }
 
-        await publishEndpoint.Publish(
-            new ReadyToProcessVideo(order.Id, parameters)
-        );
-    }
+        var uploadJob = new UploadVideosJob(order);
 
-    private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
-    {
-        var requestUpload = new FileBucketRequest
-        {
-            OrderId = orderId,
-            Files = request.Videos.Select(video => new FileRequest
-            {
-                ContentStream = video.ContentStream,
-                Name = video.Metadata.Name,
-                Size = video.Metadata.Size,
-                ContentType = video.Metadata.ContentType
-            })
-        };
-
-        // How long this could take? 
-        // A: take a lot of time on big files
-        // Is inevitable? To complex to handle? 
-        await fileBucketRepository.Upload(requestUpload);
+        await uploadVideosChannel.WriteAsync(uploadJob);
     }
 
     private static Order CreateOrder(CreateProcessingOrderRequest request)
@@ -81,7 +59,7 @@ public class CreateProcessingOrder(
             OwnerId = request.OwnerId,
             CaptureInterval = request.CaptureInterval,
             ExportResolution = request.ExportResolution ?? ResolutionTypes.FullHD,
-            Status = ProcessingStatus.Processing,
+            Status = ProcessingStatus.Received,
             Videos = request.Videos.Select(video => new VideoMetadata
             {
                 ContentType = video.Metadata.ContentType,

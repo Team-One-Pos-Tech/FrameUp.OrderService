@@ -19,12 +19,21 @@ public static class UpdateProcessingOrderValidator
             return false;
         }
 
-        if (request.Status == ProcessingStatus.Canceled && order.Status != ProcessingStatus.Processing)
+        if (CanCancelOrder(order, request))
         {
-            responseOut.AddNotification("Status", "Just orders in processing status can be canceled.");
+            responseOut.AddNotification("Status", "Order already processed cannot be cancelled.");
             return false;
         }
 
         return true;
+    }
+
+    private static bool CanCancelOrder(Order order, UpdateProcessingOrderRequest request)
+    {
+        return request.Status == ProcessingStatus.Canceled && (
+            order.Status == ProcessingStatus.Canceled || 
+            order.Status == ProcessingStatus.Failed ||
+            order.Status == ProcessingStatus.Concluded ||
+            order.Status == ProcessingStatus.Refused);
     }
 }
