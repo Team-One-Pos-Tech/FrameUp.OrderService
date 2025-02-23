@@ -35,9 +35,7 @@ public class CreateProcessingOrder(
 
         order.Id = await orderRepository.Save(order);
 
-        await UploadVideos(order.Id, request);
-
-        await ProcessVideos(order, request);
+        await UploadVideos(order, request);
 
         logger.LogInformation("New Processing Order [{orderId}] created successfully!", order.Id);
 
@@ -48,24 +46,11 @@ public class CreateProcessingOrder(
         };
     }
 
-    private async Task ProcessVideos(Order order, CreateProcessingOrderRequest request)
-    {
-        var parameters = new ProcessVideoParameters
-        {
-            ExportResolution = request.ExportResolution,
-            CaptureInterval = request.CaptureInterval,
-        };
-
-        await publishEndpoint.Publish(
-            new ReadyToProcessVideo(order.Id, parameters)
-        );
-    }
-
-    private async Task UploadVideos(Guid orderId, CreateProcessingOrderRequest request)
+    private async Task UploadVideos(Order order, CreateProcessingOrderRequest request)
     {
         var requestUpload = new FileBucketRequest
         {
-            OrderId = orderId,
+            OrderId = order.Id,
             Files = request.Videos.Select(video => new FileRequest
             {
                 ContentStream = video.ContentStream,
@@ -75,11 +60,9 @@ public class CreateProcessingOrder(
             })
         };
 
-        var uploadJob = new UploadVideosJob(requestUpload);
+        var uploadJob = new UploadVideosJob(order, requestUpload);
 
         await channel.Writer.WriteAsync(uploadJob);
-
-        statusDictionary[orderId] = UploadVideosStatus.Queued;
     }
 
     private static Order CreateOrder(CreateProcessingOrderRequest request)

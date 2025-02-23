@@ -3,11 +3,11 @@ using System.Text.Json.Serialization;
 using FrameUp.OrderService.Api.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
 using FrameUp.OrderService.Application.Jobs;
 using System.Threading.Channels;
 using System.Collections.Concurrent;
 using FrameUp.OrderService.Application.Enums;
+using FrameUp.OrderService.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
@@ -75,7 +75,8 @@ builder.Services.AddSingleton(_ =>
 
     return channel;
 });
-builder.Services.AddSingleton<ConcurrentDictionary<Guid, UploadVideosStatus>>();
+
+builder.Services.AddHostedService<UploadVideosService>();
 
 var app = builder.Build();
 
