@@ -1,13 +1,15 @@
 using System.Text;
+using System.Threading.Channels;
 using FluentAssertions;
 using FrameUp.OrderService.Application.Contracts;
+using FrameUp.OrderService.Application.Jobs;
 using FrameUp.OrderService.Application.Models.Events;
 using FrameUp.OrderService.Application.Models.Requests;
 using FrameUp.OrderService.Application.UseCases;
+using FrameUp.OrderService.Domain.Contracts;
 using FrameUp.OrderService.Domain.Entities;
 using FrameUp.OrderService.Domain.Enums;
 using MassTransit;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -20,6 +22,8 @@ public class CreateProcessingOrderShould
     private Mock<IOrderRepository> _orderRepository;
     private Mock<ILogger<CreateProcessingOrder>> _loggerMock;
     private Mock<IPublishEndpoint> _publishEndpointMock;
+    private Mock<ILocalStoreRepository> _localStoreRepositoryMock;
+    private Mock<Channel<UploadVideosJob>> _channelMock;
 
     [SetUp]
     public void Setup()
@@ -28,12 +32,23 @@ public class CreateProcessingOrderShould
         _orderRepository = new Mock<IOrderRepository>();
         _loggerMock = new Mock<ILogger<CreateProcessingOrder>>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _localStoreRepositoryMock = new Mock<ILocalStoreRepository>();
+        _channelMock = new Mock<Channel<UploadVideosJob>>();
+
+        var channelWriterMock = new Mock<ChannelWriter<UploadVideosJob>>();
+        channelWriterMock
+            .Setup(writer => writer.WriteAsync(It.IsAny<UploadVideosJob>(), default))
+            .Returns(new ValueTask());
+
+        _channelMock.Setup(mock => mock.Writer).Returns(channelWriterMock.Object);
 
         _createProcessingOrder = new CreateProcessingOrder(
             _loggerMock.Object,
             _fileBucketMock.Object,
             _orderRepository.Object,
-            _publishEndpointMock.Object);
+            _publishEndpointMock.Object,
+            _channelMock.Object,
+            _localStoreRepositoryMock.Object);
     }
 
     [Test]
@@ -755,6 +770,57 @@ public class CreateProcessingOrderShould
                 message.Parameters.CaptureInterval == request.CaptureInterval
             ),
             It.IsAny<CancellationToken>()
+        ), Times.Once);
+
+        #endregion
+    }
+
+    [Test]
+    public async Task Save_Video_Files_Locally()
+    {
+        #region Arrange
+
+        var video = CreateFakeVideo();
+
+        var request = new CreateProcessingOrderRequest
+        {
+            ExportResolution = ResolutionTypes.HD,
+            CaptureInterval = 10,
+            Videos = [
+                new VideoRequest
+                {
+                    ContentStream = video,
+                    Metadata = new VideoMetadataRequest
+                    {
+                        Name = "marketing.mp4",
+                        ContentType = "video/mp4",
+                        Size = 1024L * 1024L
+                    }
+                }
+            ]
+        };
+
+        var orderId = Guid.NewGuid();
+
+        _orderRepository.Setup(repository => repository.Save(It.IsAny<Order>()))
+            .ReturnsAsync(orderId);
+
+        #endregion
+
+        #region Act
+
+        var response = await _createProcessingOrder.Execute(request);
+
+        #endregion
+
+        #region Assert
+
+        response.IsValid.Should().BeTrue();
+
+        _localStoreRepositoryMock.Verify(localStoreRepository => localStoreRepository.SaveFileAsync(
+            orderId,
+            request.Videos.First().Metadata.Name,
+            video
         ), Times.Once);
 
         #endregion

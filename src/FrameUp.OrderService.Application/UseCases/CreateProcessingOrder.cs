@@ -11,6 +11,7 @@ using System.Threading.Channels;
 using FrameUp.OrderService.Application.Jobs;
 using System.Collections.Concurrent;
 using FrameUp.OrderService.Application.Enums;
+using FrameUp.OrderService.Domain.Contracts;
 
 namespace FrameUp.OrderService.Application.UseCases;
 
@@ -20,7 +21,7 @@ public class CreateProcessingOrder(
     IOrderRepository orderRepository,
     IPublishEndpoint publishEndpoint,
     Channel<UploadVideosJob> channel,
-    ConcurrentDictionary<Guid, UploadVideosStatus> statusDictionary
+    ILocalStoreRepository localStoreRepository
     ) : ICreateProcessingOrder
 {
     
