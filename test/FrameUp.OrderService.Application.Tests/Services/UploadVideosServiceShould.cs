@@ -17,6 +17,13 @@ namespace FrameUp.OrderService.Application.Tests.Services;
 public class UploadVideosServiceShould
 {
     private UploadVideosService _uploadVideosService;
+
+    [TearDown]
+    public void TearDown()
+    {
+        _uploadVideosService?.Dispose();
+    }
+
     private Mock<ILogger<UploadVideosService>> _loggerMock;
     private Mock<IServiceProvider> _serviceProviderMock;
     private Mock<IFileBucketRepository> _fileBucketRepositoryMock;
