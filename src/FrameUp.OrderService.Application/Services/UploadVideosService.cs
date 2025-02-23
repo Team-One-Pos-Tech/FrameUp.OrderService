@@ -35,13 +35,13 @@ public class UploadVideosService(
             {
                 logger.LogInformation("Uploading videos started");
 
+                await UpdateOrderStatus(job.Order, ProcessingStatus.Uploading);
+
                 await UploadVideosAsync(job);
 
                 logger.LogInformation("Videos has been uploaded successfully");
 
-                order = job.Order;  
-
-                await ProcessVideos(order!);
+                await ProcessVideos(job.Order!);
             }
             catch (OperationCanceledException)
             {
@@ -61,11 +61,12 @@ public class UploadVideosService(
 
     private async Task UpdateOrderStatus(Order? order, ProcessingStatus status)
     {
-        order!.Status = status;
         using (var scope = serviceProvider.CreateScope())
         {
             var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
-            orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+            
+            order!.Status = status;
+
             await orderRepository.Update(order!);
         }
     }

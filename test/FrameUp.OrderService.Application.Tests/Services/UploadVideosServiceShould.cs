@@ -1,4 +1,5 @@
-﻿using FrameUp.OrderService.Application.Contracts;
+﻿using FluentAssertions;
+using FrameUp.OrderService.Application.Contracts;
 using FrameUp.OrderService.Application.Jobs;
 using FrameUp.OrderService.Application.Models.Events;
 using FrameUp.OrderService.Application.Models.Requests;
@@ -115,6 +116,36 @@ public class UploadVideosServiceShould
             ),
             It.IsAny<CancellationToken>()
         ), Times.Once);
+
+    }
+
+    [Test]
+    public async Task Update_Order_Status_To_Uploading()
+    {
+        // Arrange
+        var order = new Order
+        {
+            Id = Guid.NewGuid(),
+            Status = ProcessingStatus.Received,
+            Videos = new List<VideoMetadata>
+            {
+                new VideoMetadata { Name = "video1.mp4", ContentType = "video/mp4", Size = 1000 },
+                new VideoMetadata { Name = "video2.mp4", ContentType = "video/mp4", Size = 2000 }
+            }
+        };
+
+        var job = new UploadVideosJob(order);
+
+        var jobsList = GetAsyncEnumerable(job);
+
+        _channel.Setup(x => x.ReadAllAsync(It.IsAny<CancellationToken>()))
+            .Returns(jobsList);
+
+        // Act
+        await _uploadVideosService.StartExecuteAsync(CancellationToken.None);
+
+        // Assert
+        order.Status.Should().Be(ProcessingStatus.Uploading);
 
     }
 
