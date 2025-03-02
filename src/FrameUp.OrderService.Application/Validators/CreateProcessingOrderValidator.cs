@@ -8,7 +8,7 @@ public static class CreateProcessingOrderValidator
 {
     private const long MaxVideoSize = 1024L * 1024L * 1024L;
     private const int MaxVideoCount = 3;
-    private static readonly List<string> SupportedContentTypes = ["video/mp4"];
+    private static readonly List<string> SupportedContentTypes = ["video/mp4", "mov", "mkv"];
 
     public static bool IsValid(CreateProcessingOrderRequest request, out CreateProcessingOrderResponse responseOut)
     {
