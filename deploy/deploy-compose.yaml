@@ -1,0 +1,52 @@
+services:
+  frame-up-order-app:
+    image: ghcr.io/team-one-pos-tech/frameup-order-service:latest
+    container_name: frame-up-order-app
+    restart: always
+    ports:
+      - "5688:8080"
+    environment:
+        Settings__RabbitMQ__ConnectionString: amqps://gcdxloon:URt1AZtRf3YSiomSwDi_9NDEkTzKnbeQ@toucan.lmq.cloudamqp.com/gcdxloon
+        Settings__PostgreSQL__ConnectionString: "User Id=postgres.gruanmsuhnonxapotmrj;Password=dvxYLc9Ux!RnQE;Server=aws-0-sa-east-1.pooler.supabase.com;Port=6543;Database=postgres"
+        Settings__MinIO__Endpoint: play.min.io
+        Settings__MinIO__AccessKey: AYMStZMMTPccDQnUnTXC
+        Settings__MinIO__SecretKey: JZKGUAVb6K2rVSw0KWaPmIQYUJaO6stwybkPlZBV
+        Settings__Auth__Key: randomlyGeneratedKey12345randomlyGeneratedKey12345randomlyGeneratedKey12345randomlyGeneratedKey12345
+        Settings__Auth__Issuer: FrameUp
+        Settings__Auth__Audience: https://identity-service-fdfnd0dmfgatbzat.brazilsouth-01.azurewebsites.net/
+        Settings__LogBee__OrganizationId: 8a2de170-dd2c-4bed-b853-bec2ca7bbb5a
+        Settings__LogBee__ApplicationId: bafc28c1-0059-4f9d-b19b-ccb0d7c0beb1
+        Settings__LogBee__ApiUrl: logbee.backend.dev
+        ASPNETCORE_ENVIRONMENT: Development
+        ASPNETCORE_HTTP_PORTS: 8080
+
+---
+services:
+  identity-app:
+    image: ghcr.io/team-one-pos-tech/identity-service:latest
+    container_name: identity-app
+    restart: always
+    ports:
+      - "5488:8080"
+    environment:
+        Settings__RabbitMQ__ConnectionString: amqps://gcdxloon:URt1AZtRf3YSiomSwDi_9NDEkTzKnbeQ@toucan.lmq.cloudamqp.com/gcdxloon
+        Settings__PostgreSQL__ConnectionString: "User Id=postgres.gruanmsuhnonxapotmrj;Password=dvxYLc9Ux!RnQE;Server=aws-0-sa-east-1.pooler.supabase.com;Port=6543;Database=postgres"
+        ASPNETCORE_ENVIRONMENT: Development
+        ASPNETCORE_HTTP_PORTS: 8080
+
+---
+services:
+  frame-up-process-app:
+    image: ghcr.io/team-one-pos-tech/frameup-process-service:latest
+    container_name: frame-up-process-app
+    restart: always
+    ports:
+      - "5888:8080"
+    environment:
+      Settings__RabbitMQ__ConnectionString: amqps://gcdxloon:URt1AZtRf3YSiomSwDi_9NDEkTzKnbeQ@toucan.lmq.cloudamqp.com/gcdxloon
+      Settings__PostgreSQL__ConnectionString: "User Id=postgres.gruanmsuhnonxapotmrj;Password=dvxYLc9Ux!RnQE;Server=aws-0-sa-east-1.pooler.supabase.com;Port=5432;Database=postgres"
+      Settings__MinIO__Endpoint: play.min.io
+      Settings__MinIO__AccessKey: AYMStZMMTPccDQnUnTXC
+      Settings__MinIO__SecretKey: JZKGUAVb6K2rVSw0KWaPmIQYUJaO6stwybkPlZBV
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
